@@ -952,24 +952,427 @@
    CHAMBER III — THE COSMOS
 ===================================================== */
 
+/* =====================================================
+   CHAMBER III — THE COSMOS
+   ===================================================== */
+
 .chamber-cosmos {
+
     position: relative;
+
     overflow: hidden;
-    isolation: isolate;
 
     background:
         radial-gradient(
-            circle at 50% 50%,
-            rgba(75, 80, 110, 0.18) 0%,
-            rgba(25, 27, 40, 0.10) 30%,
-            transparent 65%
+            circle at 50% 45%,
+            rgba(100, 95, 135, 0.16) 0%,
+            rgba(45, 42, 70, 0.10) 25%,
+            transparent 60%
         ),
+
         radial-gradient(
             ellipse at center,
-            #0d1019 0%,
-            #05070d 48%,
-            #010102 100%
+            #161522 0%,
+            #07070e 45%,
+            #020203 100%
         );
+
+    isolation: isolate;
+}
+
+
+/* =====================================================
+   COSMIC ATMOSPHERE
+   ===================================================== */
+
+.chamber-cosmos::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 900px;
+    height: 900px;
+
+    left: 50%;
+    top: 55%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(120, 110, 160, 0.10) 0%,
+            rgba(80, 75, 120, 0.05) 30%,
+            transparent 70%
+        );
+
+    filter: blur(25px);
+
+    animation: cosmosBreath 12s ease-in-out infinite;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+@keyframes cosmosBreath {
+
+    0%,
+    100% {
+        opacity: 0.45;
+        transform: translate(-50%, -50%) scale(0.92);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.08);
+    }
+}
+
+
+/* =====================================================
+   COSMOS CORE
+   ===================================================== */
+
+.cosmos-core {
+
+    position: relative;
+
+    width: 520px;
+    height: 520px;
+
+    margin: 70px auto 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 2;
+}
+
+
+/* =====================================================
+   CENTRAL LIGHT
+   ===================================================== */
+
+.cosmos-core::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(225, 220, 205, 0.16) 0%,
+            rgba(160, 150, 190, 0.08) 35%,
+            transparent 70%
+        );
+
+    filter: blur(10px);
+
+    animation: cosmicHeart 6s ease-in-out infinite;
+
+    pointer-events: none;
+}
+
+
+@keyframes cosmicHeart {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(0.85);
+        opacity: 0.45;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 1;
+    }
+}
+
+
+/* =====================================================
+   ORBITS
+   ===================================================== */
+
+.cosmos-orbit {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border: 1px solid rgba(210, 205, 220, 0.16);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    transform-origin: center;
+
+}
+
+
+/* First orbit */
+
+.cosmos-orbit-one {
+
+    width: 430px;
+    height: 180px;
+
+    transform: translate(-50%, -50%) rotate(25deg);
+
+    animation:
+        cosmosOrbitOne 18s linear infinite;
+}
+
+
+/* Second orbit */
+
+.cosmos-orbit-two {
+
+    width: 430px;
+    height: 180px;
+
+    transform: translate(-50%, -50%) rotate(-55deg);
+
+    animation:
+        cosmosOrbitTwo 24s linear infinite;
+}
+
+
+/* Third orbit */
+
+.cosmos-orbit-three {
+
+    width: 430px;
+    height: 180px;
+
+    transform: translate(-50%, -50%) rotate(90deg);
+
+    animation:
+        cosmosOrbitThree 30s linear infinite;
+}
+
+
+/* =====================================================
+   ORBIT MOVEMENT
+   ===================================================== */
+
+@keyframes cosmosOrbitOne {
+
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(25deg)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(25deg)
+            rotate(360deg);
+    }
+}
+
+
+@keyframes cosmosOrbitTwo {
+
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(-55deg)
+            rotate(360deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(-55deg)
+            rotate(0deg);
+    }
+}
+
+
+@keyframes cosmosOrbitThree {
+
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(90deg)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(90deg)
+            rotate(360deg);
+    }
+}
+
+
+/* =====================================================
+   CENTRAL COSMIC SYMBOL
+   ===================================================== */
+
+.cosmos-center {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #e8e1d6;
+
+    font-size: 2rem;
+
+    text-shadow:
+        0 0 10px rgba(220, 215, 200, 0.7),
+        0 0 30px rgba(150, 140, 190, 0.5);
+
+    animation: cosmosSymbol 5s ease-in-out infinite;
+
+    z-index: 5;
+}
+
+
+@keyframes cosmosSymbol {
+
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.9);
+
+        opacity: 0.75;
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.12);
+
+        opacity: 1;
+    }
+}
+
+
+/* =====================================================
+   SMALL COSMIC PARTICLES
+   ===================================================== */
+
+.cosmos-core::after {
+
+    content: "✦   ·       ✧       ·   ✦       ·       ✧";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 600px;
+
+    transform: translate(-50%, -50%);
+
+    color: rgba(225, 220, 210, 0.35);
+
+    font-size: 0.8rem;
+
+    letter-spacing: 3rem;
+
+    line-height: 8rem;
+
+    text-align: center;
+
+    pointer-events: none;
+
+    animation: cosmicParticles 18s linear infinite;
+
+    z-index: 1;
+}
+
+
+@keyframes cosmicParticles {
+
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
+    }
+}
+
+
+/* =====================================================
+   MOBILE COSMOS
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+    .cosmos-core {
+
+        width: 360px;
+        height: 360px;
+
+        margin-top: 50px;
+    }
+
+    .cosmos-orbit-one,
+    .cosmos-orbit-two,
+    .cosmos-orbit-three {
+
+        width: 300px;
+        height: 125px;
+    }
+
+    .cosmos-core::before {
+
+        width: 110px;
+        height: 110px;
+    }
+
+    .cosmos-center {
+
+        width: 55px;
+        height: 55px;
+
+        font-size: 1.5rem;
+    }
 }
         .chamber-cosmos::before {
     content: "";
