@@ -667,15 +667,122 @@
     }
 }
 
-        .chamber-gods {
-            background:
-                radial-gradient(
-                    ellipse at center,
-                    #211e1b 0%,
-                    #0d0b0b 45%,
-                    #030304 100%
-                );
-        }
+       /* =====================================================
+   CHAMBER II — THE GODS
+===================================================== */
+
+.chamber-gods {
+    position: relative;
+
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            rgba(130, 115, 95, 0.12) 0%,
+            rgba(55, 45, 40, 0.08) 30%,
+            transparent 65%
+        ),
+        radial-gradient(
+            ellipse at center,
+            #211e1b 0%,
+            #0d0b0b 45%,
+            #030304 100%
+        );
+
+    isolation: isolate;
+}
+
+
+/* -----------------------------------------------------
+   DIVINE ATMOSPHERE
+----------------------------------------------------- */
+
+.chamber-gods::after {
+    content: "";
+
+    position: absolute;
+
+    width: 650px;
+    height: 650px;
+
+    left: 50%;
+    top: 43%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(180, 160, 130, 0.10) 0%,
+            rgba(120, 100, 80, 0.04) 35%,
+            transparent 70%
+        );
+
+    filter: blur(25px);
+
+    animation: godsGlow 12s ease-in-out infinite;
+
+    pointer-events: none;
+
+    z-index: -1;
+}
+
+
+/* Slow divine breathing */
+
+@keyframes godsGlow {
+
+    0%,
+    100% {
+        opacity: 0.45;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.92);
+    }
+
+    50% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.08);
+    }
+}
+        /* -----------------------------------------------------
+   GODS SYMBOL
+----------------------------------------------------- */
+
+.chamber-gods .chamber-symbol {
+    display: inline-block;
+
+    animation: godsSymbol 7s ease-in-out infinite;
+
+    text-shadow:
+        0 0 15px rgba(210, 190, 160, 0.15);
+}
+
+
+@keyframes godsSymbol {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(0deg);
+
+        opacity: 0.5;
+    }
+
+    50% {
+        transform:
+            translateY(-8px)
+            rotate(-8deg);
+
+        opacity: 0.9;
+    }
+}
 
         .chamber-cosmos {
             background:
