@@ -439,7 +439,241 @@
             color: #777168;
         }
 
+        /* =====================================================
+           CHAMBERS
+        ===================================================== */
 
+        .chamber {
+            position: relative;
+
+            min-height: 100vh;
+
+            padding: 140px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            overflow: hidden;
+
+            border-top: 1px solid rgba(232, 227, 216, 0.08);
+        }
+
+        .chamber-content {
+            position: relative;
+
+            z-index: 2;
+
+            width: min(900px, 92%);
+        }
+
+        .chamber-number {
+            font-size: 0.7rem;
+
+            letter-spacing: 0.5em;
+
+            color: #777168;
+
+            margin-bottom: 25px;
+        }
+
+        .chamber-symbol {
+            font-size: 2.5rem;
+
+            opacity: 0.55;
+
+            margin-bottom: 30px;
+        }
+
+        .chamber h2 {
+            font-size: clamp(3rem, 8vw, 6rem);
+
+            font-weight: normal;
+
+            letter-spacing: 0.1em;
+
+            text-transform: uppercase;
+
+            margin-bottom: 25px;
+
+            text-shadow:
+                0 0 30px rgba(0,0,0,0.8);
+        }
+
+        .chamber-subtitle {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+
+            color: #aaa399;
+
+            line-height: 1.8;
+
+            max-width: 650px;
+
+            margin: 0 auto 50px;
+        }
+
+        .chamber-placeholder {
+            display: inline-block;
+
+            padding: 18px 30px;
+
+            border: 1px solid rgba(232, 227, 216, 0.12);
+
+            color: #777168;
+
+            letter-spacing: 0.15em;
+
+            text-transform: uppercase;
+
+            font-size: 0.7rem;
+        }
+
+        .back-button {
+            display: inline-block;
+
+            margin-top: 60px;
+
+            padding: 12px 28px;
+
+            border: 1px solid rgba(232, 227, 216, 0.3);
+
+            text-decoration: none;
+
+            color: #aaa399;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.2em;
+
+            font-size: 0.7rem;
+
+            transition:
+                background 0.3s ease,
+                color 0.3s ease,
+                border-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(232, 227, 216, 0.08);
+
+            color: #eee9de;
+
+            border-color: rgba(232, 227, 216, 0.7);
+        }
+
+
+        /* -----------------------------------------------------
+           INDIVIDUAL CHAMBER ATMOSPHERES
+        ----------------------------------------------------- */
+
+        .chamber-primordial {
+            background:
+                radial-gradient(
+                    ellipse at center,
+                    #11131a 0%,
+                    #06070b 45%,
+                    #020203 100%
+                );
+        }
+
+        .chamber-gods {
+            background:
+                radial-gradient(
+                    ellipse at center,
+                    #211e1b 0%,
+                    #0d0b0b 45%,
+                    #030304 100%
+                );
+        }
+
+        .chamber-cosmos {
+            background:
+                radial-gradient(
+                    ellipse at center,
+                    #161522 0%,
+                    #07070e 45%,
+                    #020203 100%
+                );
+        }
+
+        .chamber-shadow {
+            background:
+                radial-gradient(
+                    ellipse at center,
+                    #161313 0%,
+                    #050404 40%,
+                    #000000 100%
+                );
+        }
+
+        .chamber-ritual {
+            background:
+                radial-gradient(
+                    ellipse at center,
+                    #211b18 0%,
+                    #0b0808 45%,
+                    #020202 100%
+                );
+        }
+
+
+        /* -----------------------------------------------------
+           CHAMBER DECORATION
+        ----------------------------------------------------- */
+
+        .chamber::before {
+            content: "";
+
+            position: absolute;
+
+            width: 500px;
+            height: 500px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,0.025),
+                    transparent 65%
+                );
+
+            pointer-events: none;
+        }
+
+
+        /* -----------------------------------------------------
+           MOBILE CHAMBERS
+        ----------------------------------------------------- */
+
+        @media (max-width: 600px) {
+
+            .chamber {
+                min-height: 100svh;
+
+                padding: 110px 20px;
+            }
+
+            .chamber h2 {
+                font-size: clamp(2.6rem, 13vw, 4.5rem);
+            }
+
+            .chamber-subtitle {
+                font-size: 1rem;
+            }
+
+            .chamber-placeholder {
+                max-width: 90%;
+
+                line-height: 1.7;
+            }
+
+            .back-button {
+                margin-top: 45px;
+            }
+        }
         /* =====================================================
            FOOTER
         ===================================================== */
@@ -772,7 +1006,241 @@
 
     </section>
 
+    <!-- =====================================================
+         CHAMBER I — PRIMORDIAL
+    ====================================================== -->
 
+    <section
+        id="primordial"
+        class="chamber chamber-primordial"
+    >
+
+        <div class="chamber-content">
+
+            <div class="chamber-number">
+                CHAMBER I
+            </div>
+
+            <div class="chamber-symbol">
+                ◇
+            </div>
+
+            <h2>
+                Primordial
+            </h2>
+
+            <p class="chamber-subtitle">
+                Before form.
+                Before boundaries.
+                Before the world had a name.
+            </p>
+
+            <div class="chamber-placeholder">
+                This chamber awaits its story.
+            </div>
+
+            <br>
+
+            <a
+                href="#inside"
+                class="back-button"
+            >
+                Return to the Sanctuary
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CHAMBER II — THE GODS
+    ====================================================== -->
+
+    <section
+        id="gods"
+        class="chamber chamber-gods"
+    >
+
+        <div class="chamber-content">
+
+            <div class="chamber-number">
+                CHAMBER II
+            </div>
+
+            <div class="chamber-symbol">
+                ☽
+            </div>
+
+            <h2>
+                The Gods
+            </h2>
+
+            <p class="chamber-subtitle">
+                From the primordial darkness,
+                beings emerged and creation began
+                to take form.
+            </p>
+
+            <div class="chamber-placeholder">
+                This chamber awaits its story.
+            </div>
+
+            <br>
+
+            <a
+                href="#inside"
+                class="back-button"
+            >
+                Return to the Sanctuary
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CHAMBER III — THE COSMOS
+    ====================================================== -->
+
+    <section
+        id="cosmos"
+        class="chamber chamber-cosmos"
+    >
+
+        <div class="chamber-content">
+
+            <div class="chamber-number">
+                CHAMBER III
+            </div>
+
+            <div class="chamber-symbol">
+                ✧
+            </div>
+
+            <h2>
+                The Cosmos
+            </h2>
+
+            <p class="chamber-subtitle">
+                From the formless came form.
+                From possibility came existence.
+                From Chaos, a universe.
+            </p>
+
+            <div class="chamber-placeholder">
+                This chamber awaits its story.
+            </div>
+
+            <br>
+
+            <a
+                href="#inside"
+                class="back-button"
+            >
+                Return to the Sanctuary
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CHAMBER IV — THE SHADOW
+    ====================================================== -->
+
+    <section
+        id="shadow"
+        class="chamber chamber-shadow"
+    >
+
+        <div class="chamber-content">
+
+            <div class="chamber-number">
+                CHAMBER IV
+            </div>
+
+            <div class="chamber-symbol">
+                ◐
+            </div>
+
+            <h2>
+                The Shadow
+            </h2>
+
+            <p class="chamber-subtitle">
+                What exists beyond the boundaries
+                of the conscious mind.
+            </p>
+
+            <div class="chamber-placeholder">
+                This chamber awaits its story.
+            </div>
+
+            <br>
+
+            <a
+                href="#inside"
+                class="back-button"
+            >
+                Return to the Sanctuary
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CHAMBER V — RITUAL
+    ====================================================== -->
+
+    <section
+        id="ritual"
+        class="chamber chamber-ritual"
+    >
+
+        <div class="chamber-content">
+
+            <div class="chamber-number">
+                CHAMBER V
+            </div>
+
+            <div class="chamber-symbol">
+                ✦
+            </div>
+
+            <h2>
+                Ritual
+            </h2>
+
+            <p class="chamber-subtitle">
+                A place for contemplation,
+                practice, devotion and transformation.
+            </p>
+
+            <div class="chamber-placeholder">
+                This chamber awaits its story.
+            </div>
+
+            <br>
+
+            <a
+                href="#inside"
+                class="back-button"
+            >
+                Return to the Sanctuary
+            </a>
+
+        </div>
+
+    </section>
 
     <!-- =====================================================
          FOOTER
