@@ -493,6 +493,63 @@
     text-shadow:
         0 0 20px rgba(220, 215, 230, 0.15);
 }
+        /* =====================================================
+   COSMOS — LIVING CHAMBER SYMBOL
+   ===================================================== */
+
+.chamber-cosmos .chamber-symbol {
+
+    animation:
+        cosmosSymbolFloat 6s ease-in-out infinite,
+        cosmosSymbolGlow 4s ease-in-out infinite;
+
+    transform-origin: center;
+
+}
+
+
+/* Gentle movement */
+
+@keyframes cosmosSymbolFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(-4deg);
+    }
+
+    50% {
+        transform:
+            translateY(-9px)
+            rotate(4deg);
+    }
+
+}
+
+
+/* Gentle breathing light */
+
+@keyframes cosmosSymbolGlow {
+
+    0%,
+    100% {
+        opacity: 0.65;
+
+        text-shadow:
+            0 0 5px rgba(220, 215, 205, 0.25),
+            0 0 15px rgba(140, 130, 180, 0.15);
+    }
+
+    50% {
+        opacity: 1;
+
+        text-shadow:
+            0 0 10px rgba(220, 215, 205, 0.65),
+            0 0 30px rgba(150, 140, 190, 0.4);
+    }
+
+}
 
 
 .chamber-primordial .chamber-symbol {
@@ -1054,6 +1111,115 @@
 
     z-index: 2;
 }
+        <!-- =====================================================
+     THE COSMIC PROCESS
+     ===================================================== -->
+
+<div class="cosmos-process">
+
+    <div class="cosmos-stage">
+
+        <div class="cosmos-stage-number">
+            I
+        </div>
+
+        <div class="cosmos-stage-symbol">
+            ◇
+        </div>
+
+        <h3>
+            Chaos
+        </h3>
+
+        <p>
+            Before form, there was possibility.
+            Before boundaries, there was the limitless.
+        </p>
+
+    </div>
+
+
+    <div class="cosmos-connection">
+        ↓
+    </div>
+
+
+    <div class="cosmos-stage">
+
+        <div class="cosmos-stage-number">
+            II
+        </div>
+
+        <div class="cosmos-stage-symbol">
+            ◇
+        </div>
+
+        <h3>
+            Convergence
+        </h3>
+
+        <p>
+            Chaos and Order meet.
+            From their convergence, creation becomes possible.
+        </p>
+
+    </div>
+
+
+    <div class="cosmos-connection">
+        ↓
+    </div>
+
+
+    <div class="cosmos-stage">
+
+        <div class="cosmos-stage-number">
+            III
+        </div>
+
+        <div class="cosmos-stage-symbol">
+            ✧
+        </div>
+
+        <h3>
+            Order
+        </h3>
+
+        <p>
+            Possibility takes shape.
+            Pattern, structure and distinction emerge.
+        </p>
+
+    </div>
+
+
+    <div class="cosmos-connection">
+        ↓
+    </div>
+
+
+    <div class="cosmos-stage">
+
+        <div class="cosmos-stage-number">
+            IV
+        </div>
+
+        <div class="cosmos-stage-symbol">
+            ✦
+        </div>
+
+        <h3>
+            Creation
+        </h3>
+
+        <p>
+            Form unfolds into existence.
+            The universe becomes.
+        </p>
+
+    </div>
+
+</div>
 
 
 /* =====================================================
@@ -1674,6 +1840,298 @@
             translate(-50%, -50%)
             scale(1.08);
     }
+}
+        /* =====================================================
+   COSMIC PROCESS
+   ===================================================== */
+
+.cosmos-process {
+
+    position: relative;
+
+    z-index: 3;
+
+    width: min(900px, 90%);
+
+    margin: 80px auto 100px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+}
+
+
+/* =====================================================
+   INDIVIDUAL STAGES
+   ===================================================== */
+
+.cosmos-stage {
+
+    width: min(650px, 100%);
+
+    padding: 45px 35px;
+
+    text-align: center;
+
+    border-top: 1px solid rgba(220, 215, 205, 0.12);
+
+    transition:
+        border-color 0.5s ease,
+        transform 0.5s ease,
+        background 0.5s ease;
+
+}
+
+
+.cosmos-stage:last-child {
+
+    border-bottom: 1px solid rgba(220, 215, 205, 0.12);
+
+}
+
+
+/* Hover */
+
+.cosmos-stage:hover {
+
+    border-color: rgba(220, 215, 205, 0.3);
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(100, 95, 135, 0.08),
+            transparent 70%
+        );
+
+    transform: scale(1.015);
+
+}
+
+
+/* =====================================================
+   ROMAN NUMBERS
+   ===================================================== */
+
+.cosmos-stage-number {
+
+    margin-bottom: 15px;
+
+    color: rgba(220, 215, 205, 0.45);
+
+    font-size: 0.7rem;
+
+    letter-spacing: 0.45em;
+
+}
+
+
+/* =====================================================
+   SYMBOLS
+   ===================================================== */
+
+.cosmos-stage-symbol {
+
+    margin-bottom: 18px;
+
+    color: rgba(225, 220, 210, 0.7);
+
+    font-size: 1.4rem;
+
+    text-shadow:
+        0 0 15px rgba(150, 140, 180, 0.25);
+
+    animation:
+        stageSymbolPulse 5s ease-in-out infinite;
+
+}
+
+
+/* Give each symbol a slightly different rhythm */
+
+.cosmos-stage:nth-child(1)
+.cosmos-stage-symbol {
+
+    animation-delay: 0s;
+
+}
+
+.cosmos-stage:nth-child(3)
+.cosmos-stage-symbol {
+
+    animation-delay: 1s;
+
+}
+
+.cosmos-stage:nth-child(5)
+.cosmos-stage-symbol {
+
+    animation-delay: 2s;
+
+}
+
+.cosmos-stage:nth-child(7)
+.cosmos-stage-symbol {
+
+    animation-delay: 3s;
+
+}
+
+
+@keyframes stageSymbolPulse {
+
+    0%,
+    100% {
+
+        transform: scale(0.9);
+
+        opacity: 0.55;
+
+    }
+
+    50% {
+
+        transform: scale(1.15);
+
+        opacity: 1;
+
+    }
+
+}
+
+
+/* =====================================================
+   TITLES
+   ===================================================== */
+
+.cosmos-stage h3 {
+
+    margin-bottom: 18px;
+
+    color: #e8e1d6;
+
+    font-size: 1.4rem;
+
+    font-weight: normal;
+
+    letter-spacing: 0.28em;
+
+    text-transform: uppercase;
+
+}
+
+
+/* =====================================================
+   DESCRIPTIONS
+   ===================================================== */
+
+.cosmos-stage p {
+
+    max-width: 560px;
+
+    margin: 0 auto;
+
+    color: #aaa59d;
+
+    font-size: 1rem;
+
+    line-height: 1.9;
+
+}
+
+
+/* =====================================================
+   CONNECTIONS
+   ===================================================== */
+
+.cosmos-connection {
+
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: rgba(220, 215, 205, 0.3);
+
+    font-size: 1rem;
+
+    animation:
+        connectionPulse 4s ease-in-out infinite;
+
+}
+
+
+@keyframes connectionPulse {
+
+    0%,
+    100% {
+
+        opacity: 0.25;
+
+        transform: translateY(0);
+
+    }
+
+    50% {
+
+        opacity: 0.75;
+
+        transform: translateY(5px);
+
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+    .cosmos-process {
+
+        width: 90%;
+
+        margin-top: 50px;
+
+    }
+
+    .cosmos-stage {
+
+        padding:
+            35px
+            20px;
+
+    }
+
+    .cosmos-stage h3 {
+
+        font-size: 1.15rem;
+
+        letter-spacing: 0.2em;
+
+    }
+
+    .cosmos-stage p {
+
+        font-size: 0.95rem;
+
+        line-height: 1.7;
+
+    }
+
+    .cosmos-connection {
+
+        height: 55px;
+
+    }
+
 }
         /* =====================================================
    THE GODS — GALLERY
