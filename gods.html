@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>The Gods — Temple of Chaos</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            background: #050507;
+            color: #e8e3d8;
+            font-family: Georgia, "Times New Roman", serif;
+            overflow-x: hidden;
+        }
+
+
+        /* =========================
+           CHAMBER
+        ========================= */
+
+        .chamber {
+
+            position: relative;
+
+            min-height: 100vh;
+
+            width: 100%;
+
+            overflow: hidden;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(65, 65, 80, 0.18),
+                    rgba(0, 0, 0, 0.96) 70%
+                );
+
+        }
+
+
+        /* =========================
+           ATMOSPHERE
+        ========================= */
+
+        .chamber::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: -20%;
+
+            background:
+                radial-gradient(
+                    circle at 50% 45%,
+                    rgba(180, 175, 165, 0.08),
+                    transparent 35%
+                );
+
+            animation: divineGlow 8s ease-in-out infinite alternate;
+
+            pointer-events: none;
+
+        }
+
+
+        @keyframes divineGlow {
+
+            from {
+                transform: scale(0.95);
+                opacity: 0.5;
+            }
+
+            to {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+
+        }
+
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .chamber-content {
+
+            position: relative;
+
+            z-index: 2;
+
+            width: min(900px, 90%);
+
+            text-align: center;
+
+            padding: 60px 20px;
+
+        }
+
+
+        .chamber-number {
+
+            font-size: 0.8rem;
+
+            letter-spacing: 0.55em;
+
+            text-transform: uppercase;
+
+            color: #aaa49a;
+
+            margin-bottom: 35px;
+
+        }
+
+
+        /* =========================
+           SYMBOL
+        ========================= */
+
+        .god-symbol {
+
+            font-size: 3rem;
+
+            color: #d9d4ca;
+
+            margin-bottom: 30px;
+
+            display: inline-block;
+
+            animation:
+                symbolFloat 5s ease-in-out infinite,
+                symbolGlow 4s ease-in-out infinite alternate;
+
+        }
+
+
+        @keyframes symbolFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+        }
+
+
+        @keyframes symbolGlow {
+
+            from {
+                text-shadow:
+                    0 0 5px rgba(255,255,255,0.1);
+            }
+
+            to {
+                text-shadow:
+                    0 0 25px rgba(255,255,255,0.35);
+            }
+
+        }
+
+
+        /* =========================
+           TITLE
+        ========================= */
+
+        h1 {
+
+            font-size: clamp(
+                3.5rem,
+                10vw,
+                8rem
+            );
+
+            font-weight: normal;
+
+            letter-spacing: 0.12em;
+
+            text-transform: uppercase;
+
+            margin-bottom: 30px;
+
+            color: #eee9df;
+
+            text-shadow:
+                0 2px 20px rgba(0,0,0,0.9);
+
+        }
+
+
+        /* =========================
+           SUBTITLE
+        ========================= */
+
+        .subtitle {
+
+            font-size: clamp(
+                1rem,
+                2vw,
+                1.35rem
+            );
+
+            line-height: 1.8;
+
+            max-width: 700px;
+
+            margin: 0 auto 55px;
+
+            color: #c9c3b8;
+
+        }
+
+
+        .subtitle em {
+
+            color: #eee9df;
+
+        }
+
+
+        /* =========================
+           PLACEHOLDER
+        ========================= */
+
+        .chamber-placeholder {
+
+            display: inline-block;
+
+            padding: 22px 45px;
+
+            border: 1px solid
+                rgba(232, 227, 216, 0.25);
+
+            color: #8f8a82;
+
+            letter-spacing: 0.2em;
+
+            text-transform: uppercase;
+
+            font-size: 0.75rem;
+
+        }
+
+
+        /* =========================
+           BACK BUTTON
+        ========================= */
+
+        .back-button {
+
+            display: inline-block;
+
+            margin-top: 55px;
+
+            padding: 15px 35px;
+
+            border: 1px solid
+                rgba(232, 227, 216, 0.45);
+
+            color: #eee9de;
+
+            text-decoration: none;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.2em;
+
+            font-size: 0.75rem;
+
+            transition:
+                background 0.3s ease,
+                border-color 0.3s ease,
+                transform 0.3s ease;
+
+        }
+
+
+        .back-button:hover {
+
+            background:
+                rgba(255,255,255,0.06);
+
+            border-color:
+                rgba(255,255,255,0.8);
+
+            transform:
+                translateY(-3px);
+
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .chamber-content {
+                padding: 40px 18px;
+            }
+
+            .chamber-number {
+                font-size: 0.65rem;
+                letter-spacing: 0.35em;
+            }
+
+            .god-symbol {
+                font-size: 2.4rem;
+            }
+
+            h1 {
+                font-size:
+                    clamp(2.8rem, 14vw, 5rem);
+
+                letter-spacing: 0.06em;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .chamber-placeholder {
+                padding: 18px 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="chamber">
+
+
+        <div class="chamber-content">
+
+
+            <div class="chamber-number">
+                Chamber II
+            </div>
+
+
+            <div class="god-symbol">
+                ☾
+            </div>
+
+
+            <h1>
+                The Gods
+            </h1>
+
+
+            <p class="subtitle">
+
+                They were not the beginning.
+
+                <br><br>
+
+                They were born from the darkness
+                that came before creation —
+
+                <br>
+
+                and from <em>Chaos</em>,
+                they took form.
+
+            </p>
+
+
+            <div class="chamber-placeholder">
+
+                This chamber awaits its gods.
+
+            </div>
+
+
+            <br>
+
+
+            <a
+                href="index.html#inside"
+                class="back-button"
+            >
+                Return to the Sanctuary
+            </a>
+
+
+        </div>
+
+
+    </main>
+
+
+</body>
+
+</html>
