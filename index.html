@@ -479,13 +479,42 @@
             margin-bottom: 25px;
         }
 
-        .chamber-symbol {
-            font-size: 2.5rem;
+       .chamber-symbol {
+    font-size: 2.5rem;
 
-            opacity: 0.55;
+    opacity: 0.65;
 
-            margin-bottom: 30px;
-        }
+    margin-bottom: 30px;
+
+    transition:
+        transform 1s ease,
+        opacity 1s ease;
+
+    text-shadow:
+        0 0 20px rgba(220, 215, 230, 0.15);
+}
+
+
+.chamber-primordial .chamber-symbol {
+    animation: primordialSymbol 8s ease-in-out infinite;
+}
+
+
+@keyframes primordialSymbol {
+
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+
+        opacity: 0.45;
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.15);
+
+        opacity: 0.85;
+    }
+}
 
         .chamber h2 {
             font-size: clamp(3rem, 8vw, 6rem);
@@ -568,15 +597,75 @@
            INDIVIDUAL CHAMBER ATMOSPHERES
         ----------------------------------------------------- */
 
-        .chamber-primordial {
-            background:
-                radial-gradient(
-                    ellipse at center,
-                    #11131a 0%,
-                    #06070b 45%,
-                    #020203 100%
-                );
-        }
+       .chamber-primordial {
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(80, 75, 105, 0.18) 0%,
+            rgba(20, 18, 30, 0.12) 25%,
+            transparent 60%
+        ),
+        radial-gradient(
+            ellipse at center,
+            #101018 0%,
+            #050509 45%,
+            #010102 100%
+        );
+
+    isolation: isolate;
+}
+
+
+/* The distant primordial glow */
+
+.chamber-primordial::after {
+    content: "";
+
+    position: absolute;
+
+    width: 700px;
+    height: 700px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(115, 105, 145, 0.10) 0%,
+            rgba(70, 65, 100, 0.04) 35%,
+            transparent 70%
+        );
+
+    filter: blur(20px);
+
+    animation: primordialPulse 10s ease-in-out infinite;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+/* Slow breathing of the primordial darkness */
+
+@keyframes primordialPulse {
+
+    0%,
+    100% {
+        opacity: 0.55;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.08);
+    }
+}
 
         .chamber-gods {
             background:
