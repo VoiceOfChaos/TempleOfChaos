@@ -1111,117 +1111,7 @@
 
     z-index: 2;
 }
-        <!-- =====================================================
-     THE COSMIC PROCESS
-     ===================================================== -->
-
-<div class="cosmos-process">
-
-    <div class="cosmos-stage">
-
-        <div class="cosmos-stage-number">
-            I
-        </div>
-
-        <div class="cosmos-stage-symbol">
-            ◇
-        </div>
-
-        <h3>
-            Chaos
-        </h3>
-
-        <p>
-            Before form, there was possibility.
-            Before boundaries, there was the limitless.
-        </p>
-
-    </div>
-
-
-    <div class="cosmos-connection">
-        ↓
-    </div>
-
-
-    <div class="cosmos-stage">
-
-        <div class="cosmos-stage-number">
-            II
-        </div>
-
-        <div class="cosmos-stage-symbol">
-            ◇
-        </div>
-
-        <h3>
-            Convergence
-        </h3>
-
-        <p>
-            Chaos and Order meet.
-            From their convergence, creation becomes possible.
-        </p>
-
-    </div>
-
-
-    <div class="cosmos-connection">
-        ↓
-    </div>
-
-
-    <div class="cosmos-stage">
-
-        <div class="cosmos-stage-number">
-            III
-        </div>
-
-        <div class="cosmos-stage-symbol">
-            ✧
-        </div>
-
-        <h3>
-            Order
-        </h3>
-
-        <p>
-            Possibility takes shape.
-            Pattern, structure and distinction emerge.
-        </p>
-
-    </div>
-
-
-    <div class="cosmos-connection">
-        ↓
-    </div>
-
-
-    <div class="cosmos-stage">
-
-        <div class="cosmos-stage-number">
-            IV
-        </div>
-
-        <div class="cosmos-stage-symbol">
-            ✦
-        </div>
-
-        <h3>
-            Creation
-        </h3>
-
-        <p>
-            Form unfolds into existence.
-            The universe becomes.
-        </p>
-
-    </div>
-
-</div>
-
-
+     
 /* =====================================================
    CENTRAL LIGHT
    ===================================================== */
@@ -1439,26 +1329,171 @@
 
 .cosmic-node {
 
+   /* =====================================================
+   COSMOS — SIDE CONCEPTS
+===================================================== */
+
+.cosmic-node {
+
     position: absolute;
 
-    left: 50%;
-    top: -24px;
-
-    transform: translateX(-50%);
+    width: 150px;
+    height: 80px;
 
     display: flex;
 
     flex-direction: column;
 
     align-items: center;
+    justify-content: center;
 
-    gap: 8px;
+    z-index: 6;
+
+    pointer-events: none;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   SYMBOL
+===================================================== */
+
+.cosmic-node-symbol {
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(220, 215, 205, 0.35);
+
+    border-radius: 50%;
+
+    background: rgba(5, 5, 9, 0.75);
+
+    color: #e8e3d8;
+
+    font-size: 1.1rem;
+
+    box-shadow:
+        0 0 15px rgba(150, 140, 180, 0.15);
+
+    margin-bottom: 8px;
+
+    animation:
+        cosmicNodePulse 5s ease-in-out infinite;
+}
+
+
+/* =====================================================
+   TEXT
+===================================================== */
+
+.cosmic-node-title {
+
+    color: rgba(232, 227, 216, 0.8);
+
+    font-size: 0.7rem;
+
+    letter-spacing: 0.3em;
+
+    text-transform: uppercase;
 
     white-space: nowrap;
+}
 
-    pointer-events: auto;
 
-    z-index: 5;
+/* =====================================================
+   LEFT SIDE — CHAOS
+===================================================== */
+
+.cosmic-chaos {
+
+    left: -175px;
+
+    top: 22%;
+}
+
+
+/* =====================================================
+   LEFT SIDE — ORDER
+===================================================== */
+
+.cosmic-order {
+
+    left: -175px;
+
+    bottom: 22%;
+}
+
+
+/* =====================================================
+   RIGHT SIDE — CONVERGENCE
+===================================================== */
+
+.cosmic-convergence {
+
+    right: -175px;
+
+    top: 22%;
+}
+
+
+/* =====================================================
+   RIGHT SIDE — CREATION
+===================================================== */
+
+.cosmic-creation {
+
+    right: -175px;
+
+    bottom: 22%;
+}
+
+
+/* =====================================================
+   PULSE
+===================================================== */
+
+@keyframes cosmicNodePulse {
+
+    0%,
+    100% {
+
+        transform: scale(0.92);
+
+        opacity: 0.65;
+
+    }
+
+    50% {
+
+        transform: scale(1.08);
+
+        opacity: 1;
+
+    }
+
+}
+
+
+/* Slightly different timing */
+
+.cosmic-order .cosmic-node-symbol {
+    animation-delay: 1s;
+}
+
+.cosmic-convergence .cosmic-node-symbol {
+    animation-delay: 2s;
+}
+
+.cosmic-creation .cosmic-node-symbol {
+    animation-delay: 3s;
+}
 }
         .cosmic-node {
     position: absolute;
@@ -3475,89 +3510,91 @@
 
            <div class="cosmos-core">
 
+               <div class="cosmos-core">
+
+    <!-- THE THREE COSMIC ORBITS -->
+
+    <div class="cosmos-orbit cosmos-orbit-one"></div>
+
+    <div class="cosmos-orbit cosmos-orbit-two"></div>
+
+    <div class="cosmos-orbit cosmos-orbit-three"></div>
+
+
+    <!-- LEFT — CHAOS -->
+
+    <div class="cosmic-node cosmic-chaos">
+
+        <div class="cosmic-node-symbol">
+            ◇
+        </div>
+
+        <div class="cosmic-node-title">
+            CHAOS
+        </div>
+
+    </div>
+
+
+    <!-- LEFT — ORDER -->
+
+    <div class="cosmic-node cosmic-order">
+
+        <div class="cosmic-node-symbol">
+            ✦
+        </div>
+
+        <div class="cosmic-node-title">
+            ORDER
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT — CONVERGENCE -->
+
+    <div class="cosmic-node cosmic-convergence">
+
+        <div class="cosmic-node-symbol">
+            ✧
+        </div>
+
+        <div class="cosmic-node-title">
+            CONVERGENCE
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT — CREATION -->
+
+    <div class="cosmic-node cosmic-creation">
+
+        <div class="cosmic-node-symbol">
+            ✧
+        </div>
+
+        <div class="cosmic-node-title">
+            CREATION
+        </div>
+
+    </div>
+
+
+    <!-- CENTRAL CORE -->
+
+    <div class="cosmos-center">
+        ✧
+    </div>
+
+</div>
+
     <!-- CENTRAL CREATION POINT -->
 
     <div class="cosmos-center">
         ✧
     </div>
 
-
-    <!-- CHAOS -->
-
-    <div class="cosmic-path cosmic-path-chaos">
-
-        <div class="cosmic-node">
-
-            <span class="cosmic-node-symbol">
-                ◇
-            </span>
-
-            <span class="cosmic-node-title">
-                CHAOS
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <!-- CONVERGENCE -->
-
-    <div class="cosmic-path cosmic-path-convergence">
-
-        <div class="cosmic-node">
-
-            <span class="cosmic-node-symbol">
-                ◇
-            </span>
-
-            <span class="cosmic-node-title">
-                CONVERGENCE
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <!-- ORDER -->
-
-    <div class="cosmic-path cosmic-path-order">
-
-        <div class="cosmic-node">
-
-            <span class="cosmic-node-symbol">
-                ✧
-            </span>
-
-            <span class="cosmic-node-title">
-                ORDER
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <!-- CREATION -->
-
-    <div class="cosmic-path cosmic-path-creation">
-
-        <div class="cosmic-node">
-
-            <span class="cosmic-node-symbol">
-                ✦
-            </span>
-
-            <span class="cosmic-node-title">
-                CREATION
-            </span>
-
-        </div>
-
-    </div>
-
-</div>
             <!-- =====================================================
      THE COSMIC PROCESS
 ===================================================== -->
