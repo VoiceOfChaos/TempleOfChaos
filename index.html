@@ -948,6 +948,29 @@
 
     isolation: isolate;
 }
+        /* =====================================================
+   CHAMBER III — THE COSMOS
+===================================================== */
+
+.chamber-cosmos {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(75, 80, 110, 0.18) 0%,
+            rgba(25, 27, 40, 0.10) 30%,
+            transparent 65%
+        ),
+        radial-gradient(
+            ellipse at center,
+            #0d1019 0%,
+            #05070d 48%,
+            #010102 100%
+        );
+}
 
 
 /* -----------------------------------------------------
@@ -1460,324 +1483,6 @@
 
 <body>
 
-    /* =====================================================
-   CHAMBER III — THE COSMOS
-===================================================== */
-
-.chamber-cosmos {
-
-    position: relative;
-
-    overflow: hidden;
-
-    background:
-        radial-gradient(
-            circle at 50% 50%,
-            rgba(75, 80, 110, 0.18) 0%,
-            rgba(25, 27, 40, 0.10) 30%,
-            transparent 65%
-        ),
-        radial-gradient(
-            ellipse at center,
-            #0d1019 0%,
-            #05070d 48%,
-            #010102 100%
-        );
-
-    isolation: isolate;
-}
-
-
-/* Vast cosmic glow */
-
-.chamber-cosmos::after {
-
-    content: "";
-
-    position: absolute;
-
-    width: 900px;
-    height: 900px;
-
-    left: 50%;
-    top: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    border-radius: 50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(120, 130, 170, 0.10) 0%,
-            rgba(80, 90, 130, 0.04) 35%,
-            transparent 70%
-        );
-
-    filter: blur(30px);
-
-    animation:
-        cosmosPulse 14s ease-in-out infinite;
-
-    pointer-events: none;
-
-    z-index: -1;
-}
-
-
-@keyframes cosmosPulse {
-
-    0%,
-    100% {
-
-        opacity: 0.4;
-
-        transform:
-            translate(-50%, -50%)
-            scale(0.9);
-    }
-
-    50% {
-
-        opacity: 1;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1.1);
-    }
-
-}
-
-
-/* =====================================================
-   COSMIC CORE
-===================================================== */
-
-.cosmos-core {
-
-    position: relative;
-
-    width: 420px;
-
-    height: 420px;
-
-    margin: 70px auto 20px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-}
-
-
-/* Central light */
-
-.cosmos-center {
-
-    position: relative;
-
-    z-index: 5;
-
-    width: 85px;
-
-    height: 85px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border-radius: 50%;
-
-    font-size: 2rem;
-
-    color: #eee9df;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(220, 220, 235, 0.18),
-            rgba(80, 85, 110, 0.04) 55%,
-            transparent 75%
-        );
-
-    box-shadow:
-        0 0 35px rgba(150, 160, 190, 0.15);
-
-}
-
-
-/* Orbit rings */
-
-.cosmos-orbit {
-
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    border: 1px solid
-        rgba(190, 195, 215, 0.16);
-
-    border-radius: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-}
-
-
-/* First orbit */
-
-.cosmos-orbit-one {
-
-    width: 170px;
-    height: 170px;
-
-    animation:
-        cosmosOrbitOne 18s linear infinite;
-
-}
-
-
-/* Second orbit */
-
-.cosmos-orbit-two {
-
-    width: 280px;
-    height: 180px;
-
-    transform:
-        translate(-50%, -50%)
-        rotate(55deg);
-
-    animation:
-        cosmosOrbitTwo 25s linear infinite;
-
-}
-
-
-/* Third orbit */
-
-.cosmos-orbit-three {
-
-    width: 380px;
-    height: 250px;
-
-    transform:
-        translate(-50%, -50%)
-        rotate(-35deg);
-
-    animation:
-        cosmosOrbitThree 32s linear infinite;
-
-}
-
-
-/* Orbit movements */
-
-@keyframes cosmosOrbitOne {
-
-    from {
-        transform:
-            translate(-50%, -50%)
-            rotate(0deg);
-    }
-
-    to {
-        transform:
-            translate(-50%, -50%)
-            rotate(360deg);
-    }
-
-}
-
-
-@keyframes cosmosOrbitTwo {
-
-    from {
-        transform:
-            translate(-50%, -50%)
-            rotate(55deg);
-    }
-
-    to {
-        transform:
-            translate(-50%, -50%)
-            rotate(415deg);
-    }
-
-}
-
-
-@keyframes cosmosOrbitThree {
-
-    from {
-        transform:
-            translate(-50%, -50%)
-            rotate(-35deg);
-    }
-
-    to {
-        transform:
-            translate(-50%, -50%)
-            rotate(325deg);
-    }
-
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 600px) {
-
-    .cosmos-core {
-
-        width: 300px;
-
-        height: 300px;
-
-        margin-top: 50px;
-
-    }
-
-    .cosmos-orbit-one {
-
-        width: 130px;
-        height: 130px;
-
-    }
-
-    .cosmos-orbit-two {
-
-        width: 210px;
-        height: 135px;
-
-    }
-
-    .cosmos-orbit-three {
-
-        width: 280px;
-        height: 180px;
-
-    }
-
-    .cosmos-center {
-
-        width: 65px;
-        height: 65px;
-
-        font-size: 1.5rem;
-
-    }
-
-}
 
 
     <!-- =====================================================
