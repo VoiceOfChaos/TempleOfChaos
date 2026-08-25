@@ -974,7 +974,54 @@
         /* =====================================================
    COSMIC CORE
 ===================================================== */
+/* =====================================================
+   DISTANT STARS
+===================================================== */
 
+.chamber-cosmos::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    background-image:
+        radial-gradient(circle at 8% 18%, rgba(235, 232, 220, 0.55) 0 1px, transparent 2px),
+        radial-gradient(circle at 17% 72%, rgba(235, 232, 220, 0.35) 0 1px, transparent 2px),
+        radial-gradient(circle at 27% 34%, rgba(235, 232, 220, 0.45) 0 1px, transparent 2px),
+        radial-gradient(circle at 38% 82%, rgba(235, 232, 220, 0.30) 0 1px, transparent 2px),
+        radial-gradient(circle at 48% 16%, rgba(235, 232, 220, 0.40) 0 1px, transparent 2px),
+        radial-gradient(circle at 61% 30%, rgba(235, 232, 220, 0.30) 0 1px, transparent 2px),
+        radial-gradient(circle at 73% 14%, rgba(235, 232, 220, 0.50) 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 42%, rgba(235, 232, 220, 0.35) 0 1px, transparent 2px),
+        radial-gradient(circle at 92% 20%, rgba(235, 232, 220, 0.45) 0 1px, transparent 2px),
+        radial-gradient(circle at 88% 76%, rgba(235, 232, 220, 0.30) 0 1px, transparent 2px),
+        radial-gradient(circle at 68% 82%, rgba(235, 232, 220, 0.40) 0 1px, transparent 2px),
+        radial-gradient(circle at 11% 48%, rgba(235, 232, 220, 0.30) 0 1px, transparent 2px),
+        radial-gradient(circle at 32% 58%, rgba(235, 232, 220, 0.25) 0 1px, transparent 2px),
+        radial-gradient(circle at 78% 61%, rgba(235, 232, 220, 0.25) 0 1px, transparent 2px);
+
+    opacity: 0.65;
+
+    animation: starBreath 12s ease-in-out infinite;
+}
+
+
+@keyframes starBreath {
+
+    0%,
+    100% {
+        opacity: 0.45;
+    }
+
+    50% {
+        opacity: 0.75;
+    }
+}
+        
 .cosmos-core {
     position: relative;
 
