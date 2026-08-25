@@ -750,6 +750,248 @@
             scale(1.08);
     }
 }
+        /* =====================================================
+   THE GODS — GALLERY
+===================================================== */
+
+.gods-gallery {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: min(1100px, 92%);
+
+    margin: 80px auto 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 25px;
+
+}
+
+
+/* Individual deity */
+
+.god-card {
+
+    position: relative;
+
+    min-height: 360px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    padding: 30px;
+
+    overflow: hidden;
+
+    border: 1px solid
+        rgba(232, 227, 216, 0.12);
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,0.85),
+            rgba(0,0,0,0.15)
+        );
+
+    cursor: pointer;
+
+    transition:
+        transform 0.6s ease,
+        border-color 0.6s ease,
+        background 0.6s ease;
+
+}
+
+
+/* Atmospheric light inside the cards */
+
+.god-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.05),
+            transparent 65%
+        );
+
+    opacity: 0.5;
+
+    transition:
+        opacity 0.6s ease,
+        transform 0.8s ease;
+
+}
+
+
+/* Hover */
+
+.god-card:hover {
+
+    transform:
+        translateY(-8px);
+
+    border-color:
+        rgba(232, 227, 216, 0.45);
+
+}
+
+
+.god-card:hover::before {
+
+    opacity: 1;
+
+    transform:
+        scale(1.15);
+
+}
+
+
+/* God information */
+
+.god-card-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    text-align: center;
+
+}
+
+
+.god-card-symbol {
+
+    font-size: 2rem;
+
+    margin-bottom: 18px;
+
+    opacity: 0.65;
+
+    transition:
+        transform 0.6s ease,
+        opacity 0.6s ease;
+
+}
+
+
+.god-card:hover .god-card-symbol {
+
+    transform:
+        translateY(-5px);
+
+    opacity: 1;
+
+}
+
+
+.god-card h3 {
+
+    font-size: 1.5rem;
+
+    font-weight: normal;
+
+    letter-spacing: 0.18em;
+
+    text-transform: uppercase;
+
+    margin-bottom: 10px;
+
+}
+
+
+.god-card p {
+
+    font-size: 0.75rem;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+
+    color: #918b83;
+
+}
+
+
+/* =====================================================
+   INDIVIDUAL GOD ATMOSPHERES
+===================================================== */
+
+.god-nyx {
+
+    background:
+        radial-gradient(
+            circle at 50% 25%,
+            rgba(65, 70, 105, 0.18),
+            transparent 60%
+        ),
+        #08090f;
+
+}
+
+
+.god-erebus {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(20, 20, 25, 0.25),
+            transparent 60%
+        ),
+        #030304;
+
+}
+
+
+.god-tiamat {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(90, 60, 45, 0.18),
+            transparent 60%
+        ),
+        #0b0807;
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 800px) {
+
+    .gods-gallery {
+
+        grid-template-columns:
+            1fr;
+
+        width: min(500px, 90%);
+
+    }
+
+    .god-card {
+
+        min-height: 300px;
+
+    }
+
+}
         /* -----------------------------------------------------
    GODS SYMBOL
 ----------------------------------------------------- */
@@ -1279,9 +1521,85 @@
                 to take form.
             </p>
 
-            <div class="chamber-placeholder">
-                This chamber awaits its story.
+           <div class="gods-gallery">
+
+
+    <!-- =========================
+         NYX
+    ========================== -->
+
+    <article class="god-card god-nyx">
+
+        <div class="god-card-content">
+
+            <div class="god-card-symbol">
+                ☾
             </div>
+
+            <h3>
+                Nyx
+            </h3>
+
+            <p>
+                Primordial Goddess of Night
+            </p>
+
+        </div>
+
+    </article>
+
+
+    <!-- =========================
+         EREBUS
+    ========================== -->
+
+    <article class="god-card god-erebus">
+
+        <div class="god-card-content">
+
+            <div class="god-card-symbol">
+                ◐
+            </div>
+
+            <h3>
+                Erebus
+            </h3>
+
+            <p>
+                Primordial God of Darkness
+            </p>
+
+        </div>
+
+    </article>
+
+
+    <!-- =========================
+         TIAMAT
+    ========================== -->
+
+    <article class="god-card god-tiamat">
+
+        <div class="god-card-content">
+
+            <div class="god-card-symbol">
+                ≋
+            </div>
+
+            <h3>
+                Tiamat
+            </h3>
+
+            <p>
+                Primordial Sea
+            </p>
+
+        </div>
+
+    </article>
+
+
+</div>
 
             <br>
 
