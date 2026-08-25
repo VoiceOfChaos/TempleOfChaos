@@ -1009,6 +1009,465 @@
    CHAMBER III — THE COSMOS
 ===================================================== */
 
+.chamber-cosmos {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            #11111c 0%,
+            #07070e 50%,
+            #020205 100%
+        );
+}
+
+
+/* Main Cosmos content */
+
+.cosmos-content {
+    position: relative;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding-top: 90px;
+}
+
+
+/* Chamber heading */
+
+.cosmos-content h2 {
+    position: relative;
+    z-index: 5;
+
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+
+/* Subtitle */
+
+.cosmos-content .chamber-subtitle {
+    position: relative;
+    z-index: 5;
+
+    max-width: 850px;
+}
+
+
+/* =====================================================
+   COSMIC DIAGRAM
+===================================================== */
+
+.cosmos-diagram {
+    position: relative;
+
+    width: 100%;
+    max-width: 1200px;
+
+    height: 650px;
+
+    margin-top: 40px;
+}
+
+
+/* =====================================================
+   CENTER
+===================================================== */
+
+.cosmos-center {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 500px;
+    height: 500px;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 2;
+}
+
+
+/* =====================================================
+   ORBITS
+===================================================== */
+
+.cosmos-orbit {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border: 1px solid rgba(180, 175, 200, 0.18);
+
+    border-radius: 50%;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(-25deg);
+
+    animation:
+        cosmosOrbit 25s linear infinite;
+}
+
+
+.cosmos-orbit-one {
+    width: 500px;
+    height: 210px;
+}
+
+
+.cosmos-orbit-two {
+    width: 450px;
+    height: 180px;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(35deg);
+
+    animation-duration: 32s;
+    animation-direction: reverse;
+}
+
+
+.cosmos-orbit-three {
+    width: 390px;
+    height: 150px;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(90deg);
+
+    animation-duration: 40s;
+}
+
+
+/* =====================================================
+   CENTER LIGHT
+===================================================== */
+
+.cosmos-core {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 55px;
+    height: 55px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 2rem;
+
+    color: #eee9df;
+
+    text-shadow:
+        0 0 10px rgba(220, 215, 230, 0.8),
+        0 0 30px rgba(150, 140, 190, 0.5);
+
+    animation: cosmosPulse 4s ease-in-out infinite;
+
+    z-index: 5;
+}
+
+
+/* =====================================================
+   STARS
+===================================================== */
+
+.cosmos-stars {
+    position: absolute;
+
+    inset: 0;
+
+    color: rgba(220, 215, 225, 0.55);
+
+    font-size: 0.9rem;
+
+    pointer-events: none;
+}
+
+
+.cosmos-stars span {
+    position: absolute;
+}
+
+
+.cosmos-stars span:nth-child(1) {
+    left: 15%;
+    top: 25%;
+}
+
+
+.cosmos-stars span:nth-child(2) {
+    right: 18%;
+    top: 35%;
+}
+
+
+.cosmos-stars span:nth-child(3) {
+    left: 25%;
+    bottom: 20%;
+}
+
+
+/* =====================================================
+   SIDE COLUMNS
+===================================================== */
+
+.cosmos-side {
+    position: absolute;
+
+    top: 50%;
+
+    width: 270px;
+
+    transform: translateY(-50%);
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 70px;
+
+    z-index: 10;
+}
+
+
+.cosmos-left {
+    left: 0;
+}
+
+
+.cosmos-right {
+    right: 0;
+}
+
+
+/* =====================================================
+   COSMOS CARDS
+===================================================== */
+
+.cosmos-card {
+    position: relative;
+
+    padding: 25px 25px;
+
+    text-align: center;
+
+    border: 1px solid rgba(190, 185, 200, 0.16);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(80, 75, 110, 0.08),
+            transparent 70%
+        );
+
+    transition:
+        transform 0.4s ease,
+        border-color 0.4s ease,
+        background 0.4s ease;
+}
+
+
+.cosmos-card:hover {
+    transform: translateY(-6px);
+
+    border-color: rgba(220, 215, 225, 0.38);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(100, 90, 130, 0.13),
+            transparent 70%
+        );
+}
+
+
+.cosmos-card-symbol {
+    display: block;
+
+    margin-bottom: 12px;
+
+    font-size: 1.4rem;
+
+    color: #d9d3c8;
+
+    text-shadow:
+        0 0 12px rgba(200, 195, 220, 0.5);
+}
+
+
+.cosmos-card h3 {
+    margin-bottom: 12px;
+
+    font-size: 1rem;
+
+    letter-spacing: 0.35em;
+
+    font-weight: 400;
+}
+
+
+.cosmos-card p {
+    margin: 0;
+
+    font-size: 0.9rem;
+
+    line-height: 1.7;
+
+    color: rgba(220, 215, 210, 0.72);
+}
+
+
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+
+@keyframes cosmosOrbit {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            rotate(-25deg);
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            rotate(155deg);
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            rotate(335deg);
+    }
+}
+
+
+@keyframes cosmosPulse {
+
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.9);
+
+        opacity: 0.65;
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+
+        opacity: 1;
+    }
+}
+
+
+/* =====================================================
+   COSMOS SYMBOL
+===================================================== */
+
+.cosmos-symbol {
+    animation:
+        cosmosSymbolFloat 6s ease-in-out infinite,
+        cosmosSymbolPulse 4s ease-in-out infinite;
+}
+
+
+@keyframes cosmosSymbolFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+
+@keyframes cosmosSymbolPulse {
+
+    0%,
+    100% {
+        opacity: 0.65;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 900px) {
+
+    .cosmos-diagram {
+        height: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 50px;
+    }
+
+    .cosmos-center {
+        position: relative;
+
+        left: auto;
+        top: auto;
+
+        transform: none;
+
+        order: 2;
+    }
+
+    .cosmos-left,
+    .cosmos-right {
+        position: relative;
+
+        left: auto;
+        right: auto;
+        top: auto;
+
+        width: 90%;
+
+        transform: none;
+
+        order: 1;
+
+        gap: 30px;
+    }
+
+    .cosmos-right {
+        order: 3;
+    }
+
+    .cosmos-card {
+        width: 100%;
+    }
+}
+
 /* =====================================================
    CHAMBER III — THE COSMOS
    ===================================================== */
@@ -3484,116 +3943,137 @@
     ====================================================== -->
 
     <section
-        id="cosmos"
-        class="chamber chamber-cosmos"
-    >
+      <!-- =====================================================
+     CHAMBER III — THE COSMOS
+====================================================== -->
 
-        <div class="chamber-content">
+<section
+    id="cosmos"
+    class="chamber chamber-cosmos"
+>
 
-            <div class="chamber-number">
-                CHAMBER III
-            </div>
+    <div class="chamber-content cosmos-content">
 
-            <div class="chamber-symbol">
-                ✧
-            </div>
-
-            <h2>
-                The Cosmos
-            </h2>
-
-            <p class="chamber-subtitle">
-                From the formless came form.
-                From possibility came existence.
-                From Chaos, a universe.
-            </p>
-
-           <div class="cosmos-core">
-
-               <div class="cosmos-core">
-
-    <!-- THE THREE COSMIC ORBITS -->
-
-    <div class="cosmos-orbit cosmos-orbit-one"></div>
-
-    <div class="cosmos-orbit cosmos-orbit-two"></div>
-
-    <div class="cosmos-orbit cosmos-orbit-three"></div>
-
-
-    <!-- LEFT — CHAOS -->
-
-    <div class="cosmic-node cosmic-chaos">
-
-        <div class="cosmic-node-symbol">
-            ◇
+        <div class="chamber-number">
+            CHAMBER III
         </div>
 
-        <div class="cosmic-node-title">
-            CHAOS
-        </div>
-
-    </div>
-
-
-    <!-- LEFT — ORDER -->
-
-    <div class="cosmic-node cosmic-order">
-
-        <div class="cosmic-node-symbol">
-            ✦
-        </div>
-
-        <div class="cosmic-node-title">
-            ORDER
-        </div>
-
-    </div>
-
-
-    <!-- RIGHT — CONVERGENCE -->
-
-    <div class="cosmic-node cosmic-convergence">
-
-        <div class="cosmic-node-symbol">
+        <div class="chamber-symbol cosmos-symbol">
             ✧
         </div>
 
-        <div class="cosmic-node-title">
-            CONVERGENCE
+        <h2>
+            THE COSMOS
+        </h2>
+
+        <p class="chamber-subtitle">
+            From the formless came form.
+            From possibility came existence.
+            From Chaos, a universe.
+        </p>
+
+
+        <!-- COSMIC DIAGRAM -->
+
+        <div class="cosmos-diagram">
+
+            <!-- LEFT SIDE -->
+
+            <div class="cosmos-side cosmos-left">
+
+                <div class="cosmos-card cosmos-card-chaos">
+                    <span class="cosmos-card-symbol">◇</span>
+
+                    <h3>CHAOS</h3>
+
+                    <p>
+                        Before form, there was possibility.
+                        Before boundaries, there was the limitless.
+                    </p>
+                </div>
+
+
+                <div class="cosmos-card cosmos-card-creation">
+                    <span class="cosmos-card-symbol">✧</span>
+
+                    <h3>CREATION</h3>
+
+                    <p>
+                        From possibility came existence.
+                        From the formless, something began.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- CENTER SPIRAL -->
+
+            <div class="cosmos-center">
+
+                <div class="cosmos-orbit cosmos-orbit-one"></div>
+
+                <div class="cosmos-orbit cosmos-orbit-two"></div>
+
+                <div class="cosmos-orbit cosmos-orbit-three"></div>
+
+                <div class="cosmos-stars">
+                    ✦
+                    <span>✧</span>
+                    <span>✦</span>
+                    <span>✧</span>
+                </div>
+
+                <div class="cosmos-core">
+                    ✧
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="cosmos-side cosmos-right">
+
+                <div class="cosmos-card cosmos-card-convergence">
+                    <span class="cosmos-card-symbol">✧</span>
+
+                    <h3>CONVERGENCE</h3>
+
+                    <p>
+                        Chaos and Order meet.
+                        From their convergence,
+                        creation becomes possible.
+                    </p>
+                </div>
+
+
+                <div class="cosmos-card cosmos-card-order">
+                    <span class="cosmos-card-symbol">✦</span>
+
+                    <h3>ORDER</h3>
+
+                    <p>
+                        Possibility takes shape.
+                        Pattern, structure and distinction emerge.
+                    </p>
+                </div>
+
+            </div>
+
         </div>
 
-    </div>
 
-
-    <!-- RIGHT — CREATION -->
-
-    <div class="cosmic-node cosmic-creation">
-
-        <div class="cosmic-node-symbol">
-            ✧
-        </div>
-
-        <div class="cosmic-node-title">
-            CREATION
-        </div>
+        <a
+            href="#inside"
+            class="back-button"
+        >
+            RETURN TO THE SANCTUARY
+        </a>
 
     </div>
 
-
-    <!-- CENTRAL CORE -->
-
-    <div class="cosmos-center">
-        ✧
-    </div>
-
-</div>
-
-    <!-- CENTRAL CREATION POINT -->
-
-    <div class="cosmos-center">
-        ✧
-    </div>
+</section>
 
             <!-- =====================================================
      THE COSMIC PROCESS
