@@ -1277,123 +1277,440 @@
    ORBITS
    ===================================================== */
 
-.cosmos-orbit {
+/* =====================================================
+   COSMOS — THE GREAT CONVERGENCE
+===================================================== */
+
+.cosmos-core {
+
+    position: relative;
+
+    width: min(850px, 90vw);
+    height: 700px;
+
+    margin: 70px auto 80px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    isolation: isolate;
+}
+
+
+/* -----------------------------------------------------
+   CENTRAL STAR
+----------------------------------------------------- */
+
+.cosmos-center {
 
     position: absolute;
 
     left: 50%;
     top: 50%;
 
-    border: 1px solid rgba(210, 205, 220, 0.16);
+    transform: translate(-50%, -50%);
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #eee8dc;
+
+    font-size: 2rem;
+
+    z-index: 10;
+
+    text-shadow:
+        0 0 10px rgba(230, 220, 200, 0.8),
+        0 0 30px rgba(150, 140, 180, 0.35),
+        0 0 60px rgba(120, 110, 170, 0.2);
+
+    animation:
+        cosmosCenterPulse 5s ease-in-out infinite;
+}
+
+
+/* -----------------------------------------------------
+   ORBITAL PATHS
+----------------------------------------------------- */
+
+.cosmic-path {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border: 1px solid rgba(210, 205, 200, 0.18);
 
     border-radius: 50%;
 
-    pointer-events: none;
-
     transform-origin: center;
 
+    pointer-events: none;
 }
 
 
-/* First orbit */
+/* -----------------------------------------------------
+   CHAOS — WIDE AND SLOW
+----------------------------------------------------- */
 
-.cosmos-orbit-one {
+.cosmic-path-chaos {
 
-    width: 430px;
-    height: 180px;
+    width: 620px;
+    height: 310px;
 
-    transform: translate(-50%, -50%) rotate(25deg);
+    margin-left: -310px;
+    margin-top: -155px;
+
+    transform: rotate(-18deg);
 
     animation:
-        cosmosOrbitOne 18s linear infinite;
+        cosmosChaosOrbit 24s linear infinite;
 }
 
 
-/* Second orbit */
+/* -----------------------------------------------------
+   CONVERGENCE — DIAGONAL
+----------------------------------------------------- */
 
-.cosmos-orbit-two {
+.cosmic-path-convergence {
 
-    width: 430px;
-    height: 180px;
+    width: 520px;
+    height: 260px;
 
-    transform: translate(-50%, -50%) rotate(-55deg);
+    margin-left: -260px;
+    margin-top: -130px;
+
+    transform: rotate(48deg);
 
     animation:
-        cosmosOrbitTwo 24s linear infinite;
+        cosmosConvergenceOrbit 18s linear infinite reverse;
 }
 
 
-/* Third orbit */
+/* -----------------------------------------------------
+   ORDER — MORE PRECISE
+----------------------------------------------------- */
 
-.cosmos-orbit-three {
+.cosmic-path-order {
 
     width: 430px;
-    height: 180px;
+    height: 210px;
 
-    transform: translate(-50%, -50%) rotate(90deg);
+    margin-left: -215px;
+    margin-top: -105px;
+
+    transform: rotate(-48deg);
 
     animation:
-        cosmosOrbitThree 30s linear infinite;
+        cosmosOrderOrbit 14s linear infinite;
 }
 
 
-/* =====================================================
-   ORBIT MOVEMENT
-   ===================================================== */
+/* -----------------------------------------------------
+   CREATION — INNER ORBIT
+----------------------------------------------------- */
 
-@keyframes cosmosOrbitOne {
+.cosmic-path-creation {
+
+    width: 320px;
+    height: 160px;
+
+    margin-left: -160px;
+    margin-top: -80px;
+
+    transform: rotate(20deg);
+
+    animation:
+        cosmosCreationOrbit 10s linear infinite reverse;
+}
+
+
+/* -----------------------------------------------------
+   ORBITING NODES
+----------------------------------------------------- */
+
+.cosmic-node {
+
+    position: absolute;
+
+    left: 50%;
+    top: -24px;
+
+    transform: translateX(-50%);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 8px;
+
+    white-space: nowrap;
+
+    pointer-events: auto;
+
+    z-index: 5;
+}
+
+
+/* Symbol */
+
+.cosmic-node-symbol {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    border: 1px solid rgba(220, 215, 205, 0.35);
+
+    border-radius: 50%;
+
+    background: rgba(5, 5, 9, 0.75);
+
+    color: #dcd5ca;
+
+    font-size: 1.1rem;
+
+    box-shadow:
+        0 0 15px rgba(150, 140, 180, 0.08);
+
+    transition:
+        border-color 0.4s ease,
+        box-shadow 0.4s ease,
+        color 0.4s ease,
+        transform 0.4s ease;
+}
+
+
+/* Title */
+
+.cosmic-node-title {
+
+    font-size: 0.7rem;
+
+    letter-spacing: 0.35em;
+
+    color: #cfc8bd;
+
+    text-transform: uppercase;
+
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.9);
+
+    transition:
+        color 0.4s ease,
+        text-shadow 0.4s ease;
+}
+
+
+/* -----------------------------------------------------
+   HOVER
+----------------------------------------------------- */
+
+.cosmic-node:hover .cosmic-node-symbol {
+
+    color: #fff;
+
+    border-color: rgba(240, 235, 225, 0.9);
+
+    box-shadow:
+        0 0 15px rgba(220, 215, 205, 0.3),
+        0 0 35px rgba(130, 120, 170, 0.18);
+
+    transform: scale(1.12);
+}
+
+
+.cosmic-node:hover .cosmic-node-title {
+
+    color: #f1ebe1;
+
+    text-shadow:
+        0 0 15px rgba(230, 220, 210, 0.3);
+}
+
+
+/* -----------------------------------------------------
+   ORBIT ANIMATIONS
+----------------------------------------------------- */
+
+@keyframes cosmosChaosOrbit {
 
     from {
-        transform:
-            translate(-50%, -50%)
-            rotate(25deg)
-            rotate(0deg);
+        transform: rotate(-18deg) rotate(0deg);
     }
 
     to {
-        transform:
-            translate(-50%, -50%)
-            rotate(25deg)
-            rotate(360deg);
+        transform: rotate(-18deg) rotate(360deg);
     }
+
 }
 
 
-@keyframes cosmosOrbitTwo {
+@keyframes cosmosConvergenceOrbit {
 
     from {
-        transform:
-            translate(-50%, -50%)
-            rotate(-55deg)
-            rotate(360deg);
+        transform: rotate(48deg) rotate(0deg);
     }
 
     to {
-        transform:
-            translate(-50%, -50%)
-            rotate(-55deg)
-            rotate(0deg);
+        transform: rotate(48deg) rotate(360deg);
     }
+
 }
 
 
-@keyframes cosmosOrbitThree {
+@keyframes cosmosOrderOrbit {
 
     from {
-        transform:
-            translate(-50%, -50%)
-            rotate(90deg)
-            rotate(0deg);
+        transform: rotate(-48deg) rotate(0deg);
     }
 
     to {
-        transform:
-            translate(-50%, -50%)
-            rotate(90deg)
-            rotate(360deg);
+        transform: rotate(-48deg) rotate(360deg);
     }
+
 }
 
+
+@keyframes cosmosCreationOrbit {
+
+    from {
+        transform: rotate(20deg) rotate(0deg);
+    }
+
+    to {
+        transform: rotate(20deg) rotate(360deg);
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   CENTRAL PULSE
+----------------------------------------------------- */
+
+@keyframes cosmosCenterPulse {
+
+    0%,
+    100% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.9);
+
+        opacity: 0.65;
+
+    }
+
+    50% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+
+        opacity: 1;
+
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   MOBILE
+----------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+    .cosmos-core {
+
+        width: 100vw;
+
+        height: 520px;
+
+        margin-top: 40px;
+
+        margin-bottom: 50px;
+
+    }
+
+
+    .cosmic-path-chaos {
+
+        width: 430px;
+        height: 220px;
+
+        margin-left: -215px;
+        margin-top: -110px;
+
+    }
+
+
+    .cosmic-path-convergence {
+
+        width: 370px;
+        height: 190px;
+
+        margin-left: -185px;
+        margin-top: -95px;
+
+    }
+
+
+    .cosmic-path-order {
+
+        width: 310px;
+        height: 160px;
+
+        margin-left: -155px;
+        margin-top: -80px;
+
+    }
+
+
+    .cosmic-path-creation {
+
+        width: 240px;
+        height: 120px;
+
+        margin-left: -120px;
+        margin-top: -60px;
+
+    }
+
+
+    .cosmic-node-title {
+
+        font-size: 0.6rem;
+
+        letter-spacing: 0.22em;
+
+    }
+
+
+    .cosmic-node-symbol {
+
+        width: 34px;
+        height: 34px;
+
+        font-size: 0.9rem;
+
+    }
+
+}
 
 /* =====================================================
    CENTRAL COSMIC SYMBOL
@@ -3099,16 +3416,88 @@
                 From Chaos, a universe.
             </p>
 
-            <div class="cosmos-core">
+           <div class="cosmos-core">
 
-    <div class="cosmos-orbit cosmos-orbit-one"></div>
-
-    <div class="cosmos-orbit cosmos-orbit-two"></div>
-
-    <div class="cosmos-orbit cosmos-orbit-three"></div>
+    <!-- CENTRAL CREATION POINT -->
 
     <div class="cosmos-center">
         ✧
+    </div>
+
+
+    <!-- CHAOS -->
+
+    <div class="cosmic-path cosmic-path-chaos">
+
+        <div class="cosmic-node">
+
+            <span class="cosmic-node-symbol">
+                ◇
+            </span>
+
+            <span class="cosmic-node-title">
+                CHAOS
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONVERGENCE -->
+
+    <div class="cosmic-path cosmic-path-convergence">
+
+        <div class="cosmic-node">
+
+            <span class="cosmic-node-symbol">
+                ◇
+            </span>
+
+            <span class="cosmic-node-title">
+                CONVERGENCE
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ORDER -->
+
+    <div class="cosmic-path cosmic-path-order">
+
+        <div class="cosmic-node">
+
+            <span class="cosmic-node-symbol">
+                ✧
+            </span>
+
+            <span class="cosmic-node-title">
+                ORDER
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- CREATION -->
+
+    <div class="cosmic-path cosmic-path-creation">
+
+        <div class="cosmic-node">
+
+            <span class="cosmic-node-symbol">
+                ✦
+            </span>
+
+            <span class="cosmic-node-title">
+                CREATION
+            </span>
+
+        </div>
+
     </div>
 
 </div>
