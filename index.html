@@ -6098,6 +6098,15 @@
 }
 </style>
 
+
+<style id="nickname-taken-message">
+#accountModal .nickname-taken-message {
+    color: #d9a69b !important;
+    font-weight: 700 !important;
+    letter-spacing: .08em !important;
+}
+</style>
+
 </head>
 <body>
 <button
@@ -8294,26 +8303,28 @@ async function registerAccount() {
     button.textContent = 'CHECKING THE NAME...';
 
     try {
-        /* Nicknames are case-insensitive: Celestina and celestina are the same name. */
+        /* Nicknames are case-insensitive: Celestina and celestina are the same name.
+           Use a SECURITY DEFINER RPC so an unregistered visitor can check the name
+           without exposing the profiles table. */
         const normalizedUsername = username.trim().toLowerCase();
 
-        const { data: existingProfile, error: nicknameCheckError } =
-            await supabaseClient
-                .from('profiles')
-                .select('id')
-                .ilike('nickname', normalizedUsername)
-                .limit(1);
+        const { data: nicknameTaken, error: nicknameCheckError } =
+            await supabaseClient.rpc('is_nickname_taken', {
+                requested_nickname: normalizedUsername
+            });
 
-        if (nicknameCheckError && nicknameCheckError.code !== 'PGRST116') {
-            /* The database setup file creates this table. */
-            if (nicknameCheckError.code === '42P01') {
-                throw new Error('The nickname system is not set up yet. Run the supplied Supabase SQL setup first.');
+        if (nicknameCheckError) {
+            if (nicknameCheckError.code === 'PGRST202' || nicknameCheckError.code === '42883') {
+                throw new Error('Nickname checking is not set up yet. Run the supplied Supabase SQL setup first.');
             }
             throw nicknameCheckError;
         }
 
-        if (existingProfile && existingProfile.length) {
-            throw new Error('That name is already taken. Please choose another name.');
+        if (nicknameTaken === true) {
+            setAccountMessage('NICKNAME IS TAKEN — please choose another name.');
+            button.disabled = false;
+            button.textContent = 'CREATE ACCOUNT';
+            return;
         }
 
         button.textContent = 'CREATING ACCOUNT...';
