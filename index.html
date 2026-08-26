@@ -6075,35 +6075,10 @@
 </style>
 
 
-<style id="nickname-candle-polish">
-#registerAccountForm input#registerUsername {
-    text-transform: none;
-}
-.nickname-availability-note {
-    margin-top: 6px;
-    color: rgba(215,205,194,.55);
-    font-size: 10px;
-    letter-spacing: .08em;
-}
-.sanctuary-candle-item {
-    border-left: 1px solid rgba(205,180,140,.22);
-}
-.sanctuary-delete-candle {
-    border-color: rgba(160,95,80,.38) !important;
-}
-.sanctuary-delete-candle:hover {
-    border-color: rgba(190,120,100,.7) !important;
-    color: #f0cfc2 !important;
-    background: rgba(150,70,50,.10) !important;
-}
-</style>
-
-
-<style id="nickname-taken-message">
-#accountModal .nickname-taken-message {
-    color: #d9a69b !important;
-    font-weight: 700 !important;
-    letter-spacing: .08em !important;
+<style id="nickname-error-style">
+#accountMessage.nickname-taken {
+    color: #d8b9a8 !important;
+    border-color: rgba(180,110,90,.35) !important;
 }
 </style>
 
@@ -7693,68 +7668,7 @@ function createDedicationNode(dedication, flying = true) {
     }
 }
 
-
-async function persistDedicationToSupabase(dedication) {
-    if (!supabaseClient || !currentAuthUser || !dedication) return;
-
-    const payload = {
-        user_id: currentAuthUser.id,
-        dedication_id: dedication.id,
-        deity: dedication.deity || null,
-        intention: dedication.intention || null,
-        status: dedication.burnUntil === 'forever' ? 'active' : 'active',
-        duration: String(dedication.duration || '3600'),
-        burn_until: dedication.burnUntil || 'forever',
-        candle_color: dedication.color || '#eee6d6',
-        flame_color: dedication.flameColor || '#f5d58a',
-        hidden: !!dedication.hidden
-    };
-
-    const { error } = await supabaseClient
-        .from('user_candles')
-        .upsert(payload, { onConflict: 'dedication_id' });
-
-    if (error) {
-        console.error('Could not save dedicated candle:', error);
-        setAccountMessage('The flame was created, but could not be saved to your Sanctuary. Check the supplied Supabase SQL setup.');
-    }
-}
-
-async function deleteDedicatedCandle(key) {
-    if (!currentAuthUser || !supabaseClient || !key) return;
-
-    if (!confirm('Remove this dedicated candle from your Sanctuary and extinguish its flame?')) {
-        return;
-    }
-
-    const { error } = await supabaseClient
-        .from('user_candles')
-        .delete()
-        .eq('user_id', currentAuthUser.id)
-        .eq('dedication_id', key);
-
-    if (error && error.code !== '42703') {
-        alert(error.message);
-        return;
-    }
-
-    const localIndex = activeDedications.findIndex(item => item.id === key);
-    if (localIndex !== -1) {
-        extinguishDedication(key, false);
-    }
-
-    await loadSanctuary();
-}
-
-async function syncLocalDedicationsToSupabase() {
-    if (!supabaseClient || !currentAuthUser || !activeDedications.length) return;
-
-    for (const dedication of activeDedications) {
-        await persistDedicationToSupabase(dedication);
-    }
-}
-
-async function dedicateCandle() {
+function dedicateCandle() {
     if (!selectedCandle) return;
 
     if (!currentAuthUser) {
@@ -7809,8 +7723,6 @@ async function dedicateCandle() {
         createDedicationNode(dedication, false);
         scheduleDedication(dedication);
         saveAllDedications();
-        await persistDedicationToSupabase(dedication);
-        await loadSanctuary();
 
         closeCandleModal();
         return;
@@ -7840,8 +7752,6 @@ async function dedicateCandle() {
     createDedicationNode(dedication, true);
     scheduleDedication(dedication);
     saveAllDedications();
-    await persistDedicationToSupabase(dedication);
-    await loadSanctuary();
 
     closeCandleModal();
 }
@@ -7904,7 +7814,7 @@ function extinguishSelectedDedication() {
     closeDedicationInfo();
 }
 
-function extinguishDedication(id, removeFromDatabase = true) {
+function extinguishDedication(id) {
     const index = activeDedications.findIndex(item => item.id === id);
     if (index === -1) return;
 
@@ -7929,20 +7839,6 @@ function extinguishDedication(id, removeFromDatabase = true) {
 
     activeDedications.splice(index, 1);
     saveAllDedications();
-
-    if (removeFromDatabase && supabaseClient && currentAuthUser) {
-        supabaseClient
-            .from('user_candles')
-            .delete()
-            .eq('user_id', currentAuthUser.id)
-            .eq('dedication_id', id)
-            .then(({ error }) => {
-                if (error && error.code !== '42703') {
-                    console.error('Could not remove expired candle from Sanctuary:', error);
-                }
-                if (sanctuaryCurrentTab === 'candles') loadSanctuary();
-            });
-    }
 }
 
 function hideSelectedDedication() {
@@ -8093,7 +7989,6 @@ function restoreCandles() {
 
 document.addEventListener('DOMContentLoaded', () => {
     restoreCandles();
-    setTimeout(() => syncLocalDedicationsToSupabase(), 1200);
     updateDailyFlameStatus();
     updateHiddenFlameStatus();
 
@@ -8303,28 +8198,22 @@ async function registerAccount() {
     button.textContent = 'CHECKING THE NAME...';
 
     try {
-        /* Nicknames are case-insensitive: Celestina and celestina are the same name.
-           Use a SECURITY DEFINER RPC so an unregistered visitor can check the name
-           without exposing the profiles table. */
-        const normalizedUsername = username.trim().toLowerCase();
+        const normalizedNickname = username.trim().toLowerCase();
 
-        const { data: nicknameTaken, error: nicknameCheckError } =
-            await supabaseClient.rpc('is_nickname_taken', {
-                requested_nickname: normalizedUsername
+        // Check the nickname before creating the account.
+        // The RPC keeps the profiles table private from unauthenticated visitors.
+        const { data: nicknameTaken, error: nicknameError } =
+            await supabaseClient.rpc('nickname_is_taken', {
+                requested_nickname: normalizedNickname
             });
 
-        if (nicknameCheckError) {
-            if (nicknameCheckError.code === 'PGRST202' || nicknameCheckError.code === '42883') {
-                throw new Error('Nickname checking is not set up yet. Run the supplied Supabase SQL setup first.');
-            }
-            throw nicknameCheckError;
+        if (nicknameError) {
+            console.error('Nickname check failed:', nicknameError);
+            throw new Error('Could not check that nickname. Please try again.');
         }
 
         if (nicknameTaken === true) {
-            setAccountMessage('NICKNAME IS TAKEN — please choose another name.');
-            button.disabled = false;
-            button.textContent = 'CREATE ACCOUNT';
-            return;
+            throw new Error('Nickname is taken. Please choose another one.');
         }
 
         button.textContent = 'CREATING ACCOUNT...';
@@ -8333,7 +8222,7 @@ async function registerAccount() {
             email,
             password,
             options: {
-                data: { username: username.trim() },
+                data: { username },
                 emailRedirectTo: window.location.origin + window.location.pathname
             }
         });
@@ -8941,29 +8830,15 @@ function renderSavedList() {
 }
 
 function renderCandleList() {
-    if (!sanctuaryCache.candles.length) {
-        return '<div class="sanctuary-empty">Your dedicated candles will appear here.</div>';
-    }
+    if (!sanctuaryCache.candles.length) return '<div class="sanctuary-empty">Your dedicated candles will appear here.</div>';
 
-    return `<div class="sanctuary-list">${sanctuaryCache.candles.map(item => {
-        const candleKey = item.dedication_id || item.id;
-        const status = item.status || (
-            item.burn_until === 'forever' ? 'BURNING INDEFINITELY' : 'ACTIVE'
-        );
-
-        return `
-        <article class="sanctuary-item sanctuary-candle-item">
+    return `<div class="sanctuary-list">${sanctuaryCache.candles.map(item => `
+        <article class="sanctuary-item">
             <div class="sanctuary-item-title">🕯 ${escapeSanctuary(item.deity || "Undedicated flame")}</div>
-            <div class="sanctuary-item-meta">${escapeSanctuary(status)}</div>
-            <div class="sanctuary-item-text">${escapeSanctuary(item.intention || "A flame dedicated within the Temple.")}</div>
-            <div class="sanctuary-item-actions">
-                <button class="sanctuary-small sanctuary-delete-candle"
-                    onclick="deleteDedicatedCandle('${escapeSanctuary(candleKey)}')">
-                    DELETE CANDLE
-                </button>
-            </div>
-        </article>`;
-    }).join("")}</div>`;
+            <div class="sanctuary-item-meta">${escapeSanctuary(item.status || "active")}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.intention || "")}</div>
+        </article>
+    `).join("")}</div>`;
 }
 
 function newSanctuaryEntry(type) {
