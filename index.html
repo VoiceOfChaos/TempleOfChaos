@@ -5930,6 +5930,150 @@
 
 </style>
 
+<style id="account-password-reset-css">
+#accountModal .account-forgot {
+    display: block !important;
+    width: 100% !important;
+    margin: 8px 0 0 !important;
+    padding: 8px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #b9aa91 !important;
+    font-family: Georgia, serif !important;
+    font-size: 12px !important;
+    letter-spacing: .08em !important;
+    cursor: pointer !important;
+}
+#accountModal .account-forgot:hover { color: #e1d1b5 !important; }
+#passwordResetModal, #newPasswordModal {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1000002 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 14px !important;
+    box-sizing: border-box !important;
+}
+#passwordResetModal.active, #newPasswordModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+#passwordResetModal .account-backdrop, #newPasswordModal .account-backdrop {
+    position: absolute !important; inset: 0 !important;
+    background: rgba(0,0,0,.78) !important;
+    backdrop-filter: blur(3px) !important;
+}
+#passwordResetModal .account-card, #newPasswordModal .account-card {
+    position: relative !important; z-index: 2 !important;
+    width: min(530px, calc(100vw - 28px)) !important;
+    max-height: calc(100vh - 28px) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 36px 24px 28px !important;
+    border: 1px solid rgba(210,190,150,.24) !important;
+    background: radial-gradient(circle at 50% 0%, rgba(150,125,90,.12), transparent 55%), linear-gradient(145deg,#171311,#080707 70%) !important;
+    box-shadow: 0 30px 100px rgba(0,0,0,.9) !important;
+    text-align: center !important;
+}
+
+<style id="password-reset-button-style-fix">
+/* Make password-restoration controls match the Temple's existing account buttons */
+#passwordResetModal .account-close,
+#newPasswordModal .account-close {
+    position: absolute !important;
+    top: 15px !important;
+    right: 18px !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 1px solid rgba(210,190,150,.2) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #c7bbab !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 20px !important;
+    line-height: 34px !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+
+#passwordResetModal .account-close:hover,
+#newPasswordModal .account-close:hover {
+    border-color: rgba(232,227,216,.7) !important;
+    background: rgba(255,255,255,.05) !important;
+    color: #f3eee4 !important;
+}
+
+#passwordResetModal .account-submit,
+#newPasswordModal .account-submit {
+    display: block !important;
+    width: 100% !important;
+    height: 56px !important;
+    margin: 8px 0 0 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(210,180,125,.45) !important;
+    border-radius: 0 !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12)) !important;
+    color: #e5d8c5 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 14px !important;
+    letter-spacing: .13em !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+
+#passwordResetModal .account-submit:hover,
+#newPasswordModal .account-submit:hover {
+    border-color: rgba(232,227,216,.7) !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.22), rgba(80,60,40,.18)) !important;
+    color: #f3eee4 !important;
+}
+
+#passwordResetModal .account-form input,
+#newPasswordModal .account-form input {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    border-radius: 0 !important;
+}
+</style>
+
+</style>
+
+<style id="account-logout-style-fix">
+#accountModal .account-logout {
+    display: block !important;
+    width: 100% !important;
+    height: 56px !important;
+    box-sizing: border-box !important;
+    margin: 8px 0 0 !important;
+    padding: 12px !important;
+    border: 1px solid rgba(210,180,125,.45) !important;
+    border-radius: 0 !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12)) !important;
+    color: #e5d8c5 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 14px !important;
+    letter-spacing: .13em !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+#accountModal .account-logout:hover {
+    border-color: rgba(232,227,216,.7) !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.22), rgba(80,60,40,.18)) !important;
+    color: #f3eee4 !important;
+}
+</style>
+
 </head>
 <body>
 <button
@@ -7927,8 +8071,8 @@ document.addEventListener("keydown", function(event) {
    ACCOUNT SYSTEM — SUPABASE
 ===================================================== */
 
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
-const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
+const SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH";
 
 let supabaseClient = null;
 let currentAuthUser = null;
@@ -7965,7 +8109,7 @@ function openAccountModal(event) {
     if (currentAuthUser) {
         showLoggedInAccount();
     } else {
-        setAccountMode('register');
+        setAccountMode('login');
     }
 
     modal.classList.add('active');
@@ -8111,6 +8255,145 @@ async function loginAccount() {
     }
 }
 
+
+function getPasswordRedirectUrl() {
+    return window.location.origin + window.location.pathname;
+}
+
+function openPasswordResetModal() {
+    const modal = document.getElementById('passwordResetModal');
+    if (!modal) return;
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    const email = document.getElementById('resetEmail');
+    if (email) {
+        const loginEmail = document.getElementById('loginEmail');
+        if (loginEmail && loginEmail.value) email.value = loginEmail.value;
+        setTimeout(() => email.focus(), 50);
+    }
+}
+
+function closePasswordResetModal() {
+    const modal = document.getElementById('passwordResetModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
+
+async function sendPasswordReset() {
+    if (!supabaseClient) {
+        setResetMessage('The account system is not connected yet.');
+        return;
+    }
+
+    const email = document.getElementById('resetEmail').value.trim();
+    const button = document.getElementById('resetButton');
+
+    if (!email) {
+        setResetMessage('Enter the email address belonging to your account.');
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'SENDING...';
+
+    try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: getPasswordRedirectUrl()
+        });
+        if (error) throw error;
+        setResetMessage('A password-restoration link has been sent to your email. Open it on your phone or computer to choose a new password.');
+    } catch (error) {
+        setResetMessage(error.message || 'Unable to send the password-restoration email.');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'SEND RESTORATION LINK';
+    }
+}
+
+function setResetMessage(message) {
+    const el = document.getElementById('resetMessage');
+    if (el) el.textContent = message || '';
+}
+
+function openNewPasswordModal() {
+    const modal = document.getElementById('newPasswordModal');
+    if (!modal) return;
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('newPassword')?.focus(), 50);
+}
+
+function closeNewPasswordModal() {
+    const modal = document.getElementById('newPasswordModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
+
+async function updateForgottenPassword() {
+    if (!supabaseClient) {
+        setNewPasswordMessage('The account system is not connected yet.');
+        return;
+    }
+
+    const password = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('newPasswordConfirm').value;
+    const button = document.getElementById('newPasswordButton');
+
+    if (password.length < 6) {
+        setNewPasswordMessage('Your new password must contain at least 6 characters.');
+        return;
+    }
+    if (password !== confirm) {
+        setNewPasswordMessage('The two passwords do not match.');
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'RESTORING...';
+    try {
+        const { error } = await supabaseClient.auth.updateUser({ password });
+        if (error) throw error;
+        setNewPasswordMessage('Your password has been restored. You may now enter the Temple with your new password.');
+        setTimeout(() => {
+            closeNewPasswordModal();
+            setAccountMode('login');
+            document.getElementById('accountModal')?.classList.add('active');
+            document.getElementById('accountModal')?.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }, 1200);
+    } catch (error) {
+        setNewPasswordMessage(error.message || 'Unable to restore your password.');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'SET NEW PASSWORD';
+    }
+}
+
+function setNewPasswordMessage(message) {
+    const el = document.getElementById('newPasswordMessage');
+    if (el) el.textContent = message || '';
+}
+
+async function handlePasswordRecovery() {
+    if (!supabaseClient) return;
+
+    // Supabase v2 can deliver recovery through either the auth event or the
+    // URL hash/query. The auth listener below also catches mobile browsers.
+    const url = new URL(window.location.href);
+    const hash = window.location.hash || '';
+    const hasRecoveryHash = hash.includes('type=recovery') || url.searchParams.get('type') === 'recovery';
+
+    if (hasRecoveryHash) {
+        setTimeout(openNewPasswordModal, 300);
+    }
+}
+
 async function logoutAccount() {
     if (supabaseClient) {
         await supabaseClient.auth.signOut();
@@ -8164,10 +8447,15 @@ async function initialiseAccountSystem() {
     currentAuthUser = data.session?.user || null;
     updateAccountButton();
 
-    supabaseClient.auth.onAuthStateChange((_event, session) => {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
         currentAuthUser = session?.user || null;
         updateAccountButton();
+        if (event === 'PASSWORD_RECOVERY') {
+            setTimeout(openNewPasswordModal, 100);
+        }
     });
+
+    handlePasswordRecovery();
 }
 
 initialiseAccountSystem();
@@ -8231,6 +8519,7 @@ document.addEventListener('keydown', function(event) {
             </label>
 
             <button id="loginButton" class="account-submit" type="submit">ENTER THE TEMPLE</button>
+            <button class="account-forgot" type="button" onclick="openPasswordResetModal()">FORGOT PASSWORD?</button>
         </form>
 
         <div id="accountMessage" class="account-message"></div>
@@ -8251,6 +8540,45 @@ document.addEventListener('keydown', function(event) {
     </div>
 </div>
 
+
+<!-- =====================================================
+     PASSWORD RESTORATION
+===================================================== -->
+<div id="passwordResetModal" class="account-modal" aria-hidden="true">
+    <div class="account-backdrop" onclick="closePasswordResetModal()"></div>
+    <div class="account-card">
+        <button class="account-close" type="button" onclick="closePasswordResetModal()">×</button>
+        <div class="account-symbol">☾</div>
+        <h2>RESTORE YOUR PLACE</h2>
+        <p class="account-subtitle">Enter the email used for your Temple account. We will send a secure restoration link.</p>
+        <form class="account-form" onsubmit="event.preventDefault(); sendPasswordReset();">
+            <label>EMAIL
+                <input id="resetEmail" type="email" autocomplete="email" required>
+            </label>
+            <button id="resetButton" class="account-submit" type="submit">SEND RESTORATION LINK</button>
+        </form>
+        <div id="resetMessage" class="account-message"></div>
+    </div>
+</div>
+
+<div id="newPasswordModal" class="account-modal" aria-hidden="true">
+    <div class="account-backdrop"></div>
+    <div class="account-card">
+        <div class="account-symbol">✦</div>
+        <h2>CHOOSE A NEW PASSWORD</h2>
+        <p class="account-subtitle">Your restoration link is valid. Choose a new password for your Temple account.</p>
+        <form class="account-form" onsubmit="event.preventDefault(); updateForgottenPassword();">
+            <label>NEW PASSWORD
+                <input id="newPassword" type="password" autocomplete="new-password" minlength="6" required>
+            </label>
+            <label>CONFIRM NEW PASSWORD
+                <input id="newPasswordConfirm" type="password" autocomplete="new-password" minlength="6" required>
+            </label>
+            <button id="newPasswordButton" class="account-submit" type="submit">SET NEW PASSWORD</button>
+        </form>
+        <div id="newPasswordMessage" class="account-message"></div>
+    </div>
+</div>
 
 <!-- =====================================================
      MY SANCTUARY
