@@ -5476,9 +5476,322 @@
     width: 100%;
 }
 
+
+/* =====================================================
+   ACCOUNT TOP-RIGHT BUTTON + MODAL
+===================================================== */
+
+.account-top-button {
+    position: fixed;
+    top: 22px;
+    right: 24px;
+    z-index: 99990;
+    padding: 11px 17px;
+    border: 1px solid rgba(232,227,216,.28);
+    background: rgba(5,5,7,.72);
+    color: #d9d1c5;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: .3s ease;
+}
+.account-top-button:hover {
+    background: rgba(35,30,25,.92);
+    border-color: rgba(232,227,216,.65);
+    color: #f0e8dc;
+    transform: translateY(-2px);
+}
+
+.account-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, rgba(100,80,60,.12), rgba(0,0,0,.92));
+    backdrop-filter: blur(7px);
+}
+.account-modal.active { display:flex; }
+.account-modal-backdrop { position:absolute; inset:0; }
+.account-modal-card {
+    position:relative;
+    z-index:2;
+    width:min(460px,92vw);
+    padding:42px 34px;
+    background:linear-gradient(145deg,rgba(23,19,17,.98),rgba(7,6,6,.99));
+    border:1px solid rgba(210,185,145,.24);
+    box-shadow:0 30px 100px rgba(0,0,0,.85),0 0 50px rgba(170,130,80,.06);
+    text-align:center;
+}
+.account-modal-close {
+    position:absolute;
+    top:14px;
+    right:16px;
+    border:none;
+    background:transparent;
+    color:#b8ab9c;
+    font-size:26px;
+    cursor:pointer;
+}
+.account-modal-symbol {
+    font-size:34px;
+    color:#d4bc90;
+    margin-bottom:14px;
+}
+.account-modal-card h2 {
+    margin:0 0 10px;
+    color:#eee6da;
+    font-size:24px;
+    font-weight:normal;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+}
+.account-modal-card p {
+    margin:0 0 24px;
+    color:#90877b;
+    font-style:italic;
+    line-height:1.7;
+}
+.account-form {
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    text-align:left;
+}
+.account-form label {
+    color:#bfb3a3;
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+}
+.account-form input {
+    width:100%;
+    box-sizing:border-box;
+    padding:12px 13px;
+    margin-top:6px;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(205,180,140,.22);
+    color:#e7ded0;
+    font-family:Georgia,serif;
+    outline:none;
+}
+.account-form input:focus {
+    border-color:rgba(210,180,125,.65);
+    box-shadow:0 0 18px rgba(190,150,90,.08);
+}
+.account-form button {
+    margin-top:6px;
+    padding:14px 16px;
+    border:1px solid rgba(210,180,125,.45);
+    background:rgba(180,145,85,.12);
+    color:#e5d8c5;
+    font-family:Georgia,serif;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    cursor:pointer;
+}
+.account-switch {
+    margin-top:16px;
+    color:#797167;
+    font-size:12px;
+    text-align:center;
+}
+.account-switch button {
+    padding:0;
+    border:none;
+    background:transparent;
+    color:#c7b18d;
+    cursor:pointer;
+    font-family:Georgia,serif;
+}
+.account-message {
+    min-height:32px;
+    margin-top:15px;
+    color:#c6b38f;
+    font-size:12px;
+    line-height:1.5;
+}
+.account-quick-menu {
+    position:fixed;
+    top:62px;
+    right:24px;
+    z-index:99991;
+    padding:10px;
+    background:#0d0b0a;
+    border:1px solid rgba(210,185,145,.25);
+    box-shadow:0 15px 50px rgba(0,0,0,.65);
+}
+.account-quick-menu button {
+    padding:10px 14px;
+    background:transparent;
+    border:1px solid rgba(210,185,145,.25);
+    color:#d8cbbb;
+    font-family:Georgia,serif;
+    letter-spacing:.12em;
+    font-size:10px;
+    cursor:pointer;
+}
+@media (max-width:600px) {
+    .account-top-button {
+        top:14px; right:14px;
+        padding:9px 12px; font-size:9px;
+    }
+    .account-modal-card { padding:38px 24px; }
+}
+
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
+
+let supabaseClient = null;
+
+if (
+    window.supabase &&
+    SUPABASE_URL.startsWith("http") &&
+    !SUPABASE_URL.includes("PASTE_YOUR_") &&
+    !SUPABASE_PUBLISHABLE_KEY.includes("PASTE_YOUR_")
+) {
+    supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+}
+</script>
+
 </head>
 <body>
+
+<!-- =====================================================
+     ACCOUNT BUTTON
+===================================================== -->
+<button
+    id="accountTopButton"
+    class="account-top-button"
+    type="button"
+    onclick="openAccountModal()"
+>
+    ENTER THE TEMPLE
+</button>
+
+<!-- =====================================================
+     ACCOUNT MODAL
+===================================================== -->
+<div id="accountModal" class="account-modal" aria-hidden="true">
+    <div class="account-modal-backdrop" onclick="closeAccountModal()"></div>
+
+    <div class="account-modal-card">
+
+        <button
+            class="account-modal-close"
+            type="button"
+            onclick="closeAccountModal()"
+            aria-label="Close"
+        >×</button>
+
+        <div class="account-modal-symbol">✦</div>
+
+        <h2 id="accountModalTitle">CREATE YOUR PLACE</h2>
+
+        <p id="accountModalSubtitle">
+            Create a place within the Temple and carry your sanctuary with you.
+        </p>
+
+        <form
+            id="registerAccountForm"
+            class="account-form"
+            onsubmit="event.preventDefault(); registerFromIndex();"
+        >
+            <div>
+                <label for="accountRegisterName">NAME</label>
+                <input
+                    id="accountRegisterName"
+                    type="text"
+                    autocomplete="name"
+                    required
+                    placeholder="Your name"
+                >
+            </div>
+
+            <div>
+                <label for="accountRegisterEmail">EMAIL</label>
+                <input
+                    id="accountRegisterEmail"
+                    type="email"
+                    autocomplete="email"
+                    required
+                    placeholder="Your email"
+                >
+            </div>
+
+            <div>
+                <label for="accountRegisterPassword">PASSWORD</label>
+                <input
+                    id="accountRegisterPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                    placeholder="At least 6 characters"
+                >
+            </div>
+
+            <button type="submit">CREATE ACCOUNT</button>
+        </form>
+
+        <form
+            id="loginAccountForm"
+            class="account-form"
+            style="display:none;"
+            onsubmit="event.preventDefault(); loginFromIndex();"
+        >
+            <div>
+                <label for="accountLoginEmail">EMAIL</label>
+                <input
+                    id="accountLoginEmail"
+                    type="email"
+                    autocomplete="email"
+                    required
+                    placeholder="Your email"
+                >
+            </div>
+
+            <div>
+                <label for="accountLoginPassword">PASSWORD</label>
+                <input
+                    id="accountLoginPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                    placeholder="Your password"
+                >
+            </div>
+
+            <button type="submit">ENTER THE TEMPLE</button>
+        </form>
+
+        <div id="accountMessage" class="account-message"></div>
+
+        <div class="account-switch">
+            <span id="accountSwitchText">
+                Already have a place in the Temple?
+            </span>
+            <button
+                type="button"
+                onclick="toggleAccountMode()"
+                id="accountSwitchButton"
+            >ENTER</button>
+        </div>
+
+    </div>
+</div>
+
 
     <!-- =====================================================
          HERO
@@ -7451,6 +7764,224 @@ function closeRitualPathPopup() {
 document.addEventListener("keydown", function(event) {
     if (event.key === "Escape") {
         closeRitualPathPopup();
+    }
+});
+</script>
+
+
+<script>
+/* =====================================================
+   TEMPLE OF CHAOS — ACCOUNT BUTTON / AUTH
+===================================================== */
+
+let accountMode = "register";
+
+function openAccountModal() {
+    const modal = document.getElementById("accountModal");
+    if (!modal) return;
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden","false");
+    document.body.style.overflow = "hidden";
+}
+
+function closeAccountModal() {
+    const modal = document.getElementById("accountModal");
+    if (!modal) return;
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
+}
+
+function toggleAccountMode() {
+    const register = document.getElementById("registerAccountForm");
+    const login = document.getElementById("loginAccountForm");
+    const title = document.getElementById("accountModalTitle");
+    const subtitle = document.getElementById("accountModalSubtitle");
+    const switchText = document.getElementById("accountSwitchText");
+    const switchButton = document.getElementById("accountSwitchButton");
+    const message = document.getElementById("accountMessage");
+
+    message.textContent = "";
+
+    if (accountMode === "register") {
+        accountMode = "login";
+        register.style.display = "none";
+        login.style.display = "flex";
+        title.textContent = "ENTER THE TEMPLE";
+        subtitle.textContent = "Return to your place within the Temple.";
+        switchText.textContent = "Do not yet have a place within the Temple?";
+        switchButton.textContent = "CREATE ACCOUNT";
+    } else {
+        accountMode = "register";
+        login.style.display = "none";
+        register.style.display = "flex";
+        title.textContent = "CREATE YOUR PLACE";
+        subtitle.textContent = "Create a place within the Temple and carry your sanctuary with you.";
+        switchText.textContent = "Already have a place in the Temple?";
+        switchButton.textContent = "ENTER";
+    }
+}
+
+async function registerFromIndex() {
+    const message = document.getElementById("accountMessage");
+
+    if (!supabaseClient) {
+        message.textContent = "Add your Supabase URL and publishable key first.";
+        return;
+    }
+
+    const name = document.getElementById("accountRegisterName").value.trim();
+    const email = document.getElementById("accountRegisterEmail").value.trim();
+    const password = document.getElementById("accountRegisterPassword").value;
+
+    if (password.length < 6) {
+        message.textContent = "Your password must contain at least 6 characters.";
+        return;
+    }
+
+    message.textContent = "Creating your place within the Temple...";
+
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+                data: { username: name },
+                emailRedirectTo: window.location.origin + window.location.pathname
+            }
+        });
+
+        if (error) throw error;
+
+        if (data.session) {
+            message.textContent = "Welcome to the Temple.";
+            await updateAccountButton();
+            setTimeout(closeAccountModal, 700);
+        } else {
+            message.textContent =
+                "Account created. Check your email to verify your account.";
+        }
+
+    } catch (error) {
+        message.textContent =
+            error.message || "Unable to create the account.";
+    }
+}
+
+async function loginFromIndex() {
+    const message = document.getElementById("accountMessage");
+
+    if (!supabaseClient) {
+        message.textContent = "Add your Supabase URL and publishable key first.";
+        return;
+    }
+
+    const email = document.getElementById("accountLoginEmail").value.trim();
+    const password = document.getElementById("accountLoginPassword").value;
+
+    message.textContent = "Entering the Temple...";
+
+    try {
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
+
+        if (error) throw error;
+
+        if (data.session) {
+            message.textContent = "Welcome back to the Temple.";
+            await updateAccountButton();
+            setTimeout(closeAccountModal, 700);
+        }
+
+    } catch (error) {
+        message.textContent =
+            error.message || "Unable to enter the Temple.";
+    }
+}
+
+async function logoutFromIndex() {
+    if (supabaseClient) {
+        await supabaseClient.auth.signOut();
+    }
+
+    await updateAccountButton();
+    closeAccountModal();
+}
+
+function removeAccountQuickMenu() {
+    const old = document.getElementById("accountQuickMenu");
+    if (old) old.remove();
+}
+
+function showLoggedInAccountMenu() {
+    const old = document.getElementById("accountQuickMenu");
+    if (old) {
+        old.remove();
+        return;
+    }
+
+    const menu = document.createElement("div");
+    menu.id = "accountQuickMenu";
+    menu.className = "account-quick-menu";
+
+    const logout = document.createElement("button");
+    logout.type = "button";
+    logout.textContent = "LEAVE THE TEMPLE";
+    logout.onclick = logoutFromIndex;
+
+    menu.appendChild(logout);
+    document.body.appendChild(menu);
+}
+
+async function updateAccountButton() {
+    const button = document.getElementById("accountTopButton");
+    if (!button) return;
+
+    if (!supabaseClient) {
+        button.textContent = "ENTER THE TEMPLE";
+        button.onclick = openAccountModal;
+        return;
+    }
+
+    try {
+        const { data } = await supabaseClient.auth.getUser();
+        const user = data?.user;
+
+        if (!user) {
+            button.textContent = "ENTER THE TEMPLE";
+            button.onclick = openAccountModal;
+            removeAccountQuickMenu();
+            return;
+        }
+
+        const username =
+            user.user_metadata?.username ||
+            user.email ||
+            "MY SANCTUARY";
+
+        button.textContent = username;
+        button.onclick = showLoggedInAccountMenu;
+
+    } catch {
+        button.textContent = "ENTER THE TEMPLE";
+        button.onclick = openAccountModal;
+    }
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") closeAccountModal();
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    updateAccountButton();
+
+    if (supabaseClient) {
+        supabaseClient.auth.onAuthStateChange(function() {
+            updateAccountButton();
+        });
     }
 });
 </script>
