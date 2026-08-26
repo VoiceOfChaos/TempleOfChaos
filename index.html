@@ -4177,10 +4177,6 @@
 }
 
 
-/* -----------------------------------------------------
-   CANDLES
------------------------------------------------------ */
-
 <!-- =====================================================
      RITUAL CANDLES
 ===================================================== -->
@@ -5473,6 +5469,101 @@
     .candle-modal-box {
         padding: 40px 25px;
     }
+}
+        /* =====================================================
+   CANDLE MODAL INTERACTION
+===================================================== */
+
+.candle-modal {
+    display: none;
+}
+
+.candle-modal.active {
+    display: flex;
+}
+
+
+/* =====================================================
+   CLICKABLE CANDLES
+===================================================== */
+
+.ritual-candle {
+    cursor: pointer;
+    transition:
+        transform 0.3s ease,
+        filter 0.3s ease;
+}
+
+.ritual-candle:hover {
+    transform: translateY(-4px);
+}
+
+
+/* =====================================================
+   BURNING CANDLE
+===================================================== */
+
+.ritual-candle.candle-is-burning {
+
+    filter:
+        drop-shadow(
+            0 0 12px rgba(220,170,85,0.45)
+        )
+        drop-shadow(
+            0 0 28px rgba(220,170,85,0.25)
+        );
+}
+
+
+/* =====================================================
+   FLAME
+===================================================== */
+
+.ritual-candle.candle-is-burning
+.candle-flame {
+
+    animation:
+        ritual-flame-burn
+        0.8s
+        ease-in-out
+        infinite alternate;
+}
+
+
+@keyframes ritual-flame-burn {
+
+    from {
+
+        transform:
+            scale(0.92)
+            translateY(2px);
+
+    }
+
+    to {
+
+        transform:
+            scale(1.08)
+            translateY(-2px);
+
+    }
+
+}
+
+
+/* =====================================================
+   BURNING LABEL
+===================================================== */
+
+.ritual-candle-wrap:has(
+    .candle-is-burning
+) .candle-label {
+
+    opacity: 1;
+
+    text-shadow:
+        0 0 10px
+        rgba(220,170,85,0.35);
 }
     </style>
 </head>
@@ -6987,6 +7078,203 @@ document.addEventListener(
 );
 
 </script>
+<script>
+/* =====================================================
+   RITUAL CANDLE SYSTEM
+===================================================== */
 
+let selectedCandle = null;
+let candleTimers = {};
+
+
+/* =====================================================
+   OPEN CANDLE MODAL
+===================================================== */
+
+function openCandleModal(candle) {
+
+    selectedCandle = candle;
+
+    const wrap = candle.closest(".ritual-candle-wrap");
+
+    const deity =
+        wrap.dataset.deity || "";
+
+    const intention =
+        wrap.dataset.intention || "";
+
+    const duration =
+        wrap.dataset.duration || "1";
+
+    document.getElementById("candleDeity").value = deity;
+    document.getElementById("candleIntention").value = intention;
+    document.getElementById("candleDuration").value = duration;
+
+    document.getElementById("candleModal")
+        .classList.add("active");
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
+function closeCandleModal() {
+
+    document.getElementById("candleModal")
+        .classList.remove("active");
+
+    selectedCandle = null;
+}
+
+
+/* =====================================================
+   DEDICATE + LIGHT CANDLE
+===================================================== */
+
+function dedicateCandle() {
+
+    if (!selectedCandle) return;
+
+    const wrap =
+        selectedCandle.closest(".ritual-candle-wrap");
+
+    const deity =
+        document.getElementById("candleDeity").value.trim();
+
+    const intention =
+        document.getElementById("candleIntention").value.trim();
+
+    const duration =
+        document.getElementById("candleDuration").value;
+
+
+    /* Save information to candle */
+
+    wrap.dataset.deity = deity;
+    wrap.dataset.intention = intention;
+    wrap.dataset.duration = duration;
+
+
+    /* Update label */
+
+    const label =
+        wrap.querySelector(".candle-label span");
+
+    if (deity) {
+
+        label.textContent =
+            deity.toUpperCase();
+
+    } else if (intention) {
+
+        label.textContent =
+            intention.substring(0, 20).toUpperCase();
+
+    } else {
+
+        label.textContent =
+            "UNDEDICATED";
+    }
+
+
+    /* Light candle */
+
+    selectedCandle.classList.add(
+        "candle-is-burning"
+    );
+
+
+    /* Clear an existing timer */
+
+    if (candleTimers[wrap]) {
+
+        clearTimeout(
+            candleTimers[wrap]
+        );
+    }
+
+
+    /* =================================================
+       BURN FOREVER
+    ================================================= */
+
+    if (duration === "forever") {
+
+        closeCandleModal();
+
+        return;
+    }
+
+
+    /* =================================================
+       BURN FOR SELECTED TIME
+    ================================================= */
+
+    const hours =
+        Number(duration);
+
+    const milliseconds =
+        hours *
+        60 *
+        60 *
+        1000;
+
+
+    candleTimers[wrap] =
+        setTimeout(function () {
+
+            extinguishCandle(wrap);
+
+        }, milliseconds);
+
+
+    closeCandleModal();
+}
+
+
+/* =====================================================
+   EXTINGUISH CANDLE
+===================================================== */
+
+function extinguishCandle(wrap) {
+
+    const candle =
+        wrap.querySelector(".ritual-candle");
+
+    candle.classList.remove(
+        "candle-is-burning"
+    );
+
+    const label =
+        wrap.querySelector(".candle-label span");
+
+    label.textContent =
+        "BURNED OUT";
+
+    wrap.dataset.burning = "false";
+
+}
+
+
+/* =====================================================
+   ESC KEY CLOSES MODAL
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            closeCandleModal();
+
+        }
+
+    }
+);
+
+</script>
+        
 </body>
 </html>
