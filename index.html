@@ -4322,6 +4322,44 @@
     }
 
 }
+        /* =====================================================
+   BURNING CANDLE STATE
+===================================================== */
+
+.ritual-candle.candle-is-burning {
+
+    filter:
+        drop-shadow(
+            0 0 18px
+            rgba(220,170,85,0.55)
+        );
+}
+
+.ritual-candle.candle-is-burning
+.candle-flame {
+
+    animation:
+        ritual-flame-burn
+        0.8s
+        ease-in-out
+        infinite alternate;
+}
+
+@keyframes ritual-flame-burn {
+
+    from {
+        transform:
+            scale(0.92)
+            translateY(2px);
+    }
+
+    to {
+        transform:
+            scale(1.08)
+            translateY(-2px);
+    }
+
+}
 
 
 /* -----------------------------------------------------
@@ -4475,6 +4513,377 @@
     .ritual-paths {
         grid-template-columns:
             repeat(2, 1fr);
+    }
+
+}
+        /* =====================================================
+   INTERACTIVE RITUAL CANDLES
+===================================================== */
+
+.ritual-candle-interactive {
+    cursor: pointer;
+    transition:
+        transform 0.4s ease,
+        filter 0.4s ease;
+}
+
+.ritual-candle-interactive:hover {
+    transform: translateY(-4px);
+    filter:
+        drop-shadow(0 0 14px rgba(220, 190, 130, 0.45));
+}
+
+.ritual-candle-interactive:active {
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   CANDLE PANEL OVERLAY
+===================================================== */
+
+.ritual-candle-panel {
+    position: fixed;
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: stretch;
+
+    background: rgba(0, 0, 0, 0.62);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.45s ease,
+        visibility 0.45s ease;
+
+    backdrop-filter: blur(5px);
+}
+
+.ritual-candle-panel.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* =====================================================
+   PANEL
+===================================================== */
+
+.ritual-candle-panel-inner {
+    position: relative;
+
+    width: min(470px, 90vw);
+    height: 100%;
+
+    box-sizing: border-box;
+
+    padding: 70px 55px 50px;
+
+    overflow-y: auto;
+
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(150, 125, 85, 0.10),
+            transparent 45%
+        ),
+        linear-gradient(
+            145deg,
+            #171411,
+            #090808 70%
+        );
+
+    border-left:
+        1px solid rgba(190, 165, 120, 0.35);
+
+    box-shadow:
+        -20px 0 70px rgba(0, 0, 0, 0.65),
+        inset 1px 0 rgba(255,255,255,0.025);
+
+    transform: translateX(100%);
+
+    transition:
+        transform 0.55s cubic-bezier(.22,.61,.36,1);
+}
+
+.ritual-candle-panel.active
+.ritual-candle-panel-inner {
+    transform: translateX(0);
+}
+
+
+/* =====================================================
+   CLOSE BUTTON
+===================================================== */
+
+.ritual-panel-close {
+    position: absolute;
+
+    top: 25px;
+    right: 28px;
+
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid rgba(210,190,150,0.25);
+
+    background: transparent;
+
+    color: #d8cbb8;
+
+    font-family: Georgia, serif;
+    font-size: 25px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.ritual-panel-close:hover {
+    background: rgba(190,160,110,0.12);
+
+    border-color:
+        rgba(210,190,150,0.55);
+
+    color: #fff5df;
+}
+
+
+/* =====================================================
+   SYMBOL
+===================================================== */
+
+.ritual-panel-symbol {
+    text-align: center;
+
+    font-size: 38px;
+
+    color: #d8bd8c;
+
+    margin-bottom: 20px;
+
+    text-shadow:
+        0 0 20px rgba(210,175,110,0.55);
+
+    animation:
+        ritual-symbol-pulse 3s ease-in-out infinite;
+}
+
+@keyframes ritual-symbol-pulse {
+
+    0%, 100% {
+        opacity: 0.65;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+}
+
+
+/* =====================================================
+   TITLE
+===================================================== */
+
+.ritual-candle-panel-inner h3 {
+    margin: 0;
+
+    text-align: center;
+
+    font-family: Georgia, serif;
+
+    font-size: 27px;
+
+    letter-spacing: 0.18em;
+
+    color: #eee4d5;
+
+    text-transform: uppercase;
+}
+
+.ritual-candle-panel-inner > p {
+    margin: 12px 0 35px;
+
+    text-align: center;
+
+    color: #aaa096;
+
+    font-family: Georgia, serif;
+
+    font-size: 15px;
+
+    font-style: italic;
+}
+
+
+/* =====================================================
+   FORM LABELS
+===================================================== */
+
+.ritual-candle-panel-inner label {
+    display: block;
+
+    margin-top: 22px;
+    margin-bottom: 9px;
+
+    color: #d7c7ae;
+
+    font-family: Georgia, serif;
+
+    font-size: 14px;
+
+    letter-spacing: 0.08em;
+}
+
+
+/* =====================================================
+   INPUTS
+===================================================== */
+
+.ritual-candle-panel-inner input,
+.ritual-candle-panel-inner textarea,
+.ritual-candle-panel-inner select {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 14px 16px;
+
+    background:
+        rgba(255,255,255,0.025);
+
+    border:
+        1px solid rgba(190,165,120,0.28);
+
+    color: #e9dfd0;
+
+    font-family: Georgia, serif;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition:
+        border-color 0.3s ease,
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.ritual-candle-panel-inner textarea {
+    resize: vertical;
+
+    min-height: 110px;
+}
+
+.ritual-candle-panel-inner input::placeholder,
+.ritual-candle-panel-inner textarea::placeholder {
+    color: #746e67;
+}
+
+.ritual-candle-panel-inner input:focus,
+.ritual-candle-panel-inner textarea:focus,
+.ritual-candle-panel-inner select:focus {
+
+    border-color:
+        rgba(210,180,125,0.65);
+
+    background:
+        rgba(255,255,255,0.045);
+
+    box-shadow:
+        0 0 20px rgba(190,150,90,0.08);
+}
+
+.ritual-candle-panel-inner select {
+    appearance: auto;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   LIGHT BUTTON
+===================================================== */
+
+.ritual-light-button {
+
+    width: 100%;
+
+    margin-top: 32px;
+
+    padding: 17px 20px;
+
+    border:
+        1px solid rgba(210,180,120,0.55);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(180,145,85,0.15),
+            rgba(80,60,35,0.12)
+        );
+
+    color: #e9dcc7;
+
+    font-family: Georgia, serif;
+
+    font-size: 14px;
+
+    letter-spacing: 0.16em;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        background 0.35s ease,
+        box-shadow 0.35s ease,
+        transform 0.25s ease;
+}
+
+.ritual-light-button:hover {
+
+    background:
+        rgba(190,155,90,0.20);
+
+    box-shadow:
+        0 0 25px rgba(190,155,90,0.18);
+
+    transform: translateY(-2px);
+}
+
+.ritual-light-button:active {
+    transform: translateY(0);
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+
+    .ritual-candle-panel-inner {
+
+        width: 100%;
+
+        padding:
+            65px 28px 40px;
+    }
+
+    .ritual-candle-panel-inner h3 {
+        font-size: 22px;
     }
 
 }
@@ -5265,11 +5674,6 @@
 
 </section>
 
-
-    <!-- =====================================================
-         CHAMBER V — RITUAL
-    ====================================================== -->
-
    <!-- =====================================================
      CHAMBER V — RITUAL
 ===================================================== -->
@@ -5331,13 +5735,16 @@
 
 </div>
 
-                <div class="ritual-candle">
-                    <div class="candle-flame"></div>
-                    <div class="candle-body"></div>
-                    <div class="candle-base"></div>
-                </div>
+                <div class="ritual-candle candle-tall ritual-candle-interactive"
+     onclick="openRitualCandle(this)">
 
-            </div>
+    <div class="candle-flame"></div>
+
+    <div class="candle-body"></div>
+
+    <div class="candle-base"></div>
+
+</div>
 
 
             <!-- CENTRAL ALTAR -->
@@ -5582,6 +5989,103 @@
     </div>
 
 </div>
+        <!-- =====================================================
+     RITUAL CANDLE PANEL
+===================================================== -->
+
+<div
+    id="ritual-candle-panel"
+    class="ritual-candle-panel"
+    aria-hidden="true"
+>
+
+    <div class="ritual-candle-panel-inner">
+
+        <button
+            class="ritual-panel-close"
+            type="button"
+            onclick="closeRitualCandle()"
+        >
+            ×
+        </button>
+
+
+        <div class="ritual-panel-symbol">
+            🕯
+        </div>
+
+
+        <h3>
+            Dedicate the Flame
+        </h3>
+
+
+        <p>
+            Give this flame a purpose.
+        </p>
+
+
+        <label for="candle-deity">
+            Deity / Being
+        </label>
+
+        <input
+            id="candle-deity"
+            type="text"
+            placeholder="Who is this flame devoted to?"
+        >
+
+
+        <label for="candle-intention">
+            Intention
+        </label>
+
+        <textarea
+            id="candle-intention"
+            placeholder="What do you offer, seek or remember?"
+        ></textarea>
+
+
+        <label for="candle-duration">
+            Burn for
+        </label>
+
+        <select id="candle-duration">
+
+            <option value="3600">
+                1 hour
+            </option>
+
+            <option value="21600">
+                6 hours
+            </option>
+
+            <option value="86400">
+                1 day
+            </option>
+
+            <option value="604800">
+                7 days
+            </option>
+
+            <option value="0">
+                Until I extinguish it
+            </option>
+
+        </select>
+
+
+        <button
+            class="ritual-light-button"
+            type="button"
+            onclick="lightRitualCandle()"
+        >
+            ✦ &nbsp; LIGHT THE CANDLE
+        </button>
+
+    </div>
+
+</div>
     
 </section>
     <!-- =====================================================
@@ -5593,7 +6097,176 @@
         Temple of Chaos · Beyond Order
 
     </footer>
+<script>
 
+/* =====================================================
+   RITUAL CANDLE INTERACTION
+===================================================== */
+
+let selectedRitualCandle = null;
+
+
+/* OPEN CANDLE PANEL */
+
+function openRitualCandle(candle) {
+
+    selectedRitualCandle = candle;
+
+    const panel =
+        document.getElementById("ritual-candle-panel");
+
+    panel.classList.add("active");
+
+    panel.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.style.overflow = "hidden";
+}
+
+
+/* CLOSE CANDLE PANEL */
+
+function closeRitualCandle() {
+
+    const panel =
+        document.getElementById("ritual-candle-panel");
+
+    panel.classList.remove("active");
+
+    panel.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    document.body.style.overflow = "";
+
+}
+
+
+/* LIGHT CANDLE */
+
+function lightRitualCandle() {
+
+    if (!selectedRitualCandle) {
+        return;
+    }
+
+    const deity =
+        document
+            .getElementById("candle-deity")
+            .value
+            .trim();
+
+    const intention =
+        document
+            .getElementById("candle-intention")
+            .value
+            .trim();
+
+    const duration =
+        parseInt(
+            document
+                .getElementById("candle-duration")
+                .value
+        );
+
+
+    /* Require at least an intention */
+
+    if (!intention) {
+
+        document
+            .getElementById("candle-intention")
+            .focus();
+
+        return;
+
+    }
+
+
+    /* Mark candle as burning */
+
+    selectedRitualCandle.classList.add(
+        "candle-is-burning"
+    );
+
+
+    /* Store dedication */
+
+    selectedRitualCandle.dataset.deity =
+        deity;
+
+    selectedRitualCandle.dataset.intention =
+        intention;
+
+
+    /* Store burn duration */
+
+    if (duration > 0) {
+
+        selectedRitualCandle.dataset.burnUntil =
+            Date.now() + duration * 1000;
+
+    } else {
+
+        selectedRitualCandle.dataset.burnUntil =
+            "forever";
+
+    }
+
+
+    /* Close panel */
+
+    closeRitualCandle();
+
+}
+
+
+/* =====================================================
+   CLICK OUTSIDE PANEL
+===================================================== */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const panel =
+            document.getElementById(
+                "ritual-candle-panel"
+            );
+
+        if (
+            event.target === panel
+        ) {
+
+            closeRitualCandle();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ESCAPE KEY
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            closeRitualCandle();
+
+        }
+
+    }
+);
+
+</script>
 
 </body>
 </html>
