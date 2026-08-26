@@ -4181,147 +4181,171 @@
    CANDLES
 ----------------------------------------------------- */
 
-.ritual-candles {
-    position: absolute;
+<!-- =====================================================
+     RITUAL CANDLES
+===================================================== -->
 
-    display: flex;
+<div class="ritual-candle-chamber">
 
-    align-items: flex-end;
+    <div class="ritual-candle-intro">
+        <span>✦</span>
+        <p>Light a flame and give it a purpose.</p>
+        <span>✦</span>
+    </div>
 
-    gap: 35px;
+    <div class="ritual-candles">
 
-    bottom: 65px;
-}
+        <!-- CANDLE 1 -->
+        <div class="ritual-candle-wrap">
+            <button class="ritual-candle"
+                    onclick="openCandleModal(this)"
+                    aria-label="Dedicate this candle">
 
+                <div class="candle-flame"></div>
+                <div class="candle-body"></div>
+                <div class="candle-base"></div>
 
-.ritual-candles-left {
-    left: 0;
-}
+            </button>
 
-
-.ritual-candles-right {
-    right: 0;
-}
-
-
-/* candle itself */
-
-.ritual-candle {
-    position: relative;
-
-    width: 28px;
-    height: 100px;
-}
-
-
-/* taller candles */
-
-.candle-tall {
-    height: 140px;
-}
+            <div class="candle-label">
+                <span>UNDEDICATED</span>
+            </div>
+        </div>
 
 
-/* candle body */
+        <!-- CANDLE 2 -->
+        <div class="ritual-candle-wrap">
+            <button class="ritual-candle"
+                    onclick="openCandleModal(this)"
+                    aria-label="Dedicate this candle">
 
-.candle-body {
-    position: absolute;
+                <div class="candle-flame"></div>
+                <div class="candle-body"></div>
+                <div class="candle-base"></div>
 
-    bottom: 0;
+            </button>
 
-    width: 100%;
-    height: 85%;
-
-    border-radius: 4px 4px 2px 2px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #24201c,
-            #817362,
-            #2a2520
-        );
-
-    box-shadow:
-        0 5px 15px rgba(0, 0, 0, 0.6);
-}
+            <div class="candle-label">
+                <span>UNDEDICATED</span>
+            </div>
+        </div>
 
 
-/* candle base */
+        <!-- CANDLE 3 -->
+        <div class="ritual-candle-wrap">
+            <button class="ritual-candle"
+                    onclick="openCandleModal(this)"
+                    aria-label="Dedicate this candle">
 
-.candle-base {
-    position: absolute;
+                <div class="candle-flame"></div>
+                <div class="candle-body"></div>
+                <div class="candle-base"></div>
 
-    bottom: -7px;
-    left: -8px;
+            </button>
 
-    width: 44px;
-    height: 9px;
-
-    border-radius: 50%;
-
-    background: #25201c;
-}
-
-
-/* flame */
-
-.candle-flame {
-    position: absolute;
-
-    z-index: 5;
-
-    left: 50%;
-    top: -10px;
-
-    width: 15px;
-    height: 27px;
-
-    transform: translateX(-50%);
-
-    border-radius:
-        50% 50% 50% 50% /
-        65% 65% 35% 35%;
-
-    background:
-        radial-gradient(
-            ellipse at center bottom,
-            #f4d9a3 0%,
-            #c28a4d 45%,
-            transparent 75%
-        );
-
-    filter:
-        drop-shadow(0 0 8px rgba(220, 160, 80, 0.8))
-        drop-shadow(0 0 20px rgba(190, 120, 50, 0.4));
-
-    animation: flame-flicker 1.5s ease-in-out infinite alternate;
-}
+            <div class="candle-label">
+                <span>UNDEDICATED</span>
+            </div>
+        </div>
 
 
-@keyframes flame-flicker {
+        <!-- CANDLE 4 -->
+        <div class="ritual-candle-wrap">
+            <button class="ritual-candle"
+                    onclick="openCandleModal(this)"
+                    aria-label="Dedicate this candle">
 
-    0% {
-        transform:
-            translateX(-50%)
-            scale(0.9)
-            rotate(-3deg);
-    }
+                <div class="candle-flame"></div>
+                <div class="candle-body"></div>
+                <div class="candle-base"></div>
 
-    50% {
-        transform:
-            translateX(-50%)
-            scale(1.1)
-            rotate(3deg);
-    }
+            </button>
 
-    100% {
-        transform:
-            translateX(-50%)
-            scale(0.95)
-            rotate(-2deg);
-    }
+            <div class="candle-label">
+                <span>UNDEDICATED</span>
+            </div>
+        </div>
 
-}
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     CANDLE DEDICATION MODAL
+===================================================== -->
+
+<div id="candleModal" class="candle-modal">
+
+    <div class="candle-modal-backdrop"
+         onclick="closeCandleModal()">
+    </div>
+
+    <div class="candle-modal-box">
+
+        <button class="candle-modal-close"
+                onclick="closeCandleModal()">
+            ×
+        </button>
+
+        <div class="modal-symbol">
+            ✦
+        </div>
+
+        <h2>DEDICATE THE FLAME</h2>
+
+        <p class="modal-subtitle">
+            Give this flame a purpose.
+        </p>
+
+
+        <label>
+            Deity / Being
+        </label>
+
+        <input
+            id="candleDeity"
+            type="text"
+            placeholder="Who is this flame devoted to?"
+        >
+
+
+        <label>
+            Intention
+        </label>
+
+        <textarea
+            id="candleIntention"
+            placeholder="What do you offer, seek or remember?"
+        ></textarea>
+
+
+        <label>
+            Burn for
+        </label>
+
+        <select id="candleDuration">
+
+            <option value="1">1 hour</option>
+            <option value="3">3 hours</option>
+            <option value="6">6 hours</option>
+            <option value="12">12 hours</option>
+            <option value="24">24 hours</option>
+            <option value="forever">As long as I wish</option>
+
+        </select>
+
+
+        <button
+            class="light-candle-button"
+            onclick="dedicateCandle()"
+        >
+            LIGHT THE CANDLE
+        </button>
+
+    </div>
+
+</div>
         /* =====================================================
    BURNING CANDLE STATE
 ===================================================== */
@@ -4887,10 +4911,706 @@
     }
 
 }
+        /* =====================================================
+   RITUAL CANDLE CHAMBER
+===================================================== */
+
+.ritual-candle-chamber {
+    position: relative;
+    width: 100%;
+    margin: 90px auto 70px;
+    padding: 30px 20px 50px;
+    text-align: center;
+    z-index: 5;
+}
+
+
+/* INTRO */
+
+.ritual-candle-intro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+
+    margin-bottom: 45px;
+
+    color: #c9bda9;
+    font-size: 16px;
+    letter-spacing: 2px;
+    font-style: italic;
+}
+
+.ritual-candle-intro span {
+    opacity: .7;
+}
+
+
+/* CANDLE ROW */
+
+.ritual-candles {
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    gap: 75px;
+
+    width: min(900px, 90%);
+    margin: 0 auto;
+
+    min-height: 300px;
+
+    z-index: 10;
+}
+
+
+/* INDIVIDUAL CANDLE */
+
+.ritual-candle-wrap {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    z-index: 10;
+}
+
+
+.ritual-candle {
+    position: relative;
+
+    width: 70px;
+    height: 230px;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    padding: 0;
+
+    transition:
+        transform .35s ease,
+        filter .35s ease;
+}
+
+.ritual-candle:hover {
+    transform: translateY(-12px);
+    filter: brightness(1.25);
+}
+
+
+/* FLAME */
+
+.candle-flame {
+    position: absolute;
+
+    top: 0;
+    left: 50%;
+
+    width: 25px;
+    height: 42px;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse at center bottom,
+            #fff7cf 0%,
+            #e8c878 35%,
+            #a87536 70%,
+            transparent 72%
+        );
+
+    border-radius: 50% 50% 45% 45%;
+
+    filter: blur(.3px);
+
+    animation:
+        candle-flicker 1.7s infinite alternate ease-in-out;
+
+    z-index: 3;
+}
+
+
+/* INNER FLAME */
+
+.candle-flame::after {
+    content: "";
+
+    position: absolute;
+
+    width: 9px;
+    height: 20px;
+
+    left: 50%;
+    bottom: 3px;
+
+    transform: translateX(-50%);
+
+    background: #fffce8;
+
+    border-radius: 50%;
+}
+
+
+/* CANDLE BODY */
+
+.candle-body {
+    position: absolute;
+
+    bottom: 25px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 48px;
+    height: 175px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #35302b 0%,
+            #9b8c78 25%,
+            #c2b49e 48%,
+            #766b5c 75%,
+            #2b2723 100%
+        );
+
+    border-radius: 5px 5px 3px 3px;
+
+    box-shadow:
+        0 0 18px rgba(206, 167, 101, .12),
+        inset 3px 0 8px rgba(255,255,255,.08);
+}
+
+
+/* WAX TOP */
+
+.candle-body::before {
+    content: "";
+
+    position: absolute;
+
+    top: -5px;
+    left: 0;
+
+    width: 48px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: #a99b87;
+}
+
+
+/* WICK */
+
+.candle-body::after {
+    content: "";
+
+    position: absolute;
+
+    top: -18px;
+    left: 50%;
+
+    width: 3px;
+    height: 18px;
+
+    transform: translateX(-50%);
+
+    background: #171412;
+}
+
+
+/* BASE */
+
+.candle-base {
+    position: absolute;
+
+    bottom: 12px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 72px;
+    height: 13px;
+
+    border-radius: 50%;
+
+    background: #171513;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.8);
+}
+
+
+/* LABEL */
+
+.candle-label {
+    margin-top: 15px;
+
+    color: #8e8477;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+}
+
+.candle-label span {
+    transition: color .4s ease;
+}
+
+
+/* FLAME ANIMATION */
+
+@keyframes candle-flicker {
+
+    0% {
+        transform:
+            translateX(-50%)
+            scale(1)
+            rotate(-2deg);
+    }
+
+    50% {
+        transform:
+            translateX(-50%)
+            scale(1.08, .94)
+            rotate(2deg);
+    }
+
+    100% {
+        transform:
+            translateX(-50%)
+            scale(.94, 1.08)
+            rotate(-1deg);
+    }
+}
+
+
+/* =====================================================
+   DEDICATION MODAL
+===================================================== */
+
+.candle-modal {
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 99999;
+}
+
+.candle-modal.active {
+    display: flex;
+}
+
+
+/* DARK BACKDROP */
+
+.candle-modal-backdrop {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(75,62,50,.18),
+            rgba(0,0,0,.92)
+        );
+
+    backdrop-filter: blur(7px);
+}
+
+
+/* MODAL */
+
+.candle-modal-box {
+    position: relative;
+
+    width: min(500px, 90%);
+
+    padding: 50px 45px;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(150,125,95,.13),
+            transparent 60%
+        ),
+        #0d0b0a;
+
+    border: 1px solid rgba(180,160,130,.28);
+
+    box-shadow:
+        0 0 80px rgba(0,0,0,.9),
+        0 0 30px rgba(180,150,100,.08);
+
+    text-align: center;
+
+    z-index: 2;
+
+    animation: candle-modal-enter .45s ease;
+}
+
+
+@keyframes candle-modal-enter {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* MODAL CLOSE */
+
+.candle-modal-close {
+    position: absolute;
+
+    top: 15px;
+    right: 18px;
+
+    border: none;
+    background: transparent;
+
+    color: #aaa092;
+
+    font-size: 28px;
+
+    cursor: pointer;
+}
+
+.candle-modal-close:hover {
+    color: #eee;
+}
+
+
+/* MODAL SYMBOL */
+
+.modal-symbol {
+    font-size: 35px;
+
+    color: #d7c6a9;
+
+    margin-bottom: 15px;
+
+    animation: modal-symbol-pulse 2.5s infinite ease-in-out;
+}
+
+@keyframes modal-symbol-pulse {
+
+    0%,100% {
+        opacity: .55;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+}
+
+
+/* TEXT */
+
+.candle-modal-box h2 {
+    margin: 0;
+
+    color: #e6dccd;
+
+    font-family: Georgia, serif;
+
+    letter-spacing: 3px;
+}
+
+.modal-subtitle {
+    margin: 10px 0 30px;
+
+    color: #8d8377;
+
+    font-style: italic;
+}
+
+
+/* INPUTS */
+
+.candle-modal-box label {
+    display: block;
+
+    text-align: left;
+
+    margin-top: 18px;
+    margin-bottom: 7px;
+
+    color: #b8ab99;
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+}
+
+
+.candle-modal-box input,
+.candle-modal-box textarea,
+.candle-modal-box select {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    background: #171412;
+
+    border: 1px solid #39332d;
+
+    color: #ddd2c1;
+
+    font-family: Georgia, serif;
+
+    outline: none;
+}
+
+
+.candle-modal-box textarea {
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+
+.candle-modal-box input:focus,
+.candle-modal-box textarea:focus,
+.candle-modal-box select:focus {
+    border-color: #8d795f;
+
+    box-shadow:
+        0 0 15px rgba(160,130,90,.12);
+}
+
+
+/* LIGHT BUTTON */
+
+.light-candle-button {
+
+    margin-top: 28px;
+
+    padding: 13px 25px;
+
+    background: transparent;
+
+    border: 1px solid #806e58;
+
+    color: #d8c7ae;
+
+    letter-spacing: 2px;
+
+    cursor: pointer;
+
+    transition: all .3s ease;
+}
+
+.light-candle-button:hover {
+
+    background: rgba(150,120,80,.12);
+
+    border-color: #c1a67c;
+
+    box-shadow:
+        0 0 20px rgba(180,145,90,.15);
+}
+
+
+/* =====================================================
+   LIT CANDLE
+===================================================== */
+
+.ritual-candle-wrap.lit .candle-flame {
+
+    filter:
+        drop-shadow(0 0 12px rgba(230,180,90,.8))
+        drop-shadow(0 0 25px rgba(220,160,60,.35));
+}
+
+.ritual-candle-wrap.lit .candle-label span {
+
+    color: #c9a96d;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+
+    .ritual-candles {
+        gap: 25px;
+        flex-wrap: wrap;
+    }
+
+    .ritual-candle {
+        transform: scale(.85);
+    }
+
+    .ritual-candle:hover {
+        transform: scale(.9) translateY(-8px);
+    }
+
+    .candle-modal-box {
+        padding: 40px 25px;
+    }
+}
     </style>
 </head>
 
+<script>
 
+let selectedCandle = null;
+
+
+/* OPEN DEDICATION */
+
+function openCandleModal(candle) {
+
+    selectedCandle = candle;
+
+    document
+        .getElementById("candleModal")
+        .classList.add("active");
+
+}
+
+
+/* CLOSE */
+
+function closeCandleModal() {
+
+    document
+        .getElementById("candleModal")
+        .classList.remove("active");
+
+}
+
+
+/* DEDICATE */
+
+function dedicateCandle() {
+
+    if (!selectedCandle) return;
+
+    const deity =
+        document.getElementById("candleDeity").value.trim();
+
+    const intention =
+        document.getElementById("candleIntention").value.trim();
+
+    const duration =
+        document.getElementById("candleDuration").value;
+
+
+    if (!deity && !intention) {
+
+        alert(
+            "Give this flame a deity, being, intention, or purpose."
+        );
+
+        return;
+    }
+
+
+    /* FIND THE CANDLE CONTAINER */
+
+    const candleWrap =
+        selectedCandle.closest(".ritual-candle-wrap");
+
+
+    /* LIGHT IT */
+
+    candleWrap.classList.add("lit");
+
+
+    /* CHANGE LABEL */
+
+    const label =
+        candleWrap.querySelector(".candle-label span");
+
+
+    if (deity) {
+
+        label.textContent = deity.toUpperCase();
+
+    } else {
+
+        label.textContent = "DEDICATED";
+
+    }
+
+
+    /* CLOSE MODAL */
+
+    closeCandleModal();
+
+
+    /* CLEAR FORM */
+
+    document.getElementById("candleDeity").value = "";
+    document.getElementById("candleIntention").value = "";
+
+
+    /*
+       The candle remains lit for the selected
+       duration while the page is open.
+    */
+
+    if (duration !== "forever") {
+
+        setTimeout(
+            function() {
+
+                candleWrap.classList.remove("lit");
+
+                label.textContent = "EXPIRED";
+
+            },
+            Number(duration) * 60 * 60 * 1000
+        );
+
+    }
+
+}
+
+
+/* ESCAPE KEY */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            closeCandleModal();
+
+        }
+
+    }
+);
+
+</script>
+    
 <body>
     
     
