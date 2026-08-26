@@ -3836,6 +3836,648 @@
     }
 
 }
+        /* =====================================================
+   CHAMBER V — THE RITUAL
+===================================================== */
+
+.chamber-ritual {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 55%,
+            rgba(120, 95, 65, 0.13) 0%,
+            rgba(45, 35, 30, 0.08) 28%,
+            transparent 65%
+        ),
+        radial-gradient(
+            ellipse at center,
+            #181310 0%,
+            #090706 48%,
+            #020202 100%
+        );
+}
+
+
+/* -----------------------------------------------------
+   ATMOSPHERIC MIST
+----------------------------------------------------- */
+
+.ritual-mist {
+    position: absolute;
+
+    width: 80%;
+    height: 45%;
+
+    left: 10%;
+    bottom: 8%;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(180, 160, 130, 0.06),
+            transparent 70%
+        );
+
+    filter: blur(35px);
+
+    animation: ritual-mist-move 12s ease-in-out infinite alternate;
+
+    pointer-events: none;
+}
+
+
+@keyframes ritual-mist-move {
+
+    0% {
+        transform: translateX(-3%) scaleX(0.95);
+        opacity: 0.4;
+    }
+
+    100% {
+        transform: translateX(3%) scaleX(1.08);
+        opacity: 0.8;
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   UPPER SYMBOL
+----------------------------------------------------- */
+
+.ritual-symbol {
+    position: relative;
+
+    display: inline-block;
+
+    font-size: 34px;
+
+    color: #e0d4c4;
+
+    text-shadow:
+        0 0 8px rgba(220, 190, 150, 0.5),
+        0 0 25px rgba(180, 140, 90, 0.25);
+
+    animation:
+        ritual-symbol-float 4s ease-in-out infinite,
+        ritual-symbol-glow 3s ease-in-out infinite alternate;
+}
+
+
+@keyframes ritual-symbol-float {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(180deg);
+    }
+
+}
+
+
+@keyframes ritual-symbol-glow {
+
+    from {
+        opacity: 0.65;
+        filter: brightness(0.85);
+    }
+
+    to {
+        opacity: 1;
+        filter: brightness(1.5);
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   RITUAL SCENE
+----------------------------------------------------- */
+
+.ritual-scene {
+    position: relative;
+
+    width: min(850px, 90%);
+
+    min-height: 430px;
+
+    margin: 25px auto 35px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* -----------------------------------------------------
+   ALTAR
+----------------------------------------------------- */
+
+.ritual-altar {
+    position: relative;
+
+    width: 330px;
+    height: 330px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(45, 35, 30, 0.5),
+            rgba(4, 3, 3, 0.9) 70%
+        );
+
+    box-shadow:
+        0 0 60px rgba(150, 110, 70, 0.08),
+        inset 0 0 60px rgba(0, 0, 0, 0.8);
+}
+
+
+/* -----------------------------------------------------
+   RITUAL SIGIL
+----------------------------------------------------- */
+
+.ritual-sigil {
+    position: relative;
+
+    width: 220px;
+    height: 220px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.sigil-ring {
+    position: absolute;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(220, 195, 165, 0.25);
+}
+
+
+.sigil-ring-one {
+    width: 210px;
+    height: 210px;
+
+    animation: sigil-spin 25s linear infinite;
+}
+
+
+.sigil-ring-two {
+    width: 165px;
+    height: 165px;
+
+    border-style: dashed;
+
+    animation: sigil-spin-reverse 18s linear infinite;
+}
+
+
+.sigil-ring-three {
+    width: 115px;
+    height: 115px;
+
+    animation: sigil-spin 12s linear infinite;
+}
+
+
+@keyframes sigil-spin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+@keyframes sigil-spin-reverse {
+
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   SIGIL CORE
+----------------------------------------------------- */
+
+.sigil-core {
+    position: relative;
+
+    z-index: 3;
+
+    font-size: 52px;
+
+    color: #ded0bd;
+
+    text-shadow:
+        0 0 12px rgba(220, 190, 145, 0.6),
+        0 0 35px rgba(180, 130, 70, 0.3);
+
+    animation: sigil-pulse 4s ease-in-out infinite;
+}
+
+
+@keyframes sigil-pulse {
+
+    0%,
+    100% {
+        transform: scale(0.9);
+        opacity: 0.65;
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   RITUAL BOWL
+----------------------------------------------------- */
+
+.ritual-bowl {
+    position: absolute;
+
+    bottom: 12px;
+
+    font-size: 22px;
+
+    color: rgba(220, 200, 175, 0.6);
+}
+
+
+.ritual-bowl-glow {
+    position: absolute;
+
+    width: 90px;
+    height: 35px;
+
+    left: 50%;
+    bottom: -5px;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(200, 160, 100, 0.18),
+            transparent 70%
+        );
+
+    filter: blur(10px);
+}
+
+
+/* -----------------------------------------------------
+   OFFERINGS
+----------------------------------------------------- */
+
+.ritual-offerings {
+    position: absolute;
+
+    bottom: 45px;
+
+    display: flex;
+
+    gap: 25px;
+
+    font-size: 16px;
+
+    color: rgba(220, 200, 175, 0.5);
+}
+
+
+/* -----------------------------------------------------
+   CANDLES
+----------------------------------------------------- */
+
+.ritual-candles {
+    position: absolute;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 35px;
+
+    bottom: 65px;
+}
+
+
+.ritual-candles-left {
+    left: 0;
+}
+
+
+.ritual-candles-right {
+    right: 0;
+}
+
+
+/* candle itself */
+
+.ritual-candle {
+    position: relative;
+
+    width: 28px;
+    height: 100px;
+}
+
+
+/* taller candles */
+
+.candle-tall {
+    height: 140px;
+}
+
+
+/* candle body */
+
+.candle-body {
+    position: absolute;
+
+    bottom: 0;
+
+    width: 100%;
+    height: 85%;
+
+    border-radius: 4px 4px 2px 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #24201c,
+            #817362,
+            #2a2520
+        );
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.6);
+}
+
+
+/* candle base */
+
+.candle-base {
+    position: absolute;
+
+    bottom: -7px;
+    left: -8px;
+
+    width: 44px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #25201c;
+}
+
+
+/* flame */
+
+.candle-flame {
+    position: absolute;
+
+    z-index: 5;
+
+    left: 50%;
+    top: -10px;
+
+    width: 15px;
+    height: 27px;
+
+    transform: translateX(-50%);
+
+    border-radius:
+        50% 50% 50% 50% /
+        65% 65% 35% 35%;
+
+    background:
+        radial-gradient(
+            ellipse at center bottom,
+            #f4d9a3 0%,
+            #c28a4d 45%,
+            transparent 75%
+        );
+
+    filter:
+        drop-shadow(0 0 8px rgba(220, 160, 80, 0.8))
+        drop-shadow(0 0 20px rgba(190, 120, 50, 0.4));
+
+    animation: flame-flicker 1.5s ease-in-out infinite alternate;
+}
+
+
+@keyframes flame-flicker {
+
+    0% {
+        transform:
+            translateX(-50%)
+            scale(0.9)
+            rotate(-3deg);
+    }
+
+    50% {
+        transform:
+            translateX(-50%)
+            scale(1.1)
+            rotate(3deg);
+    }
+
+    100% {
+        transform:
+            translateX(-50%)
+            scale(0.95)
+            rotate(-2deg);
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   RITUAL PATHS
+----------------------------------------------------- */
+
+.ritual-paths {
+    width: min(900px, 92%);
+
+    margin: 0 auto 35px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+}
+
+
+.ritual-path {
+    padding: 22px 16px;
+
+    text-align: center;
+
+    border-top:
+        1px solid
+        rgba(220, 200, 175, 0.14);
+
+    border-bottom:
+        1px solid
+        rgba(220, 200, 175, 0.08);
+
+    background:
+        rgba(15, 12, 10, 0.45);
+
+    transition:
+        transform 0.4s ease,
+        border-color 0.4s ease;
+}
+
+
+.ritual-path:hover {
+    transform: translateY(-5px);
+
+    border-color:
+        rgba(220, 200, 175, 0.3);
+}
+
+
+.ritual-path > span {
+    display: block;
+
+    margin-bottom: 9px;
+
+    font-size: 22px;
+
+    color: #d9c9b3;
+
+    text-shadow:
+        0 0 12px rgba(210, 170, 110, 0.4);
+}
+
+
+.ritual-path h3 {
+    margin: 0 0 8px;
+
+    font-size: 14px;
+
+    letter-spacing: 0.16em;
+
+    color: #ded4c7;
+}
+
+
+.ritual-path p {
+    margin: 0;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    color: rgba(215, 205, 194, 0.62);
+}
+
+
+/* -----------------------------------------------------
+   QUOTE
+----------------------------------------------------- */
+
+.ritual-quote {
+    margin: 25px auto 35px;
+
+    text-align: center;
+
+    font-style: italic;
+
+    color: rgba(220, 205, 185, 0.65);
+
+    letter-spacing: 0.05em;
+}
+
+
+/* -----------------------------------------------------
+   MOBILE
+----------------------------------------------------- */
+
+@media (max-width: 800px) {
+
+    .ritual-scene {
+        min-height: 520px;
+    }
+
+    .ritual-altar {
+        width: 250px;
+        height: 250px;
+    }
+
+    .ritual-sigil {
+        width: 175px;
+        height: 175px;
+    }
+
+    .sigil-ring-one {
+        width: 170px;
+        height: 170px;
+    }
+
+    .sigil-ring-two {
+        width: 135px;
+        height: 135px;
+    }
+
+    .sigil-ring-three {
+        width: 95px;
+        height: 95px;
+    }
+
+    .ritual-candles {
+        gap: 15px;
+    }
+
+    .ritual-candles-left {
+        left: 5px;
+    }
+
+    .ritual-candles-right {
+        right: 5px;
+    }
+
+    .ritual-paths {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
     </style>
 </head>
 
