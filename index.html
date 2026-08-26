@@ -5699,39 +5699,20 @@
 
 
 
-<style id="account-right-column-final">
-/* Top-right account trigger */
-#accountButton.account-button {
-    position: fixed !important;
-    top: 20px !important;
-    right: 24px !important;
-    left: auto !important;
-    bottom: auto !important;
-    z-index: 1000001 !important;
-    width: auto !important;
-    height: auto !important;
-    padding: 10px 6px !important;
-    margin: 0 !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    color: #ded3c3 !important;
-    font-family: Georgia, "Times New Roman", serif !important;
-    font-size: 11px !important;
-    letter-spacing: .16em !important;
-    text-transform: uppercase !important;
-    cursor: pointer !important;
-    text-shadow: 0 1px 8px rgba(0,0,0,.9) !important;
-}
 
-/* Account popup = a vertical column attached to the right edge */
+
+
+<style id="account-original-style">
+/* RESTORED ORIGINAL ACCOUNT POPUP */
 #accountModal {
     position: fixed !important;
     inset: 0 !important;
     z-index: 1000000 !important;
     display: none !important;
-    align-items: stretch !important;
-    justify-content: flex-end !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
 }
 
 #accountModal.active {
@@ -5743,60 +5724,210 @@
 #accountModal .account-backdrop {
     position: absolute !important;
     inset: 0 !important;
+    background: rgba(0,0,0,.72) !important;
+    backdrop-filter: blur(3px) !important;
 }
 
 #accountModal .account-card {
     position: relative !important;
     z-index: 2 !important;
-    width: min(390px, 88vw) !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    border-top: 0 !important;
-    border-right: 0 !important;
-    border-bottom: 0 !important;
-    border-left: 1px solid rgba(205,180,140,.28) !important;
+    width: min(530px, calc(100vw - 40px)) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: calc(100vh - 40px) !important;
     overflow-y: auto !important;
     box-sizing: border-box !important;
-    padding: 70px 34px 34px !important;
-    background: rgba(10,9,8,.98) !important;
-    box-shadow: -18px 0 45px rgba(0,0,0,.55) !important;
+    margin: 0 !important;
+    padding: 42px 42px 34px !important;
+    border: 1px solid rgba(210,190,150,.24) !important;
+    border-radius: 0 !important;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(150,125,90,.12), transparent 55%),
+        linear-gradient(145deg, #171311, #080707 70%) !important;
+    box-shadow: 0 30px 100px rgba(0,0,0,.9) !important;
+    text-align: center !important;
 }
 
 #accountModal .account-close {
     position: absolute !important;
-    top: 18px !important;
-    right: 22px !important;
+    top: 10px !important;
+    right: 12px !important;
     z-index: 3 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #cfc5b6 !important;
+    font-size: 22px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
 }
 
-#accountModal .account-form,
-#accountModal .account-user-box {
+#accountModal .account-symbol {
+    display: block !important;
+    margin-bottom: 10px !important;
+    color: #ded3c3 !important;
+    font-size: 25px !important;
+}
+
+#accountModal .account-card h2 {
+    margin: 0 0 10px !important;
+    color: #e5ddd1 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 25px !important;
+    line-height: 1.15 !important;
+    letter-spacing: .12em !important;
+    font-weight: normal !important;
+}
+
+#accountModal .account-subtitle {
+    margin: 0 auto 26px !important;
+    max-width: 440px !important;
+    color: #bdb1a1 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+}
+
+#accountModal .account-form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+#accountModal .account-form label {
+    display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    color: #bdb1a1 !important;
+    font-size: 10px !important;
+    letter-spacing: .14em !important;
+    text-transform: uppercase !important;
 }
 
-#accountUserBox {
-    display: none !important;
-}
-
-#accountUserBox.active {
+#accountModal .account-form input {
     display: block !important;
+    width: 100% !important;
+    height: 42px !important;
+    margin: 6px 0 0 !important;
+    padding: 10px 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(205,180,140,.25) !important;
+    border-radius: 0 !important;
+    background: rgba(255,255,255,.025) !important;
+    color: #e7dccd !important;
+    font-family: Georgia, serif !important;
+    font-size: 14px !important;
+    outline: none !important;
+}
+
+#accountModal .account-submit {
+    display: block !important;
+    width: 100% !important;
+    height: 56px !important;
+    margin: 8px 0 0 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(210,180,125,.45) !important;
+    border-radius: 0 !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12)) !important;
+    color: #e5d8c5 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 14px !important;
+    letter-spacing: .13em !important;
+    cursor: pointer !important;
+}
+
+#accountModal .account-message {
+    min-height: 18px !important;
+    margin-top: 12px !important;
+    color: #bdb1a1 !important;
+    font-family: Georgia, serif !important;
+    font-size: 12px !important;
+}
+
+#accountModal .account-switch {
+    margin-top: 18px !important;
+    color: #777068 !important;
+    font-family: Georgia, serif !important;
+    font-size: 13px !important;
+}
+
+#accountModal .account-switch button {
+    border: 0 !important;
+    background: transparent !important;
+    color: #c7b38d !important;
+    font-family: Georgia, serif !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+}
+
+/* Keep the account trigger in the top-right, as requested previously. */
+#accountButton.account-button {
+    position: fixed !important;
+    top: 20px !important;
+    right: 24px !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 1000001 !important;
+    margin: 0 !important;
+    padding: 10px 6px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #ded3c3 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 11px !important;
+    letter-spacing: .16em !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 1px 8px rgba(0,0,0,.9) !important;
 }
 
 @media (max-width: 600px) {
+    #accountModal {
+        padding: 14px !important;
+    }
+
+    #accountModal .account-card {
+        width: calc(100vw - 28px) !important;
+        max-height: calc(100vh - 28px) !important;
+        padding: 36px 24px 28px !important;
+    }
+
+    #accountModal .account-card h2 {
+        font-size: 21px !important;
+    }
+
     #accountButton.account-button {
         top: 12px !important;
         right: 12px !important;
         font-size: 9px !important;
     }
-
-    #accountModal .account-card {
-        width: min(350px, 92vw) !important;
-        padding: 65px 24px 28px !important;
-    }
 }
+</style>
+
+
+<style id="account-no-duplicates">
+#accountUserBox { display:none !important; }
+#accountUserBox.active { display:block !important; }
+#sanctuaryAccountButton,
+.account-logout { display:block !important; width:100% !important; box-sizing:border-box !important; }
+
+/* FINAL ACCOUNT FORM VISIBILITY FIX
+   The login/register forms must never display at the same time.
+   This intentionally overrides the older !important form styling. */
+#accountModal #registerAccountForm {
+    display: none !important;
+}
+#accountModal #loginAccountForm {
+    display: none !important;
+}
+#accountModal #registerAccountForm.account-form-visible {
+    display: flex !important;
+}
+#accountModal #loginAccountForm.account-form-visible {
+    display: flex !important;
+}
+
 </style>
 
 </head>
@@ -7867,8 +7998,9 @@ function setAccountMode(mode) {
     const userBox = document.getElementById('accountUserBox');
 
     if (userBox) userBox.classList.remove('active');
-    if (register) register.style.display = mode === 'register' ? 'flex' : 'none';
-    if (login) login.style.display = mode === 'login' ? 'flex' : 'none';
+
+    if (register) register.classList.toggle('account-form-visible', mode === 'register');
+    if (login) login.classList.toggle('account-form-visible', mode === 'login');
 
     if (mode === 'register') {
         title.textContent = 'CREATE YOUR PLACE';
@@ -7998,8 +8130,8 @@ function showLoggedInAccount() {
     const switchWrap = document.querySelector('.account-switch');
     const name = document.getElementById('accountUserName');
 
-    if (register) register.style.display = 'none';
-    if (login) login.style.display = 'none';
+    if (register) register.classList.remove('account-form-visible');
+    if (login) login.classList.remove('account-form-visible');
     if (switchWrap) switchWrap.style.display = 'none';
     if (userBox) userBox.classList.add('active');
 
@@ -8464,20 +8596,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-<script id="account-right-column-handler">
-document.addEventListener("DOMContentLoaded", function () {
-    const button = document.getElementById("accountButton");
-    if (!button) return;
 
-    button.onclick = function (event) {
-        event.preventDefault();
-        event.stopPropagation();
 
-        if (typeof openAccountModal === "function") {
-            openAccountModal(event);
-        }
-    };
-});
+
+<script id="account-final-deduplicator">
+(function () {
+    function dedupeAccountUI() {
+        const buttons = document.querySelectorAll('.account-button');
+        buttons.forEach((button, index) => {
+            if (index > 0) button.remove();
+        });
+
+        const modals = document.querySelectorAll('#accountModal');
+        modals.forEach((modal, index) => {
+            if (index > 0) modal.remove();
+        });
+
+        const accountSanctuaryButtons = document.querySelectorAll('#accountUserBox #sanctuaryAccountButton');
+        accountSanctuaryButtons.forEach((button, index) => {
+            if (index > 0) button.remove();
+        });
+
+        const logoutButtons = document.querySelectorAll('#accountUserBox .account-logout');
+        logoutButtons.forEach((button, index) => {
+            if (index > 0) button.remove();
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', dedupeAccountUI, { once: true });
+    } else {
+        dedupeAccountUI();
+    }
+
+    // If an older script inserts another copy later, remove it immediately.
+    const observer = new MutationObserver(dedupeAccountUI);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
 </script>
 
 </body>
