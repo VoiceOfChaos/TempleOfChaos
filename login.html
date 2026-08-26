@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Enter the Temple — Temple of Chaos
+    </title>
+
+
+    <!-- SUPABASE -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- SUPABASE CONFIG -->
+
+    <script
+        src="supabase-config.js"
+    ></script>
+
+
+    <!-- ACCOUNT SYSTEM -->
+
+    <script
+        src="auth.js"
+        defer
+    ></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+
+            margin: 0;
+
+            min-height: 100%;
+
+            background:
+                #050507;
+
+            color:
+                #e8e3d8;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =================================================
+           ATMOSPHERE
+        ================================================= */
+
+        .auth-page {
+
+            position: relative;
+
+            width: 100%;
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            background:
+
+                radial-gradient(
+                    circle at center,
+                    rgba(125,105,85,.12),
+                    transparent 45%
+                ),
+
+                radial-gradient(
+                    ellipse at center,
+                    #171412 0%,
+                    #080707 50%,
+                    #020203 100%
+                );
+        }
+
+
+        .auth-page::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 700px;
+            height: 700px;
+
+            border-radius: 50%;
+
+            background:
+
+                radial-gradient(
+                    circle,
+                    rgba(170,135,90,.08),
+                    transparent 70%
+                );
+
+            filter:
+                blur(25px);
+
+            animation:
+                atmospherePulse
+                8s
+                ease-in-out
+                infinite;
+        }
+
+
+        @keyframes atmospherePulse {
+
+            0%,
+            100% {
+
+                transform:
+                    scale(.9);
+
+                opacity:
+                    .4;
+            }
+
+            50% {
+
+                transform:
+                    scale(1.1);
+
+                opacity:
+                    1;
+            }
+        }
+
+
+        /* =================================================
+           PANEL
+        ================================================= */
+
+        .auth-panel {
+
+            position: relative;
+
+            z-index: 2;
+
+            width:
+                min(470px, 90vw);
+
+            padding:
+                55px 45px;
+
+            background:
+
+                linear-gradient(
+                    145deg,
+                    rgba(24,20,17,.96),
+                    rgba(7,6,6,.98)
+                );
+
+            border:
+                1px solid
+                rgba(210,185,145,.23);
+
+            box-shadow:
+
+                0 30px 100px
+                rgba(0,0,0,.85),
+
+                0 0 50px
+                rgba(170,130,80,.06);
+
+            text-align:
+                center;
+        }
+
+
+        /* =================================================
+           SYMBOL
+        ================================================= */
+
+        .auth-symbol {
+
+            font-size:
+                42px;
+
+            color:
+                #d7bf94;
+
+            margin-bottom:
+                20px;
+
+            animation:
+                authSymbol
+                4s
+                ease-in-out
+                infinite;
+        }
+
+
+        @keyframes authSymbol {
+
+            0%,
+            100% {
+
+                transform:
+                    scale(1);
+
+                opacity:
+                    .6;
+            }
+
+            50% {
+
+                transform:
+                    scale(1.12);
+
+                opacity:
+                    1;
+            }
+        }
+
+
+        /* =================================================
+           TITLES
+        ================================================= */
+
+        h1 {
+
+            margin:
+                0 0 12px;
+
+            font-size:
+                27px;
+
+            font-weight:
+                normal;
+
+            letter-spacing:
+                .18em;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        .subtitle {
+
+            color:
+                #8d857a;
+
+            font-style:
+                italic;
+
+            line-height:
+                1.7;
+
+            margin:
+                0 0 35px;
+        }
+
+
+        /* =================================================
+           FORMS
+        ================================================= */
+
+        .auth-form {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                15px;
+
+            text-align:
+                left;
+        }
+
+
+        label {
+
+            color:
+                #bcb0a0;
+
+            font-size:
+                11px;
+
+            letter-spacing:
+                .13em;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        input {
+
+            width:
+                100%;
+
+            padding:
+                14px;
+
+            margin-top:
+                6px;
+
+            background:
+                rgba(255,255,255,.025);
+
+            border:
+                1px solid
+                rgba(205,180,140,.22);
+
+            color:
+                #e8dfd2;
+
+            font-family:
+                Georgia,
+                serif;
+
+            font-size:
+                15px;
+
+            outline:
+                none;
+        }
+
+
+        input:focus {
+
+            border-color:
+                rgba(210,180,125,.65);
+
+            box-shadow:
+                0 0 18px
+                rgba(190,150,90,.08);
+        }
+
+
+        /* =================================================
+           BUTTON
+        ================================================= */
+
+        .auth-button {
+
+            width:
+                100%;
+
+            margin-top:
+                10px;
+
+            padding:
+                16px;
+
+            border:
+                1px solid
+                rgba(210,180,125,.45);
+
+            background:
+
+                linear-gradient(
+                    135deg,
+                    rgba(180,145,85,.14),
+                    rgba(60,45,30,.12)
+                );
+
+            color:
+                #e5d8c5;
+
+            font-family:
+                Georgia,
+                serif;
+
+            font-size:
+                13px;
+
+            letter-spacing:
+                .14em;
+
+            cursor:
+                pointer;
+
+            transition:
+                .3s ease;
+        }
+
+
+        .auth-button:hover {
+
+            background:
+                rgba(190,155,90,.18);
+
+            box-shadow:
+                0 0 25px
+                rgba(190,150,90,.12);
+        }
+
+
+        .auth-button:disabled {
+
+            opacity:
+                .5;
+
+            cursor:
+                wait;
+        }
+
+
+        /* =================================================
+           MESSAGE
+        ================================================= */
+
+        #authMessage {
+
+            min-height:
+                42px;
+
+            margin-top:
+                20px;
+
+            color:
+                #b9a989;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.6;
+        }
+
+
+        /* =================================================
+           SWITCH
+        ================================================= */
+
+        .auth-switch {
+
+            margin-top:
+                25px;
+
+            padding-top:
+                25px;
+
+            border-top:
+                1px solid
+                rgba(210,190,150,.12);
+
+            color:
+                #777067;
+
+            font-size:
+                13px;
+        }
+
+
+        .auth-switch a {
+
+            color:
+                #c4b18e;
+
+            text-decoration:
+                none;
+
+            cursor:
+                pointer;
+        }
+
+
+        .auth-switch a:hover {
+
+            color:
+                #eee3d2;
+        }
+
+
+        .return-link {
+
+            display:
+                inline-block;
+
+            margin-top:
+                30px;
+
+            color:
+                #777067;
+
+            text-decoration:
+                none;
+
+            font-size:
+                11px;
+
+            letter-spacing:
+                .15em;
+
+            text-transform:
+                uppercase;
+        }
+
+        .return-link:hover {
+
+            color:
+                #d6c8b5;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="auth-page">
+
+
+    <div class="auth-panel">
+
+        <div class="auth-symbol">
+            ✦
+        </div>
+
+
+        <h1 id="authTitle">
+            Enter the Temple
+        </h1>
+
+
+        <p class="subtitle">
+            Create a place within the Temple
+            and carry your sanctuary with you.
+        </p>
+
+
+        <!-- =================================================
+             REGISTER
+        ================================================== -->
+
+        <form
+            id="registerForm"
+            class="auth-form"
+            onsubmit="event.preventDefault(); registerAccount();"
+        >
+
+            <div>
+
+                <label
+                    for="registerUsername"
+                >
+                    NAME
+                </label>
+
+                <input
+                    id="registerUsername"
+                    type="text"
+                    placeholder="Your name"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div>
+
+                <label
+                    for="registerEmail"
+                >
+                    EMAIL
+                </label>
+
+                <input
+                    id="registerEmail"
+                    type="email"
+                    placeholder="Your email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div>
+
+                <label
+                    for="registerPassword"
+                >
+                    PASSWORD
+                </label>
+
+                <input
+                    id="registerPassword"
+                    type="password"
+                    placeholder="At least 6 characters"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                id="registerButton"
+                class="auth-button"
+                type="submit"
+            >
+                CREATE ACCOUNT
+            </button>
+
+        </form>
+
+
+        <!-- =================================================
+             LOGIN FORM
+        ================================================== -->
+
+        <form
+            id="loginForm"
+            class="auth-form"
+            style="display:none;"
+            onsubmit="event.preventDefault(); loginAccount();"
+        >
+
+            <div>
+
+                <label
+                    for="loginEmail"
+                >
+                    EMAIL
+                </label>
+
+                <input
+                    id="loginEmail"
+                    type="email"
+                    placeholder="Your email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div>
+
+                <label
+                    for="loginPassword"
+                >
+                    PASSWORD
+                </label>
+
+                <input
+                    id="loginPassword"
+                    type="password"
+                    placeholder="Your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                id="loginButton"
+                class="auth-button"
+                type="submit"
+            >
+                ENTER THE TEMPLE
+            </button>
+
+        </form>
+
+
+        <div
+            id="authMessage"
+        ></div>
+
+
+        <div class="auth-switch">
+
+            <span id="switchText">
+                Already have a place in the Temple?
+            </span>
+
+            <a
+                href="#"
+                id="switchLink"
+                onclick="toggleAuthMode(event)"
+            >
+                ENTER
+            </a>
+
+        </div>
+
+
+        <a
+            href="index.html"
+            class="return-link"
+        >
+            ← Return to the Temple
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SWITCH LOGIN / REGISTER
+===================================================== */
+
+function toggleAuthMode(event) {
+
+    event.preventDefault();
+
+
+    const registerForm =
+        document.getElementById(
+            "registerForm"
+        );
+
+
+    const loginForm =
+        document.getElementById(
+            "loginForm"
+        );
+
+
+    const title =
+        document.getElementById(
+            "authTitle"
+        );
+
+
+    const switchText =
+        document.getElementById(
+            "switchText"
+        );
+
+
+    const switchLink =
+        document.getElementById(
+            "switchLink"
+        );
+
+
+    const message =
+        document.getElementById(
+            "authMessage"
+        );
+
+
+    message.textContent = "";
+
+
+    const registerVisible =
+        registerForm.style.display !== "none";
+
+
+    if (registerVisible) {
+
+        /* Show login */
+
+        registerForm.style.display =
+            "none";
+
+        loginForm.style.display =
+            "flex";
+
+        title.textContent =
+            "Enter the Temple";
+
+        switchText.textContent =
+            "Do not yet have a place within the Temple?";
+
+        switchLink.textContent =
+            "CREATE ACCOUNT";
+
+    } else {
+
+        /* Show registration */
+
+        loginForm.style.display =
+            "none";
+
+        registerForm.style.display =
+            "flex";
+
+        title.textContent =
+            "Create Your Place";
+
+        switchText.textContent =
+            "Already have a place in the Temple?";
+
+        switchLink.textContent =
+            "ENTER";
+    }
+}
+
+</script>
+
+
+</body>
+
+</html>
