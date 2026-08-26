@@ -5312,11 +5312,24 @@
 
             <div class="ritual-candles ritual-candles-left">
 
-                <div class="ritual-candle candle-tall">
-                    <div class="candle-flame"></div>
-                    <div class="candle-body"></div>
-                    <div class="candle-base"></div>
-                </div>
+               <div class="ritual-candle candle-tall ritual-candle-interactive">
+
+    <button
+        class="candle-button"
+        type="button"
+        onclick="openRitualCandle(this)"
+        aria-label="Dedicate this candle"
+    >
+
+        <div class="candle-flame"></div>
+
+        <div class="candle-body"></div>
+
+        <div class="candle-base"></div>
+
+    </button>
+
+</div>
 
                 <div class="ritual-candle">
                     <div class="candle-flame"></div>
@@ -5474,7 +5487,102 @@
         </a>
 
     </div>
+<!-- =====================================================
+     RITUAL CANDLE PANEL
+===================================================== -->
 
+<div
+    id="ritual-candle-panel"
+    class="ritual-candle-panel"
+    aria-hidden="true"
+>
+
+    <div class="ritual-candle-panel-inner">
+
+        <button
+            class="ritual-panel-close"
+            type="button"
+            onclick="closeRitualCandle()"
+        >
+            ×
+        </button>
+
+        <div class="ritual-panel-symbol">
+            🕯
+        </div>
+
+        <h3>
+            DEDICATE THE FLAME
+        </h3>
+
+        <p>
+            Give this flame a purpose.
+        </p>
+
+
+        <label for="candle-deity">
+            Deity / Being
+        </label>
+
+        <input
+            id="candle-deity"
+            type="text"
+            placeholder="Who is this flame devoted to?"
+        >
+
+
+        <label for="candle-intention">
+            Intention
+        </label>
+
+        <textarea
+            id="candle-intention"
+            placeholder="What do you offer, seek or remember?"
+            rows="3"
+        ></textarea>
+
+
+        <label for="candle-duration">
+            Burn for
+        </label>
+
+        <select id="candle-duration">
+
+            <option value="3600">
+                1 hour
+            </option>
+
+            <option value="21600">
+                6 hours
+            </option>
+
+            <option value="86400">
+                1 day
+            </option>
+
+            <option value="604800">
+                7 days
+            </option>
+
+            <option value="0">
+                Until I extinguish it
+            </option>
+
+        </select>
+
+
+        <button
+            class="ritual-light-button"
+            type="button"
+            onclick="lightRitualCandle()"
+        >
+            LIGHT THE CANDLE
+        </button>
+
+    </div>
+
+</div>
+    
 </section>
     <!-- =====================================================
          FOOTER
