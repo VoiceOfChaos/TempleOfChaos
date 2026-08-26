@@ -5635,21 +5635,166 @@
     left: auto !important;
     bottom: auto !important;
     z-index: 999999 !important;
+
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     transform: none !important;
+
     margin: 0 !important;
-    padding: 11px 17px !important;
+    padding: 10px 6px !important;
     width: auto !important;
     height: auto !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    color: #ded3c3 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 11px !important;
+    letter-spacing: .16em !important;
+    text-transform: uppercase !important;
+
     cursor: pointer !important;
+    text-shadow: 0 1px 8px rgba(0,0,0,.9) !important;
 }
+
+#accountButton.account-button:hover {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
 @media (max-width: 600px) {
     #accountButton.account-button {
         top: 12px !important;
         right: 12px !important;
-        padding: 9px 12px !important;
+        padding: 8px 4px !important;
+        font-size: 9px !important;
+    }
+}
+</style>
+
+
+<style id="account-modal-repair-css">
+#accountModal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1000000 !important;
+}
+#accountModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+#accountModal[aria-hidden="true"] {
+    visibility: hidden;
+}
+</style>
+
+
+
+
+
+<style id="account-right-column-final">
+/* Top-right account trigger */
+#accountButton.account-button {
+    position: fixed !important;
+    top: 20px !important;
+    right: 24px !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 1000001 !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 10px 6px !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #ded3c3 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 11px !important;
+    letter-spacing: .16em !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    text-shadow: 0 1px 8px rgba(0,0,0,.9) !important;
+}
+
+/* Account popup = a vertical column attached to the right edge */
+#accountModal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1000000 !important;
+    display: none !important;
+    align-items: stretch !important;
+    justify-content: flex-end !important;
+}
+
+#accountModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#accountModal .account-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+}
+
+#accountModal .account-card {
+    position: relative !important;
+    z-index: 2 !important;
+    width: min(390px, 88vw) !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    border-left: 1px solid rgba(205,180,140,.28) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    padding: 70px 34px 34px !important;
+    background: rgba(10,9,8,.98) !important;
+    box-shadow: -18px 0 45px rgba(0,0,0,.55) !important;
+}
+
+#accountModal .account-close {
+    position: absolute !important;
+    top: 18px !important;
+    right: 22px !important;
+    z-index: 3 !important;
+}
+
+#accountModal .account-form,
+#accountModal .account-user-box {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#accountUserBox {
+    display: none !important;
+}
+
+#accountUserBox.active {
+    display: block !important;
+}
+
+@media (max-width: 600px) {
+    #accountButton.account-button {
+        top: 12px !important;
+        right: 12px !important;
+        font-size: 9px !important;
+    }
+
+    #accountModal .account-card {
+        width: min(350px, 92vw) !important;
+        padding: 65px 24px 28px !important;
     }
 }
 </style>
@@ -7708,6 +7853,10 @@ function closeAccountModal() {
 
 function setAccountMode(mode) {
     accountMode = mode;
+    const loggedInBox = document.getElementById('accountUserBox');
+    const switchWrap = document.querySelector('.account-switch');
+    if (loggedInBox) loggedInBox.classList.remove('active');
+    if (switchWrap) switchWrap.style.display = '';
 
     const register = document.getElementById('registerAccountForm');
     const login = document.getElementById('loginAccountForm');
@@ -8306,25 +8455,26 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 
-<script id="final-account-button-handler">
-document.addEventListener("DOMContentLoaded", function () {
-    const btn = document.getElementById("accountButton");
-    if (!btn) return;
 
-    btn.onclick = function (event) {
+
+
+
+
+
+
+
+
+<script id="account-right-column-handler">
+document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("accountButton");
+    if (!button) return;
+
+    button.onclick = function (event) {
         event.preventDefault();
         event.stopPropagation();
 
         if (typeof openAccountModal === "function") {
             openAccountModal(event);
-        } else {
-            const modal = document.getElementById("accountModal");
-            if (modal) {
-                modal.classList.add("active");
-                modal.setAttribute("aria-hidden", "false");
-                modal.style.display = "flex";
-                document.body.style.overflow = "hidden";
-            }
         }
     };
 });
