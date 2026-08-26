@@ -5478,60 +5478,146 @@
 
 \n\n/* =====================================================\n   ACCOUNT SYSTEM\n===================================================== */\n\n.account-button {\n    display: inline-block;\n    margin: 18px 8px 0;\n    padding: 12px 24px;\n    border: 1px solid rgba(210,190,150,.32);\n    background: rgba(0,0,0,.22);\n    color: #cfc5b6;\n    text-decoration: none;\n    text-transform: uppercase;\n    letter-spacing: .16em;\n    font-size: .7rem;\n    cursor: pointer;\n    transition: .3s ease;\n}\n\n.account-button:hover {\n    border-color: rgba(232,227,216,.7);\n    background: rgba(255,255,255,.05);\n    color: #f3eee4;\n}\n\n.account-modal {\n    position: fixed;\n    inset: 0;\n    z-index: 100000;\n    display: none;\n    align-items: center;\n    justify-content: center;\n    padding: 20px;\n}\n\n.account-modal.active {\n    display: flex;\n}\n\n.account-backdrop {\n    position: absolute;\n    inset: 0;\n    background: rgba(0,0,0,.86);\n    backdrop-filter: blur(8px);\n}\n\n.account-card {\n    position: relative;\n    z-index: 2;\n    width: min(460px, 94vw);\n    padding: 46px 38px 36px;\n    background:\n        radial-gradient(circle at 50% 0%, rgba(150,125,90,.12), transparent 55%),\n        linear-gradient(145deg, #171311, #080707 70%);\n    border: 1px solid rgba(210,190,150,.24);\n    box-shadow: 0 30px 100px rgba(0,0,0,.9);\n    text-align: center;\n}\n\n.account-close {\n    position: absolute;\n    top: 15px;\n    right: 18px;\n    width: 36px;\n    height: 36px;\n    border: 1px solid rgba(210,190,150,.2);\n    background: transparent;\n    color: #c7bbab;\n    font-size: 24px;\n    cursor: pointer;\n}\n\n.account-symbol {\n    color: #d5bb8c;\n    font-size: 34px;\n    margin-bottom: 14px;\n    animation: accountSymbolPulse 3.5s ease-in-out infinite;\n}\n\n@keyframes accountSymbolPulse {\n    0%,100% { opacity:.6; transform:scale(1); }\n    50% { opacity:1; transform:scale(1.1); }\n}\n\n.account-card h2 {\n    margin: 0 0 10px;\n    font-size: 24px;\n    letter-spacing: .16em;\n    font-weight: normal;\n}\n\n.account-subtitle {\n    color: #8f877d;\n    font-style: italic;\n    line-height: 1.65;\n    margin: 0 0 24px;\n}\n\n.account-form {\n    display: flex;\n    flex-direction: column;\n    gap: 13px;\n    text-align: left;\n}\n\n.account-form label {\n    color: #bdb1a1;\n    font-size: 10px;\n    letter-spacing: .14em;\n    text-transform: uppercase;\n}\n\n.account-form input {\n    width: 100%;\n    margin-top: 5px;\n    padding: 13px 14px;\n    box-sizing: border-box;\n    border: 1px solid rgba(205,180,140,.2);\n    background: rgba(255,255,255,.025);\n    color: #e7dccd;\n    font-family: Georgia, serif;\n    outline: none;\n}\n\n.account-form input:focus {\n    border-color: rgba(210,180,125,.65);\n    box-shadow: 0 0 18px rgba(190,150,90,.08);\n}\n\n.account-submit {\n    margin-top: 10px;\n    width: 100%;\n    padding: 15px;\n    border: 1px solid rgba(210,180,125,.45);\n    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12));\n    color: #e5d8c5;\n    font-family: Georgia, serif;\n    letter-spacing: .13em;\n    cursor: pointer;\n}\n\n.account-submit:disabled {\n    opacity: .5;\n    cursor: wait;\n}\n\n.account-message {\n    min-height: 38px;\n    margin-top: 16px;\n    color: #b9aa8f;\n    font-size: 13px;\n    line-height: 1.55;\n}\n\n.account-switch {\n    margin-top: 18px;\n    color: #777068;\n    font-size: 13px;\n}\n\n.account-switch button {\n    border: none;\n    background: transparent;\n    color: #c7b38d;\n    cursor: pointer;\n    font-family: Georgia, serif;\n}\n\n.account-user-box {\n    display: none;\n    margin-top: 18px;\n    padding-top: 18px;\n    border-top: 1px solid rgba(210,190,150,.12);\n}\n\n.account-user-box.active {\n    display: block;\n}\n\n.account-user-name {\n    color: #e3d7c8;\n    margin-bottom: 14px;\n}\n\n.account-logout {\n    padding: 10px 20px;\n    border: 1px solid rgba(210,190,150,.3);\n    background: transparent;\n    color: #bda98a;\n    cursor: pointer;\n    font-family: Georgia, serif;\n    letter-spacing: .12em;\n    text-transform: uppercase;\n    font-size: 10px;\n}\n\n@media (max-width: 600px) {\n    .account-card { padding: 40px 24px 28px; }\n}\n
 
+/* =====================================================
+   ACCOUNT BUTTON — FIXED TOP RIGHT
+===================================================== */
+.account-button {
+    position: fixed !important;
+    top: 22px !important;
+    right: 24px !important;
+    z-index: 100002 !important;
+    margin: 0 !important;
+    display: block !important;
+    padding: 11px 17px !important;
+    background: rgba(5,5,7,.78) !important;
+    backdrop-filter: blur(8px);
+}
+@media (max-width:600px) {
+    .account-button {
+        top: 14px !important;
+        right: 14px !important;
+        padding: 9px 12px !important;
+        font-size: .62rem !important;
+    }
+}
 
 /* =====================================================
-   MY SANCTUARY — PERSONAL ACCOUNT CONTENT
+   SANCTUARY
 ===================================================== */
-.sanctuary-open-button {
-    width:100%; margin-top:12px; padding:13px 16px; cursor:pointer;
-    border:1px solid rgba(210,185,145,.35); background:rgba(180,145,85,.10);
-    color:#e5d8c5; font-family:Georgia,serif; letter-spacing:.12em;
-    text-transform:uppercase; font-size:10px;
+.sanctuary-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100010;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
 }
-.sanctuary-open-button:hover { background:rgba(180,145,85,.18); }
-.sanctuary-modal { position:fixed; inset:0; z-index:100000; display:none;
-    align-items:center; justify-content:center; background:rgba(0,0,0,.86); backdrop-filter:blur(9px); }
 .sanctuary-modal.active { display:flex; }
-.sanctuary-backdrop { position:absolute; inset:0; }
-.sanctuary-card { position:relative; z-index:2; width:min(1100px,94vw); max-height:90vh; overflow:auto;
-    padding:38px; background:linear-gradient(145deg,rgba(22,18,16,.99),rgba(7,6,6,.99));
-    border:1px solid rgba(210,185,145,.25); box-shadow:0 30px 120px rgba(0,0,0,.9); }
-.sanctuary-close { position:absolute; top:12px; right:17px; border:0; background:none; color:#b8ab9c; font-size:28px; cursor:pointer; }
-.sanctuary-header { text-align:center; margin:0 0 26px; }
-.sanctuary-symbol { color:#d4bc90; font-size:34px; }
-.sanctuary-header h2 { margin:8px 0; color:#eee6da; font-size:27px; font-weight:normal; letter-spacing:.16em; }
-.sanctuary-header p { margin:0; color:#90877b; font-style:italic; }
-.sanctuary-tabs { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:22px; }
-.sanctuary-tab { padding:10px 13px; border:1px solid rgba(210,185,145,.22); background:transparent; color:#aa9d8e; cursor:pointer; font-family:Georgia,serif; font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
-.sanctuary-tab.active { color:#e5d8c5; border-color:rgba(210,185,145,.55); background:rgba(180,145,85,.1); }
-.sanctuary-panel { display:none; }
-.sanctuary-panel.active { display:block; }
-.sanctuary-toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:15px; }
-.sanctuary-toolbar h3 { margin:0; color:#d9cdbd; font-weight:normal; letter-spacing:.12em; font-size:16px; }
-.sanctuary-add { padding:9px 13px; border:1px solid rgba(210,185,145,.3); background:rgba(180,145,85,.08); color:#d9cdbd; cursor:pointer; font-family:Georgia,serif; font-size:10px; letter-spacing:.1em; }
-.sanctuary-form { display:none; margin-bottom:18px; padding:18px; border:1px solid rgba(210,185,145,.14); background:rgba(255,255,255,.02); }
-.sanctuary-form.active { display:block; }
-.sanctuary-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
-.sanctuary-form label { display:block; color:#a99c8e; font-size:9px; letter-spacing:.1em; text-transform:uppercase; }
-.sanctuary-form input,.sanctuary-form textarea,.sanctuary-form select { box-sizing:border-box; width:100%; margin-top:6px; padding:11px; border:1px solid rgba(210,185,145,.2); background:#0c0a09; color:#e7ded0; font-family:Georgia,serif; outline:none; }
-.sanctuary-form textarea { min-height:130px; resize:vertical; }
-.sanctuary-form .full { grid-column:1/-1; }
-.sanctuary-check { display:flex!important; align-items:center; gap:8px; margin-top:13px; cursor:pointer; }
-.sanctuary-check input { width:auto!important; margin:0!important; }
-.sanctuary-form-actions { display:flex; gap:9px; margin-top:14px; }
-.sanctuary-form-actions button { padding:10px 14px; border:1px solid rgba(210,185,145,.28); background:transparent; color:#d9cdbd; cursor:pointer; font-family:Georgia,serif; }
-.sanctuary-form-actions .primary { background:rgba(180,145,85,.12); }
-.sanctuary-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-.sanctuary-item { padding:17px; border:1px solid rgba(210,185,145,.14); background:rgba(255,255,255,.018); }
-.sanctuary-item h4 { margin:0 0 8px; color:#e0d5c6; font-weight:normal; font-size:17px; }
-.sanctuary-item .meta { color:#887e72; font-size:9px; letter-spacing:.09em; text-transform:uppercase; margin-bottom:9px; }
-.sanctuary-item .body { white-space:pre-wrap; color:#bcb1a3; line-height:1.65; font-size:13px; }
-.sanctuary-badge { display:inline-block; margin-bottom:9px; padding:4px 7px; border:1px solid rgba(210,185,145,.2); color:#a9977d; font-size:8px; letter-spacing:.1em; text-transform:uppercase; }
-.sanctuary-item-actions { display:flex; gap:7px; flex-wrap:wrap; margin-top:13px; }
-.sanctuary-item-actions button { padding:7px 9px; border:1px solid rgba(210,185,145,.2); background:transparent; color:#aa9e90; cursor:pointer; font-family:Georgia,serif; font-size:9px; }
-.sanctuary-empty { padding:35px; text-align:center; color:#756d64; border:1px dashed rgba(210,185,145,.13); font-style:italic; }
-.sanctuary-loading { color:#81776c; text-align:center; padding:25px; }
-@media(max-width:700px){ .sanctuary-card{padding:28px 17px}.sanctuary-form-grid,.sanctuary-grid{grid-template-columns:1fr}.sanctuary-form .full{grid-column:auto}.sanctuary-toolbar{align-items:flex-start;flex-direction:column} }
+.sanctuary-backdrop {
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.9);
+    backdrop-filter:blur(9px);
+}
+.sanctuary-card {
+    position:relative;
+    z-index:2;
+    width:min(1000px,96vw);
+    max-height:92vh;
+    overflow:auto;
+    padding:36px;
+    background:
+      radial-gradient(circle at 50% 0%,rgba(150,125,90,.12),transparent 45%),
+      linear-gradient(145deg,#171311,#080707 75%);
+    border:1px solid rgba(210,190,150,.25);
+    box-shadow:0 30px 110px rgba(0,0,0,.92);
+}
+.sanctuary-close {
+    position:absolute;
+    top:14px;
+    right:17px;
+    width:38px;height:38px;
+    border:1px solid rgba(210,190,150,.22);
+    background:transparent;color:#cfc2b0;
+    font-size:24px;cursor:pointer;
+}
+.sanctuary-head{text-align:center;padding:10px 45px 25px}
+.sanctuary-symbol{font-size:34px;color:#d5bb8c;margin-bottom:8px}
+.sanctuary-head h2{font-size:25px;font-weight:normal;letter-spacing:.18em}
+.sanctuary-head p{margin-top:9px;color:#8f877d;font-style:italic}
+.sanctuary-tabs{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:7px;
+    margin-bottom:20px;
+}
+.sanctuary-tab{
+    padding:12px 7px;
+    border:1px solid rgba(210,190,150,.18);
+    background:rgba(255,255,255,.025);
+    color:#a99e90;
+    cursor:pointer;
+    font:10px Georgia,serif;
+    letter-spacing:.1em;
+}
+.sanctuary-tab.active,.sanctuary-tab:hover{
+    border-color:rgba(210,180,125,.5);
+    color:#eadfce;
+    background:rgba(180,145,85,.08);
+}
+.sanctuary-panel{display:none}
+.sanctuary-panel.active{display:block}
+.sanctuary-toolbar{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:12px;margin-bottom:14px;
+}
+.sanctuary-toolbar h3{
+    font-size:16px;font-weight:normal;letter-spacing:.12em;
+}
+.sanctuary-action{
+    padding:10px 14px;
+    border:1px solid rgba(210,180,125,.38);
+    background:rgba(180,145,85,.09);
+    color:#d9ccb9;
+    cursor:pointer;font:10px Georgia,serif;letter-spacing:.11em;
+}
+.sanctuary-list{display:grid;gap:10px}
+.sanctuary-item{
+    padding:16px;
+    border:1px solid rgba(210,190,150,.14);
+    background:rgba(255,255,255,.018);
+}
+.sanctuary-item-title{color:#e4d9ca;font-size:16px}
+.sanctuary-item-meta{color:#766f67;font-size:10px;letter-spacing:.1em;margin-top:6px;text-transform:uppercase}
+.sanctuary-item-text{color:#a79e94;line-height:1.65;margin-top:9px;white-space:pre-wrap}
+.sanctuary-item-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.sanctuary-small{
+    padding:7px 10px;border:1px solid rgba(210,190,150,.18);
+    background:transparent;color:#bcae9b;cursor:pointer;font:9px Georgia,serif;letter-spacing:.08em;
+}
+.sanctuary-empty{padding:35px;text-align:center;color:#746e67;font-style:italic;border:1px solid rgba(210,190,150,.1)}
+.sanctuary-form{
+    display:grid;gap:12px;padding:18px;
+    border:1px solid rgba(210,190,150,.14);
+    background:rgba(0,0,0,.16);margin-bottom:18px;
+}
+.sanctuary-form label{color:#a99e90;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.sanctuary-form input,.sanctuary-form textarea{
+    width:100%;margin-top:6px;padding:12px;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(205,180,140,.2);
+    color:#e7dccd;font:14px Georgia,serif;outline:none;
+}
+.sanctuary-form textarea{min-height:130px;resize:vertical}
+.sanctuary-form-actions{display:flex;gap:8px}
+.sanctuary-public{display:flex;align-items:center;gap:8px;color:#958a7e;font-size:11px}
+.sanctuary-public input{width:auto}
+#sanctuaryAccountButton{margin-top:10px}
+@media(max-width:700px){
+    .sanctuary-card{padding:25px 16px}
+    .sanctuary-tabs{grid-template-columns:repeat(2,1fr)}
+}
 
 </style>
 
@@ -5540,8 +5626,44 @@
 ===================================================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
+<style id="final-account-button-css">
+#accountButton.account-button {
+    position: fixed !important;
+    top: 20px !important;
+    right: 22px !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 999999 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 11px 17px !important;
+    width: auto !important;
+    height: auto !important;
+    cursor: pointer !important;
+}
+@media (max-width: 600px) {
+    #accountButton.account-button {
+        top: 12px !important;
+        right: 12px !important;
+        padding: 9px 12px !important;
+    }
+}
+</style>
+
 </head>
 <body>
+<button
+    id="accountButton"
+    class="account-button"
+    type="button"
+    aria-label="Open account"
+>
+    ENTER THE TEMPLE
+</button>
 
     <!-- =====================================================
          HERO
@@ -5573,10 +5695,6 @@
 
             <a href="#inside" class="enter-button">
                 Enter the Temple
-            </a>
-
-            <a href="#" id="accountButton" class="account-button" onclick="openAccountModal(event)">
-                ENTER THE TEMPLE
             </a>
 
         </div>
@@ -7122,47 +7240,6 @@ function createDedicationNode(dedication, flying = true) {
     }
 }
 
-
-
-/* =====================================================
-   ACCOUNT CANDLE SYNC
-===================================================== */
-async function saveCandleToAccount(dedication) {
-    if (!supabaseClient || !currentAuthUser) return;
-    const durationSeconds = dedication.duration === '0' ? 0 : Number(dedication.duration || 3600);
-    const { data, error } = await supabaseClient.from('user_candles').insert({
-        user_id: currentAuthUser.id,
-        deity: dedication.deity || null,
-        intention: dedication.intention || null,
-        color: dedication.color || '#eee6d6',
-        duration_seconds: durationSeconds,
-        started_at: new Date(Number(dedication.createdAt || Date.now())).toISOString()
-    }).select('id').single();
-    if (!error && data) {
-        dedication.supabase_id = data.id;
-        saveAllDedications();
-    }
-}
-
-async function updateCandleInAccount(dedication) {
-    if (!supabaseClient || !currentAuthUser || !dedication.supabase_id) return;
-    await supabaseClient.from('user_candles').update({
-        deity: dedication.deity || null,
-        intention: dedication.intention || null,
-        color: dedication.color || '#eee6d6',
-        duration_seconds: dedication.duration === '0' ? 0 : Number(dedication.duration || 3600),
-        started_at: new Date(Number(dedication.createdAt || Date.now())).toISOString(),
-        extinguished_at: null
-    }).eq('id', dedication.supabase_id).eq('user_id', currentAuthUser.id);
-}
-
-async function extinguishCandleInAccount(dedication) {
-    if (!supabaseClient || !currentAuthUser || !dedication.supabase_id) return;
-    await supabaseClient.from('user_candles').update({
-        extinguished_at: new Date().toISOString()
-    }).eq('id', dedication.supabase_id).eq('user_id', currentAuthUser.id);
-}
-
 function dedicateCandle() {
     if (!selectedCandle) return;
 
@@ -7218,7 +7295,6 @@ function dedicateCandle() {
         createDedicationNode(dedication, false);
         scheduleDedication(dedication);
         saveAllDedications();
-        updateCandleInAccount(dedication);
 
         closeCandleModal();
         return;
@@ -7248,7 +7324,6 @@ function dedicateCandle() {
     createDedicationNode(dedication, true);
     scheduleDedication(dedication);
     saveAllDedications();
-    saveCandleToAccount(dedication);
 
     closeCandleModal();
 }
@@ -7334,7 +7409,6 @@ function extinguishDedication(id) {
         }, 700);
     }
 
-    extinguishCandleInAccount(dedication);
     activeDedications.splice(index, 1);
     saveAllDedications();
 }
@@ -7577,8 +7651,8 @@ document.addEventListener("keydown", function(event) {
    ACCOUNT SYSTEM — SUPABASE
 ===================================================== */
 
-const SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH";
+const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
 
 let supabaseClient = null;
 let currentAuthUser = null;
@@ -7887,7 +7961,9 @@ document.addEventListener('keydown', function(event) {
 
         <div id="accountUserBox" class="account-user-box">
             <div id="accountUserName" class="account-user-name"></div>
-            <button class="sanctuary-open-button" type="button" onclick="openSanctuary()">MY SANCTUARY</button>
+            <button id="sanctuaryAccountButton" class="account-submit" type="button" onclick="openSanctuary()">
+                MY SANCTUARY
+            </button>
             <button class="account-logout" type="button" onclick="logoutAccount()">LEAVE THE TEMPLE</button>
         </div>
 
@@ -7895,220 +7971,363 @@ document.addEventListener('keydown', function(event) {
 </div>
 
 
-
 <!-- =====================================================
      MY SANCTUARY
 ===================================================== -->
 <div id="sanctuaryModal" class="sanctuary-modal" aria-hidden="true">
-  <div class="sanctuary-backdrop" onclick="closeSanctuary()"></div>
-  <div class="sanctuary-card">
-    <button class="sanctuary-close" type="button" onclick="closeSanctuary()">×</button>
-    <div class="sanctuary-header">
-      <div class="sanctuary-symbol">✦</div>
-      <h2>MY SANCTUARY</h2>
-      <p>A private place for what you create within the Temple.</p>
+    <div class="sanctuary-backdrop" onclick="closeSanctuary()"></div>
+
+    <div class="sanctuary-card">
+        <button class="sanctuary-close" type="button" onclick="closeSanctuary()">×</button>
+
+        <div class="sanctuary-head">
+            <div class="sanctuary-symbol">✦</div>
+            <h2>MY SANCTUARY</h2>
+            <p>A private place for what you create within the Temple.</p>
+        </div>
+
+        <div class="sanctuary-tabs">
+            <button class="sanctuary-tab active" onclick="showSanctuaryTab('prayers',this)">PRAYERS</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('devotions',this)">DEVOTIONS</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('deities',this)">DEITIES</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('saved',this)">SAVED WRITINGS</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('candles',this)">CANDLES</button>
+        </div>
+
+        <section id="sanctuaryPanelPrayers" class="sanctuary-panel active"></section>
+        <section id="sanctuaryPanelDevotions" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelDeities" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelSaved" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelCandles" class="sanctuary-panel"></section>
     </div>
-    <div class="sanctuary-tabs">
-      <button class="sanctuary-tab active" data-sanctuary-tab="prayers" onclick="switchSanctuaryTab('prayers')">PRAYERS</button>
-      <button class="sanctuary-tab" data-sanctuary-tab="devotions" onclick="switchSanctuaryTab('devotions')">DEVOTIONS</button>
-      <button class="sanctuary-tab" data-sanctuary-tab="deities" onclick="switchSanctuaryTab('deities')">DEITIES I WORK WITH</button>
-      <button class="sanctuary-tab" data-sanctuary-tab="saved" onclick="switchSanctuaryTab('saved')">SAVED WRITINGS</button>
-      <button class="sanctuary-tab" data-sanctuary-tab="candles" onclick="switchSanctuaryTab('candles')">CANDLES</button>
-    </div>
-
-    <section class="sanctuary-panel active" data-sanctuary-panel="prayers">
-      <div class="sanctuary-toolbar"><h3>PERSONAL PRAYERS</h3><button class="sanctuary-add" onclick="toggleSanctuaryForm('prayerForm')">+ NEW PRAYER</button></div>
-      <form id="prayerForm" class="sanctuary-form" onsubmit="event.preventDefault(); saveSanctuaryPrayer();">
-        <div class="sanctuary-form-grid">
-          <label>Title<input id="prayerTitle" required maxlength="150" placeholder="Name this prayer"></label>
-          <label class="sanctuary-check"><input id="prayerPublic" type="checkbox"> Make public</label>
-          <label class="full">Prayer<textarea id="prayerContent" required placeholder="Write your prayer..."></textarea></label>
-        </div>
-        <div class="sanctuary-form-actions"><button class="primary" type="submit">SAVE PRAYER</button><button type="button" onclick="toggleSanctuaryForm('prayerForm',false)">CANCEL</button></div>
-      </form>
-      <div id="prayersList" class="sanctuary-grid"><div class="sanctuary-loading">Loading...</div></div>
-    </section>
-
-    <section class="sanctuary-panel" data-sanctuary-panel="devotions">
-      <div class="sanctuary-toolbar"><h3>PERSONAL DEVOTIONS</h3><button class="sanctuary-add" onclick="toggleSanctuaryForm('devotionForm')">+ NEW DEVOTION</button></div>
-      <form id="devotionForm" class="sanctuary-form" onsubmit="event.preventDefault(); saveSanctuaryDevotion();">
-        <div class="sanctuary-form-grid">
-          <label>Title<input id="devotionTitle" required maxlength="150" placeholder="Name this devotion"></label>
-          <label class="sanctuary-check"><input id="devotionPublic" type="checkbox"> Make public</label>
-          <label class="full">Devotion<textarea id="devotionContent" required placeholder="Write your devotion..."></textarea></label>
-        </div>
-        <div class="sanctuary-form-actions"><button class="primary" type="submit">SAVE DEVOTION</button><button type="button" onclick="toggleSanctuaryForm('devotionForm',false)">CANCEL</button></div>
-      </form>
-      <div id="devotionsList" class="sanctuary-grid"><div class="sanctuary-loading">Loading...</div></div>
-    </section>
-
-    <section class="sanctuary-panel" data-sanctuary-panel="deities">
-      <div class="sanctuary-toolbar"><h3>DEITIES I WORK WITH</h3><button class="sanctuary-add" onclick="toggleSanctuaryForm('deityForm')">+ ADD DEITY</button></div>
-      <form id="deityForm" class="sanctuary-form" onsubmit="event.preventDefault(); saveSanctuaryDeity();">
-        <div class="sanctuary-form-grid">
-          <label>Name<input id="deityName" required maxlength="150" placeholder="Deity / being"></label>
-          <label>Relationship<input id="deityRelationship" maxlength="150" placeholder="How do you work with them?"></label>
-          <label class="full">Description<textarea id="deityDescription" placeholder="Your personal notes..."></textarea></label>
-          <label class="full">Symbolism<textarea id="deitySymbolism" placeholder="Symbols, offerings, associations..."></textarea></label>
-          <label class="sanctuary-check full"><input id="deityPublic" type="checkbox"> Make public</label>
-        </div>
-        <div class="sanctuary-form-actions"><button class="primary" type="submit">SAVE DEITY</button><button type="button" onclick="toggleSanctuaryForm('deityForm',false)">CANCEL</button></div>
-      </form>
-      <div id="deitiesList" class="sanctuary-grid"><div class="sanctuary-loading">Loading...</div></div>
-    </section>
-
-    <section class="sanctuary-panel" data-sanctuary-panel="saved">
-      <div class="sanctuary-toolbar"><h3>SAVED WRITINGS</h3></div>
-      <div id="savedList" class="sanctuary-grid"><div class="sanctuary-loading">Loading...</div></div>
-    </section>
-
-    <section class="sanctuary-panel" data-sanctuary-panel="candles">
-      <div class="sanctuary-toolbar"><h3>MY CANDLES</h3></div>
-      <div id="sanctuaryCandlesList" class="sanctuary-grid"></div>
-    </section>
-  </div>
 </div>
-
 
 <script>
 /* =====================================================
-   MY SANCTUARY — SUPABASE CRUD
+   SANCTUARY DATA
 ===================================================== */
 
-function requireSanctuaryUser() {
-    if (!supabaseClient || !currentAuthUser) {
-        setAccountMessage('Please enter the Temple first.');
-        return false;
-    }
-    return true;
+let sanctuaryCache = {
+    prayers: [],
+    devotions: [],
+    deities: [],
+    saved: [],
+    candles: []
+};
+
+let sanctuaryCurrentTab = "prayers";
+
+function sanctuaryUserId() {
+    return currentAuthUser ? currentAuthUser.id : null;
 }
 
 function openSanctuary() {
-    if (!requireSanctuaryUser()) return;
-    const modal = document.getElementById('sanctuaryModal');
-    if (!modal) return;
-    modal.classList.add('active');
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
-    loadSanctuaryAll();
+    if (!currentAuthUser) {
+        setAccountMode("login");
+        return;
+    }
+
+    closeAccountModal();
+
+    const modal = document.getElementById("sanctuaryModal");
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden","false");
+    document.body.style.overflow = "hidden";
+
+    loadSanctuary();
 }
+
 function closeSanctuary() {
-    const modal=document.getElementById('sanctuaryModal');
+    const modal = document.getElementById("sanctuaryModal");
     if (!modal) return;
-    modal.classList.remove('active');
-    modal.setAttribute('aria-hidden','true');
-    document.body.style.overflow='';
-}
-function switchSanctuaryTab(tab) {
-    document.querySelectorAll('[data-sanctuary-tab]').forEach(b=>b.classList.toggle('active',b.dataset.sanctuaryTab===tab));
-    document.querySelectorAll('[data-sanctuary-panel]').forEach(p=>p.classList.toggle('active',p.dataset.sanctuaryPanel===tab));
-}
-function toggleSanctuaryForm(id, force) {
-    const el=document.getElementById(id); if(!el) return;
-    const show = force === undefined ? !el.classList.contains('active') : force;
-    el.classList.toggle('active',show);
-}
-function escSanctuary(value) {
-    return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-}
-function sanctuaryBadge(publicValue) { return `<span class="sanctuary-badge">${publicValue?'PUBLIC':'PRIVATE'}</span>`; }
-function sanctuaryError(id, msg) { const el=document.getElementById(id); if(el) el.innerHTML=`<div class="sanctuary-empty">${escSanctuary(msg)}</div>`; }
-function emptySanctuary(id, msg) { const el=document.getElementById(id); if(el) el.innerHTML=`<div class="sanctuary-empty">${escSanctuary(msg)}</div>`; }
-
-async function loadSanctuaryAll() {
-    await Promise.all([loadPrayers(),loadDevotions(),loadDeities(),loadSavedWritings(),loadSanctuaryCandles()]);
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
 }
 
-async function saveSanctuaryPrayer() {
-    if(!requireSanctuaryUser()) return;
-    const title=document.getElementById('prayerTitle').value.trim();
-    const content=document.getElementById('prayerContent').value.trim();
-    const is_public=document.getElementById('prayerPublic').checked;
-    const {error}=await supabaseClient.from('user_prayers').insert({user_id:currentAuthUser.id,title,content,is_public});
-    if(error){alert(error.message);return;}
-    document.getElementById('prayerForm').reset(); toggleSanctuaryForm('prayerForm',false); await loadPrayers();
-}
-async function loadPrayers() {
-    if(!currentAuthUser) return;
-    const {data,error}=await supabaseClient.from('user_prayers').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('prayersList',error.message);return;}
-    if(!data?.length){emptySanctuary('prayersList','No personal prayers yet. What you write here belongs to you.');return;}
-    document.getElementById('prayersList').innerHTML=data.map(x=>`<article class="sanctuary-item">${sanctuaryBadge(x.is_public)}<h4>${escSanctuary(x.title)}</h4><div class="body">${escSanctuary(x.content)}</div><div class="sanctuary-item-actions"><button onclick="togglePrayerPublic('${x.id}',${!x.is_public})">${x.is_public?'MAKE PRIVATE':'MAKE PUBLIC'}</button><button onclick="deleteSanctuaryItem('user_prayers','${x.id}',loadPrayers)">DELETE</button></div></article>`).join('');
-}
-async function togglePrayerPublic(id,value){await updatePublicFlag('user_prayers',id,value,loadPrayers);}
+function showSanctuaryTab(tab, button) {
+    sanctuaryCurrentTab = tab;
 
-async function saveSanctuaryDevotion() {
-    if(!requireSanctuaryUser()) return;
-    const title=document.getElementById('devotionTitle').value.trim();
-    const content=document.getElementById('devotionContent').value.trim();
-    const is_public=document.getElementById('devotionPublic').checked;
-    const {error}=await supabaseClient.from('user_devotions').insert({user_id:currentAuthUser.id,title,content,is_public});
-    if(error){alert(error.message);return;}
-    document.getElementById('devotionForm').reset(); toggleSanctuaryForm('devotionForm',false); await loadDevotions();
-}
-async function loadDevotions() {
-    if(!currentAuthUser) return;
-    const {data,error}=await supabaseClient.from('user_devotions').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('devotionsList',error.message);return;}
-    if(!data?.length){emptySanctuary('devotionsList','No personal devotions yet.');return;}
-    document.getElementById('devotionsList').innerHTML=data.map(x=>`<article class="sanctuary-item">${sanctuaryBadge(x.is_public)}<h4>${escSanctuary(x.title)}</h4><div class="body">${escSanctuary(x.content)}</div><div class="sanctuary-item-actions"><button onclick="toggleDevotionPublic('${x.id}',${!x.is_public})">${x.is_public?'MAKE PRIVATE':'MAKE PUBLIC'}</button><button onclick="deleteSanctuaryItem('user_devotions','${x.id}',loadDevotions)">DELETE</button></div></article>`).join('');
-}
-async function toggleDevotionPublic(id,value){await updatePublicFlag('user_devotions',id,value,loadDevotions);}
+    document.querySelectorAll(".sanctuary-tab").forEach(b => b.classList.remove("active"));
+    if (button) button.classList.add("active");
 
-async function saveSanctuaryDeity() {
-    if(!requireSanctuaryUser()) return;
-    const payload={user_id:currentAuthUser.id,name:document.getElementById('deityName').value.trim(),relationship:document.getElementById('deityRelationship').value.trim(),description:document.getElementById('deityDescription').value.trim(),symbolism:document.getElementById('deitySymbolism').value.trim(),is_public:document.getElementById('deityPublic').checked};
-    const {error}=await supabaseClient.from('user_deities').insert(payload);
-    if(error){alert(error.message);return;}
-    document.getElementById('deityForm').reset(); toggleSanctuaryForm('deityForm',false); await loadDeities();
-}
-async function loadDeities() {
-    if(!currentAuthUser) return;
-    const {data,error}=await supabaseClient.from('user_deities').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('deitiesList',error.message);return;}
-    if(!data?.length){emptySanctuary('deitiesList','No deities have been added to your personal path yet.');return;}
-    document.getElementById('deitiesList').innerHTML=data.map(x=>`<article class="sanctuary-item">${sanctuaryBadge(x.is_public)}<h4>${escSanctuary(x.name)}</h4><div class="meta">${escSanctuary(x.relationship||'Deity / being')}</div>${x.description?`<div class="body">${escSanctuary(x.description)}</div>`:''}${x.symbolism?`<div class="body" style="margin-top:9px"><strong>Symbolism:</strong> ${escSanctuary(x.symbolism)}</div>`:''}<div class="sanctuary-item-actions"><button onclick="toggleDeityPublic('${x.id}',${!x.is_public})">${x.is_public?'MAKE PRIVATE':'MAKE PUBLIC'}</button><button onclick="deleteSanctuaryItem('user_deities','${x.id}',loadDeities)">DELETE</button></div></article>`).join('');
-}
-async function toggleDeityPublic(id,value){await updatePublicFlag('user_deities',id,value,loadDeities);}
+    document.querySelectorAll(".sanctuary-panel").forEach(p => p.classList.remove("active"));
+    const panel = document.getElementById("sanctuaryPanel" + tab.charAt(0).toUpperCase() + tab.slice(1));
+    if (panel) panel.classList.add("active");
 
-async function updatePublicFlag(table,id,value,reload){
-    const {error}=await supabaseClient.from(table).update({is_public:value,updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',currentAuthUser.id);
-    if(error) alert(error.message); else await reload();
-}
-async function deleteSanctuaryItem(table,id,reload){
-    if(!confirm('Delete this from your sanctuary?')) return;
-    const {error}=await supabaseClient.from(table).delete().eq('id',id).eq('user_id',currentAuthUser.id);
-    if(error) alert(error.message); else await reload();
+    renderSanctuaryTab(tab);
 }
 
-async function loadSavedWritings() {
-    if(!currentAuthUser) return;
-    const {data,error}=await supabaseClient.from('saved_writings').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('savedList',error.message);return;}
-    if(!data?.length){emptySanctuary('savedList','Nothing bookmarked yet. When the Temple gains bookmark buttons, saved writings will appear here.');return;}
-    document.getElementById('savedList').innerHTML=data.map(x=>`<article class="sanctuary-item"><span class="sanctuary-badge">${escSanctuary(x.writing_type)}</span><h4>${escSanctuary(x.title)}</h4>${x.content?`<div class="body">${escSanctuary(x.content)}</div>`:''}${x.source_url?`<div class="sanctuary-item-actions"><button onclick="window.location.href='${escSanctuary(x.source_url)}'">OPEN</button></div>`:''}<div class="sanctuary-item-actions"><button onclick="deleteSanctuaryItem('saved_writings','${x.id}',loadSavedWritings)">REMOVE BOOKMARK</button></div></article>`).join('');
+async function loadSanctuary() {
+    if (!supabaseClient || !currentAuthUser) return;
+
+    const uid = sanctuaryUserId();
+
+    try {
+        const [p,d,de,s,c] = await Promise.all([
+            supabaseClient.from("user_prayers").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+            supabaseClient.from("user_devotions").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+            supabaseClient.from("user_deities").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+            supabaseClient.from("saved_writings").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+            supabaseClient.from("user_candles").select("*").eq("user_id",uid).order("created_at",{ascending:false})
+        ]);
+
+        for (const result of [p,d,de,s,c]) {
+            if (result.error && result.error.code !== "42P01") throw result.error;
+        }
+
+        sanctuaryCache.prayers = p.data || [];
+        sanctuaryCache.devotions = d.data || [];
+        sanctuaryCache.deities = de.data || [];
+        sanctuaryCache.saved = s.data || [];
+        sanctuaryCache.candles = c.data || [];
+
+        renderSanctuaryTab(sanctuaryCurrentTab);
+    } catch (error) {
+        console.error(error);
+        document.getElementById("sanctuaryPanelPrayers").innerHTML =
+            '<div class="sanctuary-empty">The Sanctuary database is not ready yet. Run the supplied SQL setup in Supabase.</div>';
+    }
 }
 
-/* Call this from any future Temple writing's SAVE/BOOKMARK button.
-   Example:
-   saveTempleWriting('prayer','The title','The text','#ritual');
-*/
-async function saveTempleWriting(writingType,title,content='',sourceUrl=window.location.href){
-    if(!requireSanctuaryUser()) return false;
-    const {error}=await supabaseClient.from('saved_writings').upsert({user_id:currentAuthUser.id,writing_type:writingType,title,content,source_url:sourceUrl},{onConflict:'user_id,writing_type,title,source_url'});
-    if(error){alert(error.message);return false;}
-    return true;
+function escapeSanctuary(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[c]));
 }
 
-async function loadSanctuaryCandles(){
-    const el=document.getElementById('sanctuaryCandlesList'); if(!el) return;
-    if(!currentAuthUser){emptySanctuary('sanctuaryCandlesList','Enter the Temple first.');return;}
-    const {data,error}=await supabaseClient.from('user_candles').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('sanctuaryCandlesList',error.message);return;}
-    if(!data?.length){emptySanctuary('sanctuaryCandlesList','Your account candles will appear here once candle saving is connected to the altar.');return;}
-    document.getElementById('sanctuaryCandlesList').innerHTML=data.map(x=>`<article class="sanctuary-item"><span class="sanctuary-badge">${x.extinguished_at?'EXTINGUISHED':'ACTIVE'}</span><h4>${escSanctuary(x.deity||'Undedicated flame')}</h4><div class="body">${escSanctuary(x.intention||'No intention recorded.')}</div><div class="meta" style="margin-top:9px">${escSanctuary(x.color||'Ivory')} · ${x.extinguished_at?'Ended':'Burning'}</div></article>`).join('');
+function renderSanctuaryTab(tab) {
+    const panel = document.getElementById("sanctuaryPanel" + tab.charAt(0).toUpperCase() + tab.slice(1));
+    if (!panel) return;
+
+    if (tab === "prayers") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>PERSONAL PRAYERS</h3>
+                <button class="sanctuary-action" onclick="newSanctuaryEntry('prayer')">+ NEW PRAYER</button>
+            </div>
+            <div id="sanctuaryPrayerForm"></div>
+            ${renderWritingList(sanctuaryCache.prayers,"prayer")}
+        `;
+    } else if (tab === "devotions") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>PERSONAL DEVOTIONS</h3>
+                <button class="sanctuary-action" onclick="newSanctuaryEntry('devotion')">+ NEW DEVOTION</button>
+            </div>
+            <div id="sanctuaryDevotionForm"></div>
+            ${renderWritingList(sanctuaryCache.devotions,"devotion")}
+        `;
+    } else if (tab === "deities") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>DEITIES I WORK WITH</h3>
+                <button class="sanctuary-action" onclick="newSanctuaryEntry('deity')">+ NEW DEITY</button>
+            </div>
+            <div id="sanctuaryDeityForm"></div>
+            ${renderDeityList()}
+        `;
+    } else if (tab === "saved") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>SAVED WRITINGS</h3>
+            </div>
+            ${renderSavedList()}
+        `;
+    } else if (tab === "candles") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>MY CANDLES</h3>
+            </div>
+            ${renderCandleList()}
+        `;
+    }
 }
 
+function renderWritingList(items,type) {
+    if (!items.length) return '<div class="sanctuary-empty">Nothing has been written here yet.</div>';
+
+    return `<div class="sanctuary-list">${items.map(item => `
+        <article class="sanctuary-item">
+            <div class="sanctuary-item-title">${escapeSanctuary(item.title)}</div>
+            <div class="sanctuary-item-meta">${item.is_public ? "PUBLIC" : "PRIVATE"}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.content)}</div>
+            <div class="sanctuary-item-actions">
+                <button class="sanctuary-small" onclick="togglePublic('${type}','${item.id}',${!item.is_public})">${item.is_public ? "MAKE PRIVATE" : "MAKE PUBLIC"}</button>
+                <button class="sanctuary-small" onclick="deleteSanctuaryEntry('${type}','${item.id}')">DELETE</button>
+            </div>
+        </article>
+    `).join("")}</div>`;
+}
+
+function renderDeityList() {
+    if (!sanctuaryCache.deities.length) return '<div class="sanctuary-empty">No personal deities have been added yet.</div>';
+
+    return `<div class="sanctuary-list">${sanctuaryCache.deities.map(item => `
+        <article class="sanctuary-item">
+            <div class="sanctuary-item-title">${escapeSanctuary(item.name)}</div>
+            <div class="sanctuary-item-meta">${item.is_public ? "PUBLIC" : "PRIVATE"}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.description || "")}</div>
+            <div class="sanctuary-item-actions">
+                <button class="sanctuary-small" onclick="togglePublic('deity','${item.id}',${!item.is_public})">${item.is_public ? "MAKE PRIVATE" : "MAKE PUBLIC"}</button>
+                <button class="sanctuary-small" onclick="deleteSanctuaryEntry('deity','${item.id}')">DELETE</button>
+            </div>
+        </article>
+    `).join("")}</div>`;
+}
+
+function renderSavedList() {
+    if (!sanctuaryCache.saved.length) return '<div class="sanctuary-empty">Your bookmarked writings will appear here.</div>';
+
+    return `<div class="sanctuary-list">${sanctuaryCache.saved.map(item => `
+        <article class="sanctuary-item">
+            <div class="sanctuary-item-title">${escapeSanctuary(item.title)}</div>
+            <div class="sanctuary-item-meta">${escapeSanctuary(item.category || "WRITING")}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.content || "")}</div>
+            <div class="sanctuary-item-actions">
+                ${item.url ? `<a class="sanctuary-small" href="${escapeSanctuary(item.url)}">OPEN</a>` : ""}
+                <button class="sanctuary-small" onclick="deleteSavedWriting('${item.id}')">REMOVE BOOKMARK</button>
+            </div>
+        </article>
+    `).join("")}</div>`;
+}
+
+function renderCandleList() {
+    if (!sanctuaryCache.candles.length) return '<div class="sanctuary-empty">Your dedicated candles will appear here.</div>';
+
+    return `<div class="sanctuary-list">${sanctuaryCache.candles.map(item => `
+        <article class="sanctuary-item">
+            <div class="sanctuary-item-title">🕯 ${escapeSanctuary(item.deity || "Undedicated flame")}</div>
+            <div class="sanctuary-item-meta">${escapeSanctuary(item.status || "active")}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.intention || "")}</div>
+        </article>
+    `).join("")}</div>`;
+}
+
+function newSanctuaryEntry(type) {
+    const id = type === "prayer" ? "sanctuaryPrayerForm" :
+               type === "devotion" ? "sanctuaryDevotionForm" :
+               "sanctuaryDeityForm";
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if (type === "deity") {
+        el.innerHTML = `
+            <form class="sanctuary-form" onsubmit="event.preventDefault();saveDeity();">
+                <label>DEITY / BEING<input id="newDeityName" required placeholder="Name"></label>
+                <label>ABOUT THIS RELATIONSHIP<textarea id="newDeityDescription" placeholder="How do you work with this deity?"></textarea></label>
+                <label class="sanctuary-public"><input id="newDeityPublic" type="checkbox"> MAKE PUBLIC</label>
+                <div class="sanctuary-form-actions"><button class="sanctuary-action">SAVE DEITY</button></div>
+            </form>`;
+    } else {
+        const title = type === "prayer" ? "PRAYER" : "DEVOTION";
+        el.innerHTML = `
+            <form class="sanctuary-form" onsubmit="event.preventDefault();saveWriting('${type}');">
+                <label>TITLE<input id="newWritingTitle" required placeholder="${title} title"></label>
+                <label>TEXT<textarea id="newWritingContent" required placeholder="Write here..."></textarea></label>
+                <label class="sanctuary-public"><input id="newWritingPublic" type="checkbox"> MAKE PUBLIC</label>
+                <div class="sanctuary-form-actions"><button class="sanctuary-action">SAVE ${title}</button></div>
+            </form>`;
+    }
+}
+
+async function saveWriting(type) {
+    const table = type === "prayer" ? "user_prayers" : "user_devotions";
+    const title = document.getElementById("newWritingTitle").value.trim();
+    const content = document.getElementById("newWritingContent").value.trim();
+    const is_public = document.getElementById("newWritingPublic").checked;
+
+    const {error} = await supabaseClient.from(table).insert({
+        user_id:sanctuaryUserId(), title, content, is_public
+    });
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+
+async function saveDeity() {
+    const name = document.getElementById("newDeityName").value.trim();
+    const description = document.getElementById("newDeityDescription").value.trim();
+    const is_public = document.getElementById("newDeityPublic").checked;
+
+    const {error} = await supabaseClient.from("user_deities").insert({
+        user_id:sanctuaryUserId(), name, description, is_public
+    });
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+
+async function togglePublic(type,id,value) {
+    const table = type === "prayer" ? "user_prayers" :
+                  type === "devotion" ? "user_devotions" : "user_deities";
+
+    const {error} = await supabaseClient.from(table).update({is_public:value})
+        .eq("id",id).eq("user_id",sanctuaryUserId());
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+
+async function deleteSanctuaryEntry(type,id) {
+    if (!confirm("Delete this from your Sanctuary?")) return;
+
+    const table = type === "prayer" ? "user_prayers" :
+                  type === "devotion" ? "user_devotions" : "user_deities";
+
+    const {error} = await supabaseClient.from(table).delete()
+        .eq("id",id).eq("user_id",sanctuaryUserId());
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+
+async function deleteSavedWriting(id) {
+    const {error} = await supabaseClient.from("saved_writings").delete()
+        .eq("id",id).eq("user_id",sanctuaryUserId());
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+</script>
+
+
+<script>
+/* Final account-button safety layer: one button, one handler. */
+document.addEventListener("DOMContentLoaded", function () {
+    const accountButton = document.getElementById("accountButton");
+    if (accountButton) {
+        accountButton.onclick = function(event) {
+            event.preventDefault();
+            openAccountModal(event);
+        };
+    }
+});
+</script>
+
+
+<script id="final-account-button-handler">
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("accountButton");
+    if (!btn) return;
+
+    btn.onclick = function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (typeof openAccountModal === "function") {
+            openAccountModal(event);
+        } else {
+            const modal = document.getElementById("accountModal");
+            if (modal) {
+                modal.classList.add("active");
+                modal.setAttribute("aria-hidden", "false");
+                modal.style.display = "flex";
+                document.body.style.overflow = "hidden";
+            }
+        }
+    };
+});
 </script>
 
 </body>
