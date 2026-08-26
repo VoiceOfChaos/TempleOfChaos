@@ -3446,12 +3446,405 @@
                 margin-top: 100px;
             }
         }
+/* =====================================================
+   CHAMBER IV — THE SHADOW
+   ===================================================== */
 
+.chamber-shadow {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(120, 105, 95, 0.13) 0%,
+            rgba(40, 32, 30, 0.08) 30%,
+            transparent 65%
+        ),
+        radial-gradient(
+            ellipse at center,
+            #171416 0%,
+            #080709 50%,
+            #020203 100%
+        );
+}
+
+
+/* -----------------------------------------------------
+   MOVING UPPER SYMBOL
+----------------------------------------------------- */
+
+.chamber-shadow .chamber-symbol {
+    position: relative;
+    display: inline-block;
+
+    font-size: 34px;
+
+    animation:
+        shadow-symbol-float 4s ease-in-out infinite,
+        shadow-symbol-glow 3s ease-in-out infinite alternate;
+
+    text-shadow:
+        0 0 8px rgba(220, 210, 195, 0.45),
+        0 0 25px rgba(150, 130, 110, 0.25);
+}
+
+
+/* gentle floating movement */
+
+@keyframes shadow-symbol-float {
+
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-12px) rotate(180deg);
+    }
+
+    100% {
+        transform: translateY(0px) rotate(360deg);
+    }
+
+}
+
+
+/* subtle pulsing light */
+
+@keyframes shadow-symbol-glow {
+
+    from {
+        opacity: 0.65;
+        filter: brightness(0.8);
+    }
+
+    to {
+        opacity: 1;
+        filter: brightness(1.5);
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   SHADOW CONTENT
+----------------------------------------------------- */
+
+.shadow-content {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* -----------------------------------------------------
+   DECORATIVE ATMOSPHERE
+----------------------------------------------------- */
+
+.chamber-shadow::before {
+    content: "";
+
+    position: absolute;
+    inset: 8% 15% 10% 15%;
+
+    border: 1px solid rgba(210, 200, 185, 0.08);
+
+    border-radius: 50%;
+
+    transform: scaleY(0.55);
+
+    box-shadow:
+        0 0 80px rgba(120, 105, 95, 0.08),
+        inset 0 0 80px rgba(120, 105, 95, 0.04);
+
+    pointer-events: none;
+}
+
+
+/* second faint orbit */
+
+.chamber-shadow::after {
+    content: "";
+
+    position: absolute;
+
+    width: 55vw;
+    height: 55vw;
+
+    max-width: 700px;
+    max-height: 700px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border: 1px solid rgba(210, 200, 185, 0.05);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+
+/* -----------------------------------------------------
+   SHADOW CARDS
+----------------------------------------------------- */
+
+.shadow-card {
+    position: relative;
+
+    padding: 28px 30px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30, 27, 27, 0.85),
+            rgba(7, 6, 8, 0.72)
+        );
+
+    border: 1px solid rgba(210, 200, 190, 0.16);
+
+    box-shadow:
+        0 15px 45px rgba(0, 0, 0, 0.45),
+        inset 0 0 25px rgba(255, 255, 255, 0.015);
+
+    transition:
+        transform 0.5s ease,
+        border-color 0.5s ease,
+        box-shadow 0.5s ease;
+}
+
+
+/* decorative corners */
+
+.shadow-card::before,
+.shadow-card::after {
+    content: "◇";
+
+    position: absolute;
+
+    color: rgba(220, 210, 195, 0.55);
+
+    font-size: 13px;
+}
+
+.shadow-card::before {
+    top: -9px;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+.shadow-card::after {
+    bottom: -9px;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+
+/* hover effect */
+
+.shadow-card:hover {
+    transform: translateY(-6px);
+
+    border-color: rgba(220, 210, 195, 0.35);
+
+    box-shadow:
+        0 20px 55px rgba(0, 0, 0, 0.6),
+        0 0 25px rgba(150, 130, 110, 0.08);
+}
+
+
+/* -----------------------------------------------------
+   SHADOW CARD TITLES
+----------------------------------------------------- */
+
+.shadow-card h3 {
+    margin-bottom: 12px;
+
+    letter-spacing: 0.18em;
+
+    font-size: 18px;
+
+    color: #e6ded3;
+}
+
+
+/* -----------------------------------------------------
+   SHADOW CARD TEXT
+----------------------------------------------------- */
+
+.shadow-card p {
+    margin: 0;
+
+    line-height: 1.8;
+
+    color: rgba(220, 212, 202, 0.72);
+
+    font-size: 16px;
+}
+
+
+/* -----------------------------------------------------
+   SHADOW SYMBOLS
+----------------------------------------------------- */
+
+.shadow-card-symbol {
+    display: block;
+
+    margin-bottom: 12px;
+
+    font-size: 24px;
+
+    color: #d8cec1;
+
+    text-shadow:
+        0 0 10px rgba(220, 210, 195, 0.35);
+}
+
+
+/* -----------------------------------------------------
+   CENTRAL SHADOW ELEMENT
+----------------------------------------------------- */
+
+.shadow-core {
+    position: relative;
+
+    width: 260px;
+    height: 260px;
+
+    margin: 40px auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(220, 210, 195, 0.22);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(90, 75, 75, 0.18),
+            rgba(5, 5, 7, 0.9) 65%
+        );
+
+    box-shadow:
+        0 0 60px rgba(100, 85, 80, 0.12),
+        inset 0 0 50px rgba(0, 0, 0, 0.8);
+
+    animation: shadow-core-pulse 6s ease-in-out infinite;
+}
+
+
+/* inner ring */
+
+.shadow-core::before {
+    content: "";
+
+    position: absolute;
+
+    width: 190px;
+    height: 190px;
+
+    border: 1px solid rgba(220, 210, 195, 0.13);
+
+    border-radius: 50%;
+
+    animation: shadow-ring 12s linear infinite;
+}
+
+
+/* core animation */
+
+@keyframes shadow-core-pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 40px rgba(100, 85, 80, 0.08),
+            inset 0 0 50px rgba(0, 0, 0, 0.8);
+    }
+
+    50% {
+        box-shadow:
+            0 0 80px rgba(130, 110, 100, 0.18),
+            inset 0 0 70px rgba(0, 0, 0, 0.9);
+    }
+
+}
+
+
+@keyframes shadow-ring {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* -----------------------------------------------------
+   QUOTE
+----------------------------------------------------- */
+
+.shadow-quote {
+    max-width: 700px;
+
+    margin: 35px auto;
+
+    text-align: center;
+
+    font-style: italic;
+
+    font-size: 20px;
+
+    line-height: 1.8;
+
+    color: rgba(225, 215, 202, 0.78);
+
+    text-shadow:
+        0 0 15px rgba(150, 130, 110, 0.12);
+}
+
+
+/* -----------------------------------------------------
+   MOBILE
+----------------------------------------------------- */
+
+@media (max-width: 800px) {
+
+    .shadow-card {
+        padding: 22px;
+    }
+
+    .shadow-core {
+        width: 200px;
+        height: 200px;
+    }
+
+    .shadow-core::before {
+        width: 145px;
+        height: 145px;
+    }
+
+}
     </style>
 </head>
 
 
 <body>
+    
+    
+
+    
 
 
 
