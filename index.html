@@ -8203,17 +8203,23 @@ async function registerAccount() {
         // Check the nickname before creating the account.
         // The RPC keeps the profiles table private from unauthenticated visitors.
         const { data: nicknameTaken, error: nicknameError } =
-            await supabaseClient.rpc('nickname_is_taken', {
+            await supabaseClient.rpc('is_nickname_taken', {
                 requested_nickname: normalizedNickname
             });
 
         if (nicknameError) {
             console.error('Nickname check failed:', nicknameError);
+            if (nicknameError.code === 'PGRST202' || nicknameError.code === '42883') {
+                throw new Error('Nickname checking is not set up. Please run the Supabase nickname SQL first.');
+            }
             throw new Error('Could not check that nickname. Please try again.');
         }
 
         if (nicknameTaken === true) {
-            throw new Error('Nickname is taken. Please choose another one.');
+            setAccountMessage('NICKNAME IS TAKEN — please choose another name.');
+            button.disabled = false;
+            button.textContent = 'CREATE ACCOUNT';
+            return;
         }
 
         button.textContent = 'CREATING ACCOUNT...';
