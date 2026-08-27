@@ -5683,6 +5683,88 @@
     font-size: 10px;
 }
 
+/* Dedicated candles live directly in the account on phones. */
+.account-mobile-candles {
+    display: none;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(210,190,150,.12);
+}
+
+.account-mobile-candles-title {
+    margin-bottom: 12px;
+    color: #b9aa8f;
+    font-size: 9px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.account-mobile-candle-list {
+    display: grid;
+    gap: 9px;
+}
+
+.account-mobile-candle {
+    padding: 12px;
+    border: 1px solid rgba(205,180,140,.18);
+    border-left: 1px solid rgba(205,180,140,.38);
+    background: rgba(255,255,255,.018);
+}
+
+.account-mobile-candle-name {
+    color: #e3d7c8;
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.account-mobile-candle-meta {
+    margin-top: 5px;
+    color: #8f8579;
+    font-size: 9px;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+}
+
+.account-mobile-candle-intention {
+    margin-top: 7px;
+    color: #aaa095;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.account-mobile-candle-delete {
+    width: 100%;
+    margin-top: 10px;
+    padding: 9px;
+    border: 1px solid rgba(160,95,80,.38);
+    background: rgba(90,50,40,.10);
+    color: #bca99a;
+    font-family: Georgia, serif;
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.account-mobile-candle-delete:hover {
+    border-color: rgba(190,120,100,.7);
+    color: #f0cfc2;
+    background: rgba(150,70,50,.10);
+}
+
+.account-mobile-candles-empty {
+    color: #777068;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+@media (max-width: 800px) {
+    .account-mobile-candles {
+        display: block;
+    }
+}
+
 @media (max-width: 600px) {
     .account-card { padding: 40px 24px 28px; }
 }
@@ -8275,6 +8357,7 @@ async function deleteDedicatedCandle(key) {
     }
 
     await loadSanctuary();
+    renderAccountMobileCandles();
 }
 
 async function syncLocalDedicationsToSupabase() {
@@ -9093,8 +9176,70 @@ async function logoutAccount() {
     }
 
     currentAuthUser = null;
+    sanctuaryCache.candles = [];
+    renderAccountMobileCandles();
     updateAccountButton();
     closeAccountModal();
+}
+
+function renderAccountMobileCandles() {
+    const container = document.getElementById('accountMobileCandles');
+    if (!container) return;
+
+    if (!currentAuthUser) {
+        container.innerHTML = '';
+        return;
+    }
+
+    const candles = Array.isArray(sanctuaryCache?.candles)
+        ? sanctuaryCache.candles
+        : [];
+
+    if (!candles.length) {
+        container.innerHTML = `
+            <div class="account-mobile-candles-title">MY DEDICATED CANDLES</div>
+            <div class="account-mobile-candles-empty">
+                Your dedicated candles will appear here.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="account-mobile-candles-title">MY DEDICATED CANDLES</div>
+        <div class="account-mobile-candle-list">
+            ${candles.map(item => {
+                const candleKey = item.dedication_id || item.id;
+                const status = item.status || (
+                    item.burn_until === 'forever'
+                        ? 'BURNING INDEFINITELY'
+                        : 'ACTIVE'
+                );
+
+                return `
+                    <article class="account-mobile-candle">
+                        <div class="account-mobile-candle-name">
+                            🕯 ${escapeSanctuary(item.deity || 'Undedicated flame')}
+                        </div>
+                        <div class="account-mobile-candle-meta">
+                            ${escapeSanctuary(status)}
+                        </div>
+                        <div class="account-mobile-candle-intention">
+                            ${escapeSanctuary(item.intention || 'A flame dedicated within the Temple.')}
+                        </div>
+                        <button
+                            class="account-mobile-candle-delete"
+                            type="button"
+                            data-candle-id="${escapeSanctuary(candleKey)}"
+                            onclick="deleteDedicatedCandle(this.dataset.candleId)"
+                        >
+                            DELETE CANDLE
+                        </button>
+                    </article>
+                `;
+            }).join('')}
+        </div>
+    `;
 }
 
 function showLoggedInAccount() {
@@ -9115,7 +9260,13 @@ function showLoggedInAccount() {
     title.textContent = 'YOUR PLACE WITHIN THE TEMPLE';
     subtitle.textContent = 'You are already within the sanctuary. Your personal creations can now belong to your account.';
     name.textContent = username;
+    renderAccountMobileCandles();
     setAccountMessage('');
+
+    /* Refresh the account's candle list without changing the existing Sanctuary flow. */
+    if (typeof loadSanctuary === 'function' && supabaseClient) {
+        loadSanctuary();
+    }
 }
 
 function updateAccountButton() {
@@ -9227,6 +9378,10 @@ document.addEventListener('keydown', function(event) {
             <button id="sanctuaryAccountButton" class="account-submit" type="button" onclick="openSanctuary()">
                 MY SANCTUARY
             </button>
+
+            <!-- Dedicated candles are shown directly inside the account on mobile. -->
+            <div id="accountMobileCandles" class="account-mobile-candles"></div>
+
             <button class="account-logout" type="button" onclick="logoutAccount()">LEAVE THE TEMPLE</button>
         </div>
 
@@ -9429,6 +9584,7 @@ async function loadSanctuary() {
         .sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
     renderSanctuaryTab(sanctuaryCurrentTab);
+    renderAccountMobileCandles();
 }
 
 function getLocalSanctuaryCandles() {
