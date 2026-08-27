@@ -7019,6 +7019,292 @@ body.temple-popup-open .account-button {
 })();
 </script>
 
+
+<style id="candle-menu-size-repair">
+/* =====================================================
+   CANDLE MENU — RESTORE FULL MENU, COMPACTLY
+   The candle designer keeps every existing field/control.
+   We only reduce the overall footprint and spacing so the
+   complete menu fits inside the viewport instead of being
+   physically cropped.
+===================================================== */
+
+.candle-modal {
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.candle-design-window {
+    width: min(820px, calc(100vw - 30px)) !important;
+    height: min(680px, calc(100dvh - 30px)) !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 30px) !important;
+    grid-template-columns: 39% 61% !important;
+    overflow: hidden !important;
+}
+
+.candle-preview-area {
+    min-height: 0 !important;
+    height: 100% !important;
+}
+
+.candle-preview-aura {
+    width: 430px !important;
+    height: 430px !important;
+}
+
+.large-candle {
+    width: 150px !important;
+    height: 390px !important;
+}
+
+.large-candle-body {
+    width: 105px !important;
+    height: 275px !important;
+    bottom: 34px !important;
+}
+
+.large-candle-body::before {
+    width: 105px !important;
+}
+
+.large-candle-wick {
+    top: 48px !important;
+    height: 35px !important;
+}
+
+.large-candle-flame {
+    width: 62px !important;
+    height: 98px !important;
+}
+
+.large-candle-base {
+    width: 145px !important;
+    height: 22px !important;
+    bottom: 14px !important;
+}
+
+.large-candle-name {
+    margin-top: 5px !important;
+    font-size: 9px !important;
+}
+
+.candle-control-card {
+    height: 100% !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    padding: 30px 32px 24px !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin;
+}
+
+.candle-control-card .modal-symbol {
+    font-size: 26px !important;
+    margin-bottom: 7px !important;
+}
+
+.candle-control-card h2 {
+    font-size: 21px !important;
+    line-height: 1.15 !important;
+    margin-bottom: 5px !important;
+}
+
+.candle-control-card .modal-subtitle {
+    font-size: 12px !important;
+    margin-bottom: 13px !important;
+}
+
+.candle-control-card label {
+    margin: 10px 0 5px !important;
+    font-size: 9px !important;
+}
+
+.candle-control-card input[type="text"],
+.candle-control-card textarea,
+.candle-control-card select {
+    box-sizing: border-box !important;
+    padding: 9px 11px !important;
+    font-size: 12px !important;
+}
+
+.candle-control-card textarea {
+    min-height: 58px !important;
+    height: 58px !important;
+}
+
+.candle-palette,
+.flame-palette {
+    gap: 7px !important;
+}
+
+.candle-modal .candle-swatch,
+.candle-modal .flame-swatch {
+    width: 27px !important;
+    height: 27px !important;
+    min-width: 27px !important;
+    min-height: 27px !important;
+}
+
+.custom-colour-row {
+    margin-top: 5px !important;
+}
+
+.light-candle-button,
+.candle-extinguish-button {
+    margin-top: 14px !important;
+    min-height: 40px !important;
+    padding: 9px 12px !important;
+    font-size: 10px !important;
+}
+
+/* Keep the close X visible while the control column scrolls. */
+.candle-modal-close {
+    position: absolute !important;
+    top: 9px !important;
+    right: 9px !important;
+    width: 32px !important;
+    height: 32px !important;
+    z-index: 100 !important;
+}
+
+/* Mobile: retain the complete menu, but make the preview compact. */
+@media (max-width: 800px) {
+    .candle-modal {
+        padding: 8px !important;
+        align-items: center !important;
+        overflow: hidden !important;
+    }
+
+    .candle-design-window {
+        width: min(94vw, 430px) !important;
+        height: min(94dvh, 720px) !important;
+        max-height: calc(100dvh - 16px) !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .candle-preview-area {
+        flex: 0 0 145px !important;
+        height: 145px !important;
+        min-height: 145px !important;
+    }
+
+    .candle-preview-aura {
+        width: 210px !important;
+        height: 210px !important;
+    }
+
+    .large-candle {
+        width: 95px !important;
+        height: 125px !important;
+    }
+
+    .large-candle-body {
+        width: 62px !important;
+        height: 88px !important;
+        bottom: 17px !important;
+    }
+
+    .large-candle-body::before {
+        width: 62px !important;
+    }
+
+    .large-candle-wick {
+        top: 27px !important;
+        height: 20px !important;
+        width: 3px !important;
+    }
+
+    .large-candle-flame {
+        width: 39px !important;
+        height: 58px !important;
+    }
+
+    .large-candle-base {
+        width: 88px !important;
+        height: 14px !important;
+        bottom: 6px !important;
+    }
+
+    .candle-control-card {
+        flex: 1 1 auto !important;
+        height: auto !important;
+        max-height: none !important;
+        padding: 25px 17px 18px !important;
+        overflow-y: auto !important;
+    }
+
+    .candle-control-card .modal-symbol {
+        font-size: 23px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .candle-control-card h2 {
+        font-size: 18px !important;
+    }
+
+    .candle-control-card .modal-subtitle {
+        font-size: 11px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .candle-control-card label {
+        margin: 8px 0 4px !important;
+    }
+
+    .candle-control-card input[type="text"],
+    .candle-control-card textarea,
+    .candle-control-card select {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+    }
+
+    .candle-control-card textarea {
+        min-height: 52px !important;
+        height: 52px !important;
+    }
+
+    .candle-modal .candle-swatch,
+    .candle-modal .flame-swatch {
+        width: 25px !important;
+        height: 25px !important;
+        min-width: 25px !important;
+        min-height: 25px !important;
+    }
+
+    .light-candle-button,
+    .candle-extinguish-button {
+        margin-top: 11px !important;
+        min-height: 38px !important;
+        padding: 8px 10px !important;
+    }
+}
+</style>
+
+
+<style id="dedication-live-countdown-style">
+.dedication-live-countdown {
+    margin: 14px auto 4px;
+    padding: 9px 12px;
+    border: 1px solid rgba(210,190,150,.35);
+    background: rgba(0,0,0,.18);
+    text-align: center;
+    letter-spacing: .08em;
+}
+.dedication-live-countdown span {
+    display: block;
+    font-size: 8px;
+    opacity: .7;
+}
+.dedication-live-countdown strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+    color: #f1e5ce;
+}
+</style>
+
 </head>
 <body>
 <button
@@ -8078,7 +8364,12 @@ body.temple-popup-open .account-button {
         <div id="dedicationInfo" class="dedication-info" aria-hidden="true">
             <div class="dedication-info-card">
                 <button class="dedication-info-close" type="button" onclick="closeDedicationInfo()" aria-label="Close">×</button>
-                <div class="dedication-info-symbol">✦</div>
+                <div class="dedication-info-symbol">✦
+        <div class="dedication-live-countdown">
+            <span>TIME LEFT BURNING</span>
+            <strong id="dedicationLiveCountdown">—</strong>
+        </div>
+</div>
                 <div class="dedication-info-kicker">DEDICATED FLAME</div>
                 <h3 id="dedicationInfoTitle">YOUR FLAME</h3>
                 <div class="dedication-info-meta" id="dedicationInfoMeta"></div>
@@ -8243,7 +8534,8 @@ const dedicationNodes = new Map();
 let activeDedications = [];
 let pendingCandleDesign = null;
 
-const DAILY_DEDICATION_LIMIT = 2;
+const GUEST_DAILY_DEDICATION_LIMIT = 5;
+const REGISTERED_DAILY_DEDICATION_LIMIT = 15;
 const DAILY_LIMIT_STORAGE_KEY = 'templeChaosDailyDedications';
 
 function getLocalDayKey(date = new Date()) {
@@ -8253,26 +8545,39 @@ function getLocalDayKey(date = new Date()) {
     return `${year}-${month}-${day}`;
 }
 
+function getDailyLimit() {
+    return currentAuthUser
+        ? REGISTERED_DAILY_DEDICATION_LIMIT
+        : GUEST_DAILY_DEDICATION_LIMIT;
+}
+
+function getDailyUsageKey() {
+    return currentAuthUser
+        ? `${DAILY_LIMIT_STORAGE_KEY}:user:${currentAuthUser.id}`
+        : `${DAILY_LIMIT_STORAGE_KEY}:guest`;
+}
+
 function getDailyUsage() {
     const today = getLocalDayKey();
+    const storageKey = getDailyUsageKey();
     let usage = null;
 
     try {
-        usage = JSON.parse(localStorage.getItem(DAILY_LIMIT_STORAGE_KEY) || 'null');
+        usage = JSON.parse(localStorage.getItem(storageKey) || 'null');
     } catch {
         usage = null;
     }
 
     if (!usage || usage.day !== today || !Number.isFinite(Number(usage.count))) {
         usage = { day: today, count: 0 };
-        localStorage.setItem(DAILY_LIMIT_STORAGE_KEY, JSON.stringify(usage));
+        localStorage.setItem(storageKey, JSON.stringify(usage));
     }
 
     return usage;
 }
 
 function getRemainingDailyDedications() {
-    return Math.max(0, DAILY_DEDICATION_LIMIT - getDailyUsage().count);
+    return Math.max(0, getDailyLimit() - getDailyUsage().count);
 }
 
 function incrementDailyDedications() {
@@ -8299,11 +8604,12 @@ function updateDailyFlameStatus() {
 
     const remaining = getRemainingDailyDedications();
     const resetText = getNextDailyResetText();
+    const dailyLimit = getDailyLimit();
 
     status.classList.toggle('limit-reached', remaining === 0);
 
     if (remaining > 0) {
-        status.textContent = `${remaining} flame${remaining === 1 ? '' : 's'} remaining · resets in ${resetText}`;
+        status.textContent = `${remaining} of ${dailyLimit} flames remaining · resets in ${resetText}`;
     } else {
         status.textContent = `No flames remaining · resets in ${resetText}`;
     }
@@ -8633,30 +8939,133 @@ async function persistDedicationToSupabase(dedication) {
 }
 
 async function deleteDedicatedCandle(key) {
-    if (!currentAuthUser || !supabaseClient || !key) return;
+    if (!key) return;
 
     if (!confirm('Remove this dedicated candle from your Sanctuary and extinguish its flame?')) {
         return;
     }
 
-    const { error } = await supabaseClient
-        .from('user_candles')
-        .delete()
-        .eq('user_id', currentAuthUser.id)
-        .eq('dedication_id', key);
+    /*
+     * EXTINQUISH LOCALLY FIRST.
+     * Do not wait for Supabase. This makes DELETE CANDLE immediately remove
+     * the visible flame and stop its timer.
+     */
+    const normalizedKey = String(key);
 
-    if (error && error.code !== '42703') {
-        alert(error.message);
-        return;
+    const matches = activeDedications.filter(item =>
+        item && (
+            String(item.id) === normalizedKey ||
+            String(item.dedication_id || '') === normalizedKey
+        )
+    );
+
+    matches.forEach(dedication => {
+        const id = dedication.id;
+
+        if (dedicationTimers.has(id)) {
+            clearTimeout(dedicationTimers.get(id));
+            dedicationTimers.delete(id);
+        }
+
+        const node = dedicationNodes.get(id);
+        if (node) {
+            node.classList.remove('is-visible');
+            node.classList.add('is-fading-out');
+
+            setTimeout(() => {
+                if (node && node.isConnected) node.remove();
+                dedicationNodes.delete(id);
+            }, 700);
+        }
+
+        const index = activeDedications.findIndex(item =>
+            item && String(item.id) === String(id)
+        );
+
+        if (index !== -1) {
+            activeDedications.splice(index, 1);
+        }
+    });
+
+    /*
+     * Remove the candle from every local candle list too, so a refresh cannot
+     * resurrect a candle that the user has just deleted.
+     */
+    try {
+        for (let i = 0; i < 20; i++) {
+            const storageKey = 'templeChaosDedications-' + i;
+            const raw = localStorage.getItem(storageKey);
+            if (!raw) continue;
+
+            const list = JSON.parse(raw);
+            if (!Array.isArray(list)) continue;
+
+            const filtered = list.filter(item => {
+                if (!item) return false;
+
+                return (
+                    String(item.id) !== normalizedKey &&
+                    String(item.dedication_id || '') !== normalizedKey
+                );
+            });
+
+            if (filtered.length !== list.length) {
+                localStorage.setItem(storageKey, JSON.stringify(filtered));
+            }
+        }
+    } catch (error) {
+        console.warn('Could not clean local candle storage:', error);
     }
 
-    const localIndex = activeDedications.findIndex(item => item.id === key);
-    if (localIndex !== -1) {
-        extinguishDedication(key, false);
+    saveAllDedications();
+    updateDailyFlameStatus();
+
+    /* Update both Sanctuary and account displays immediately. */
+    if (typeof renderSanctuaryTab === 'function') {
+        renderSanctuaryTab(sanctuaryCurrentTab);
+    }
+    if (typeof renderAccountMobileCandles === 'function') {
+        renderAccountMobileCandles();
     }
 
-    await loadSanctuary();
-    renderAccountMobileCandles();
+    /*
+     * Now delete the persisted record. The visual flame is already gone,
+     * regardless of whether the network request takes a moment.
+     */
+    if (currentAuthUser && supabaseClient) {
+        let query = supabaseClient
+            .from('user_candles')
+            .delete()
+            .eq('user_id', currentAuthUser.id);
+
+        /*
+         * dedication_id is the normal key. If the database row uses a plain
+         * id instead, try that as a fallback.
+         */
+        let result = await query.eq('dedication_id', key);
+
+        if (result.error && result.error.code === '42703') {
+            result = await supabaseClient
+                .from('user_candles')
+                .delete()
+                .eq('user_id', currentAuthUser.id)
+                .eq('id', key);
+        }
+
+        if (result.error) {
+            console.error('Could not delete dedicated candle from Sanctuary:', result.error);
+            alert('The candle was extinguished, but could not be removed from your saved Sanctuary: ' + result.error.message);
+            return;
+        }
+    }
+
+    if (typeof loadSanctuary === 'function') {
+        await loadSanctuary();
+    }
+
+    if (typeof renderAccountMobileCandles === 'function') {
+        renderAccountMobileCandles();
+    }
 }
 
 async function syncLocalDedicationsToSupabase() {
@@ -8669,13 +9078,6 @@ async function syncLocalDedicationsToSupabase() {
 
 async function dedicateCandle() {
     if (!selectedCandle) return;
-
-    if (!currentAuthUser) {
-        closeCandleModal();
-        openAccountModal();
-        setAccountMessage("Create an account or enter the Temple before lighting a personal flame.");
-        return;
-    }
 
     const sourceWrap = selectedCandle.closest('.ritual-candle-wrap');
     const sourceIndex = getSourceIndex(sourceWrap);
@@ -8784,6 +9186,43 @@ function openDedicationInfo(id) {
     document.getElementById('dedicationInfo').classList.add('active');
     document.getElementById('dedicationInfo').setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+
+    const liveCountdown = document.getElementById('dedicationLiveCountdown');
+    if (liveCountdown) {
+        if (dedication.burnUntil === 'forever') {
+            liveCountdown.textContent = 'ETERNAL FLAME';
+        } else {
+            if (liveCountdown._timer) clearInterval(liveCountdown._timer);
+
+            const updateLiveCountdown = () => {
+                const remaining = Math.max(0, Number(dedication.burnUntil) - Date.now());
+                const total = Math.floor(remaining / 1000);
+                const days = Math.floor(total / 86400);
+                const hours = Math.floor((total % 86400) / 3600);
+                const minutes = Math.floor((total % 3600) / 60);
+                const seconds = total % 60;
+
+                if (days > 0) {
+                    liveCountdown.textContent = `${days}d ${hours}h ${minutes}m remaining`;
+                } else if (hours > 0) {
+                    liveCountdown.textContent = `${hours}h ${minutes}m ${seconds}s remaining`;
+                } else if (minutes > 0) {
+                    liveCountdown.textContent = `${minutes}m ${seconds}s remaining`;
+                } else {
+                    liveCountdown.textContent = `${seconds}s remaining`;
+                }
+
+                if (remaining <= 0) {
+                    clearInterval(liveCountdown._timer);
+                    liveCountdown._timer = null;
+                    liveCountdown.textContent = 'EXTINGUISHED';
+                }
+            };
+
+            updateLiveCountdown();
+            liveCountdown._timer = setInterval(updateLiveCountdown, 1000);
+        }
+    }
 }
 
 function getDedicationTimeText(dedication) {
@@ -8818,6 +9257,23 @@ function extinguishSelectedDedication() {
 }
 
 function extinguishDedication(id, removeFromDatabase = true) {
+    /* A flame that stops burning must no longer appear in the account. */
+    const extinguished = activeDedications.find(item =>
+        item && String(item.id) === String(id)
+    );
+
+    if (extinguished) {
+        sanctuaryCache.candles = (sanctuaryCache.candles || []).filter(item =>
+            String(item.dedication_id || item.id || '') !== String(id)
+        );
+        removeExpiredCandleFromLocalStorage(id);
+
+        if (typeof renderSanctuaryTab === 'function' &&
+            sanctuaryCurrentTab === 'candles') {
+            renderSanctuaryTab('candles');
+        }
+    }
+
     const index = activeDedications.findIndex(item => item.id === id);
     if (index === -1) return;
 
@@ -9476,70 +9932,10 @@ async function logoutAccount() {
 
     currentAuthUser = null;
     sanctuaryCache.candles = [];
-    renderAccountMobileCandles();
     updateAccountButton();
     closeAccountModal();
 }
 
-function renderAccountMobileCandles() {
-    const container = document.getElementById('accountMobileCandles');
-    if (!container) return;
-
-    if (!currentAuthUser) {
-        container.innerHTML = '';
-        return;
-    }
-
-    const candles = Array.isArray(sanctuaryCache?.candles)
-        ? sanctuaryCache.candles
-        : [];
-
-    if (!candles.length) {
-        container.innerHTML = `
-            <div class="account-mobile-candles-title">MY DEDICATED CANDLES</div>
-            <div class="account-mobile-candles-empty">
-                Your dedicated candles will appear here.
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="account-mobile-candles-title">MY DEDICATED CANDLES</div>
-        <div class="account-mobile-candle-list">
-            ${candles.map(item => {
-                const candleKey = item.dedication_id || item.id;
-                const status = item.status || (
-                    item.burn_until === 'forever'
-                        ? 'BURNING INDEFINITELY'
-                        : 'ACTIVE'
-                );
-
-                return `
-                    <article class="account-mobile-candle">
-                        <div class="account-mobile-candle-name">
-                            🕯 ${escapeSanctuary(item.deity || 'Undedicated flame')}
-                        </div>
-                        <div class="account-mobile-candle-meta">
-                            ${escapeSanctuary(status)}
-                        </div>
-                        <div class="account-mobile-candle-intention">
-                            ${escapeSanctuary(item.intention || 'A flame dedicated within the Temple.')}
-                        </div>
-                        <button
-                            class="account-mobile-candle-delete"
-                            type="button"
-                            data-candle-id="${escapeSanctuary(candleKey)}"
-                            onclick="deleteDedicatedCandle(this.dataset.candleId)"
-                        >
-                            DELETE CANDLE
-                        </button>
-                    </article>
-                `;
-            }).join('')}
-        </div>
-    `;
-}
 
 function showLoggedInAccount() {
     const register = document.getElementById('registerAccountForm');
@@ -9559,7 +9955,6 @@ function showLoggedInAccount() {
     title.textContent = 'YOUR PLACE WITHIN THE TEMPLE';
     subtitle.textContent = 'You are already within the sanctuary. Your personal creations can now belong to your account.';
     name.textContent = username;
-    renderAccountMobileCandles();
     setAccountMessage('');
 
     /* Refresh the account's candle list without changing the existing Sanctuary flow. */
@@ -9677,9 +10072,6 @@ document.addEventListener('keydown', function(event) {
             <button id="sanctuaryAccountButton" class="account-submit" type="button" onclick="openSanctuary()">
                 MY SANCTUARY
             </button>
-
-            <!-- Dedicated candles are shown directly inside the account on mobile. -->
-            <div id="accountMobileCandles" class="account-mobile-candles"></div>
 
             <button class="account-logout" type="button" onclick="logoutAccount()">LEAVE THE TEMPLE</button>
         </div>
@@ -9869,21 +10261,76 @@ async function loadSanctuary() {
 
     databaseCandles.forEach(item => {
         const key = item.dedication_id || item.id;
-        if (key) byKey.set(key, item);
+        if (!key) return;
+
+        if (isCandleCurrentlyBurning(item)) {
+            byKey.set(key, item);
+        } else {
+            removeExpiredCandleFromLocalStorage(key);
+        }
     });
 
     // Local candles are used as an immediate/offline fallback and also cover
     // the short period before a newly created candle reaches Supabase.
     localCandles.forEach(item => {
         const key = item.dedication_id || item.id;
-        if (key && !byKey.has(key)) byKey.set(key, item);
+        if (!key || !isCandleCurrentlyBurning(item)) {
+            if (key) removeExpiredCandleFromLocalStorage(key);
+            return;
+        }
+
+        if (!byKey.has(key)) byKey.set(key, item);
     });
 
     sanctuaryCache.candles = Array.from(byKey.values())
+        .filter(isCandleCurrentlyBurning)
         .sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
     renderSanctuaryTab(sanctuaryCurrentTab);
-    renderAccountMobileCandles();
+}
+
+function isCandleCurrentlyBurning(item) {
+    if (!item) return false;
+
+    const until = item.burn_until ?? item.burnUntil;
+
+    if (until === 'forever' || until === 'indefinite' || until === Infinity) {
+        return true;
+    }
+
+    const timestamp = Number(until);
+    return Number.isFinite(timestamp) && timestamp > Date.now();
+}
+
+function removeExpiredCandleFromLocalStorage(candleId) {
+    if (!candleId) return;
+
+    try {
+        for (let i = 0; i < 50; i++) {
+            const key = 'templeChaosDedications-' + i;
+            const raw = localStorage.getItem(key);
+            if (!raw) continue;
+
+            const list = JSON.parse(raw);
+            if (!Array.isArray(list)) continue;
+
+            const filtered = list.filter(item => {
+                if (!item) return false;
+                return String(item.id) !== String(candleId) &&
+                       String(item.dedication_id || '') !== String(candleId);
+            });
+
+            if (filtered.length !== list.length) {
+                if (filtered.length) {
+                    localStorage.setItem(key, JSON.stringify(filtered));
+                } else {
+                    localStorage.removeItem(key);
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Could not clean expired candle:', error);
+    }
 }
 
 function getLocalSanctuaryCandles() {
@@ -10002,6 +10449,19 @@ function renderSanctuaryTab(tab) {
             </div>
             ${renderCandleList()}
         `;
+
+        /* Direct listener on the freshly-rendered Sanctuary panel.
+           This does not depend on inline onclick handlers. */
+        panel.querySelectorAll(".sanctuary-delete-candle").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                const key = this.dataset.candleKey;
+                if (key && typeof window.deleteDedicatedCandle === "function") {
+                    window.deleteDedicatedCandle(key);
+                }
+            });
+        });
     }
 }
 
@@ -10054,6 +10514,9 @@ function renderSavedList() {
 }
 
 function renderCandleList() {
+    // Only show candles that are still burning.
+    sanctuaryCache.candles = (sanctuaryCache.candles || []).filter(isCandleCurrentlyBurning);
+
     if (!sanctuaryCache.candles.length) {
         return '<div class="sanctuary-empty">Your dedicated candles will appear here.</div>';
     }
@@ -10071,7 +10534,8 @@ function renderCandleList() {
             <div class="sanctuary-item-text">${escapeSanctuary(item.intention || "A flame dedicated within the Temple.")}</div>
             <div class="sanctuary-item-actions">
                 <button class="sanctuary-small sanctuary-delete-candle"
-                    onclick="deleteDedicatedCandle('${escapeSanctuary(candleKey)}')">
+                    type="button"
+                    data-candle-key="${escapeSanctuary(candleKey)}">
                     DELETE CANDLE
                 </button>
             </div>
@@ -10252,6 +10716,110 @@ document.addEventListener("DOMContentLoaded", function () {
         repairAccountButton();
     }
 })();
+</script>
+
+
+<script id="candle-delete-final-fix">
+/*
+ * FINAL DIRECT DELETE HANDLER
+ * The Sanctuary renderer attaches the click listener directly to every
+ * DELETE CANDLE button. This function only handles the actual deletion.
+ */
+window.deleteDedicatedCandle = async function (key) {
+    if (!key) return;
+
+    const candleKey = String(key);
+
+    if (!confirm("Extinguish and delete this candle?")) return;
+
+    /* Remove it from the Sanctuary list FIRST. */
+    sanctuaryCache.candles = (sanctuaryCache.candles || []).filter(item => {
+        const itemKey = item && (item.dedication_id || item.id);
+        return String(itemKey || "") !== candleKey;
+    });
+
+    /* Extinguish every matching live flame. */
+    const matches = activeDedications.filter(item => {
+        const itemKey = item && (item.dedication_id || item.id);
+        return String(itemKey || "") === candleKey ||
+               String(item?.id || "") === candleKey ||
+               String(item?.dedication_id || "") === candleKey;
+    });
+
+    matches.forEach(item => {
+        if (dedicationTimers.has(item.id)) {
+            clearTimeout(dedicationTimers.get(item.id));
+            dedicationTimers.delete(item.id);
+        }
+
+        const node = dedicationNodes.get(item.id);
+        if (node) {
+            node.remove();
+            dedicationNodes.delete(item.id);
+        }
+    });
+
+    activeDedications = activeDedications.filter(item => {
+        const itemKey = item && (item.dedication_id || item.id);
+        return String(itemKey || "") !== candleKey &&
+               String(item?.id || "") !== candleKey &&
+               String(item?.dedication_id || "") !== candleKey;
+    });
+
+    /* Remove local persistence. */
+    try {
+        for (let i = 0; i < 50; i++) {
+            const storageKey = "templeChaosDedications-" + i;
+            const raw = localStorage.getItem(storageKey);
+            if (!raw) continue;
+
+            const list = JSON.parse(raw);
+            if (!Array.isArray(list)) continue;
+
+            const filtered = list.filter(item => {
+                const itemKey = item && (item.dedication_id || item.id);
+                return String(itemKey || "") !== candleKey &&
+                       String(item?.id || "") !== candleKey &&
+                       String(item?.dedication_id || "") !== candleKey;
+            });
+
+            if (filtered.length !== list.length) {
+                localStorage.setItem(storageKey, JSON.stringify(filtered));
+            }
+        }
+    } catch (error) {
+        console.warn("Candle local-storage cleanup failed:", error);
+    }
+
+    saveAllDedications();
+    updateDailyFlameStatus();
+
+    /* Re-render: the card is now definitely gone. */
+    renderSanctuaryTab("candles");
+
+    /* Delete the database row using BOTH possible identifiers. */
+    if (currentAuthUser && supabaseClient) {
+        let result = await supabaseClient
+            .from("user_candles")
+            .delete()
+            .eq("user_id", currentAuthUser.id)
+            .eq("dedication_id", candleKey);
+
+        if (result.error) {
+            console.warn("dedication_id delete attempt:", result.error);
+        }
+
+        const resultById = await supabaseClient
+            .from("user_candles")
+            .delete()
+            .eq("user_id", currentAuthUser.id)
+            .eq("id", candleKey);
+
+        if (resultById.error && resultById.error.code !== "42703") {
+            console.warn("id delete attempt:", resultById.error);
+        }
+    }
+};
 </script>
 
 </body>
