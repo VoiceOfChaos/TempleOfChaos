@@ -6721,18 +6721,186 @@ html, body {
 </style>
 
 
+<style id="final-candle-popup-repair">
+/* Final candle/popup repair: overrides earlier rules without deleting them. */
+.candle-design-window {
+    width: min(900px, 88vw) !important;
+    min-height: 560px !important;
+    max-height: 88vh !important;
+    overflow: hidden !important;
+    grid-template-columns: 42% 58% !important;
+}
+.candle-preview-area {
+    min-height: 560px !important;
+}
+.candle-control-card {
+    min-width: 0 !important;
+    padding: 42px 38px 34px !important;
+    overflow-y: auto !important;
+}
+.candle-control-card h2 {
+    font-size: 23px !important;
+    line-height: 1.25 !important;
+}
+.candle-control-card .modal-subtitle { margin-bottom: 20px !important; }
+.candle-control-card label { margin: 14px 0 7px !important; }
+.candle-control-card textarea { min-height: 72px !important; }
+.candle-modal-close {
+    z-index: 20 !important;
+    top: 12px !important;
+    right: 12px !important;
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0,0,0,.18) !important;
+    border: 1px solid rgba(210,190,150,.55) !important;
+    color: #e8dfd2 !important;
+    font-size: 22px !important;
+    line-height: 1 !important;
+}
+.candle-modal-close:hover { background: rgba(255,255,255,.05) !important; }
 
-<style id="final-visual-repair">
-/* =====================================================
-   FINAL VISUAL REPAIR
-   - Account button: crisp transparent button with a real border.
-   - Hide account trigger whenever any Temple popup/modal is open.
-   - Ritual candles: consistent sizing and mathematically even
-     vertical spacing on both sides.
-===================================================== */
+/* Keep altar candles away from the central typography. */
+.ritual-candles {
+    width: 105px !important;
+    height: 510px !important;
+    z-index: 3 !important;
+}
+.ritual-candles-left { left: 0 !important; }
+.ritual-candles-right { right: 0 !important; }
+.ritual-candle-wrap { width: 90px !important; height: 220px !important; flex-basis: 220px !important; }
+.ritual-candle, .candle-button { width: 64px !important; height: 200px !important; flex-basis: 200px !important; }
 
-/* Crisp account trigger — no backdrop blur or text shadow. */
+@media (max-width: 800px) {
+    .candle-design-window {
+        width: min(92vw, 420px) !important;
+        max-width: calc(100vw - 20px) !important;
+        max-height: calc(100dvh - 20px) !important;
+        grid-template-columns: 1fr !important;
+    }
+    .candle-preview-area {
+        flex: 0 0 190px !important;
+        height: 190px !important;
+        min-height: 190px !important;
+    }
+    .candle-control-card {
+        padding: 32px 18px 20px !important;
+        max-height: calc(100dvh - 230px) !important;
+    }
+    .candle-control-card h2 { font-size: 19px !important; }
+    .candle-control-card .modal-subtitle { font-size: 12px !important; }
+    .candle-modal-close { top: 8px !important; right: 8px !important; }
+
+    .ritual-candles {
+        width: 68px !important;
+        height: 360px !important;
+    }
+    .ritual-candles-left { left: 0 !important; }
+    .ritual-candles-right { right: 0 !important; }
+    .ritual-candle-wrap { width: 62px !important; height: 155px !important; flex-basis: 155px !important; }
+    .ritual-candle, .candle-button { width: 50px !important; height: 140px !important; flex-basis: 140px !important; }
+}
+</style>
+
+
+
+<style id="final-ritual-layout-and-global-popup-fix">
+/* FINAL OVERRIDE — do not remove earlier systems. */
+
+/* The side candle groups MUST be absolutely positioned. An earlier rule
+   changed them to position:relative, which made them enter the flex layout
+   and pushed them over the title/subtitle. */
+.ritual-scene > .ritual-candles {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    transform: none !important;
+    width: 92px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 18px 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0 !important;
+    z-index: 3 !important;
+}
+
+.ritual-scene > .ritual-candles-left {
+    left: 0 !important;
+    right: auto !important;
+}
+
+.ritual-scene > .ritual-candles-right {
+    right: 0 !important;
+    left: auto !important;
+}
+
+.ritual-candle-wrap {
+    position: relative !important;
+    width: 92px !important;
+    height: 190px !important;
+    flex: 0 0 190px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    box-sizing: border-box !important;
+}
+
+.ritual-candle-wrap .ritual-candle,
+.ritual-candle-wrap .candle-button {
+    width: 62px !important;
+    height: 166px !important;
+    flex: 0 0 166px !important;
+    margin: 0 !important;
+}
+
+.ritual-candle-wrap .candle-body {
+    width: 42px !important;
+    height: 128px !important;
+    bottom: 20px !important;
+}
+
+.ritual-candle-wrap .candle-body::before {
+    width: 42px !important;
+}
+
+.ritual-candle-wrap .candle-base {
+    width: 62px !important;
+    bottom: 7px !important;
+}
+
+.ritual-candle-wrap .candle-flame {
+    width: 22px !important;
+    height: 36px !important;
+}
+
+.ritual-candle-wrap .candle-label {
+    width: 92px !important;
+    max-width: 92px !important;
+    margin-top: 5px !important;
+    font-size: 8px !important;
+    letter-spacing: 1.1px !important;
+}
+
+/* Keep the center content visually clear. */
+.ritual-scene > .ritual-altar {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Crisp top-right account/entry button. */
 #accountButton.account-button {
+    z-index: 100002 !important;
     background: transparent !important;
     background-color: transparent !important;
     border: 1px solid rgba(210,190,150,.55) !important;
@@ -6740,183 +6908,116 @@ html, body {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     text-shadow: none !important;
-    color: #ded3c3 !important;
-    padding: 9px 16px !important;
-    border-radius: 0 !important;
-    opacity: 1 !important;
     filter: none !important;
 }
 
-#accountButton.account-button:hover {
-    background: rgba(255,255,255,.035) !important;
-    border-color: rgba(232,227,216,.82) !important;
-    color: #fff !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-}
-
-/* The account trigger must disappear behind every modal/popup. */
-body:has(#accountModal.active) #accountButton,
-body:has(#sanctuaryModal.active) #accountButton,
-body:has(#candleModal.active) #accountButton,
-body:has(#dedicationInfo.active) #accountButton,
-body:has(.ritual-path-popup.active) #accountButton {
+/* One global state: when ANY Temple overlay is open, the top-right button
+   is removed from view. This catches account/login/register, password,
+   sanctuary, candle designer, dedication info and ritual-path popups. */
+body.temple-popup-open #accountButton.account-button,
+body.temple-popup-open .account-button {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
 }
 
-/* Keep all four altar candles identical and evenly aligned. */
-.ritual-candles {
-    width: 86px !important;
-    min-height: 0 !important;
-    height: 520px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    gap: 0 !important;
-    box-sizing: border-box !important;
-}
-
-.ritual-candles-left {
-    left: 8px !important;
-    right: auto !important;
-}
-
-.ritual-candles-right {
-    right: 8px !important;
-    left: auto !important;
-}
-
-.ritual-candle-wrap {
-    width: 86px !important;
-    height: 248px !important;
-    flex: 0 0 248px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    position: relative !important;
-    box-sizing: border-box !important;
-}
-
-.ritual-candle,
-.candle-button {
-    width: 70px !important;
-    height: 230px !important;
-    flex: 0 0 230px !important;
-    margin: 0 !important;
-    transform: none !important;
-}
-
-.ritual-candle:hover,
-.candle-button:hover {
-    transform: translateY(-8px) !important;
-}
-
-.candle-label {
-    width: 86px !important;
-    max-width: 86px !important;
-    height: 14px !important;
-    margin: 8px 0 0 !important;
-    line-height: 14px !important;
-    text-align: center !important;
-}
-
-/* Phone layout: smaller, but still exactly matched left/right. */
 @media (max-width: 800px) {
+    .ritual-scene {
+        min-height: 390px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .ritual-scene > .ritual-candles {
+        width: 68px !important;
+        padding: 10px 0 !important;
+    }
+
+    .ritual-candle-wrap {
+        width: 68px !important;
+        height: 155px !important;
+        flex-basis: 155px !important;
+    }
+
+    .ritual-candle-wrap .ritual-candle,
+    .ritual-candle-wrap .candle-button {
+        width: 50px !important;
+        height: 135px !important;
+        flex-basis: 135px !important;
+    }
+
+    .ritual-candle-wrap .candle-body {
+        width: 34px !important;
+        height: 104px !important;
+        bottom: 17px !important;
+    }
+
+    .ritual-candle-wrap .candle-body::before { width: 34px !important; }
+    .ritual-candle-wrap .candle-base { width: 50px !important; bottom: 6px !important; }
+    .ritual-candle-wrap .candle-flame { width: 19px !important; height: 32px !important; }
+    .ritual-candle-wrap .candle-label {
+        width: 68px !important;
+        max-width: 68px !important;
+        font-size: 7px !important;
+        letter-spacing: .8px !important;
+    }
+
     #accountButton.account-button {
         top: 12px !important;
         right: 12px !important;
-        padding: 7px 11px !important;
-        font-size: 9px !important;
-    }
-
-    .ritual-candles {
-        width: 72px !important;
-        height: 350px !important;
-    }
-
-    .ritual-candles-left {
-        left: 2px !important;
-    }
-
-    .ritual-candles-right {
-        right: 2px !important;
-    }
-
-    .ritual-candle-wrap {
-        width: 72px !important;
-        height: 166px !important;
-        flex-basis: 166px !important;
-    }
-
-    .ritual-candle,
-    .candle-button {
-        width: 54px !important;
-        height: 150px !important;
-        flex-basis: 150px !important;
-    }
-
-    .candle-label {
-        width: 72px !important;
-        max-width: 72px !important;
-        margin-top: 5px !important;
-        font-size: 7px !important;
-    }
-}
-
-/* Very small phones: preserve equal geometry without overflow. */
-@media (max-width: 380px) {
-    .ritual-candles {
-        width: 68px !important;
-        height: 330px !important;
-    }
-
-    .ritual-candles-left { left: 0 !important; }
-    .ritual-candles-right { right: 0 !important; }
-
-    .ritual-candle-wrap {
-        width: 68px !important;
-        height: 156px !important;
-        flex-basis: 156px !important;
-    }
-
-    .ritual-candle,
-    .candle-button {
-        width: 50px !important;
-        height: 142px !important;
-        flex-basis: 142px !important;
-    }
-
-    .candle-body {
-        width: 32px !important;
-        height: 102px !important;
-    }
-
-    .candle-body::before {
-        width: 32px !important;
-    }
-
-    .candle-base {
-        width: 49px !important;
-    }
-
-    .candle-flame {
-        width: 19px !important;
-        height: 32px !important;
-    }
-
-    .candle-label {
-        width: 68px !important;
-        max-width: 68px !important;
+        padding: 8px 12px !important;
     }
 }
 </style>
+
+<script id="global-temple-popup-button-controller">
+(function () {
+    const popupSelectors = [
+        '#accountModal',
+        '#passwordResetModal',
+        '#newPasswordModal',
+        '#sanctuaryModal',
+        '#candleModal',
+        '#ritualPathPopup',
+        '.dedication-info'
+    ];
+
+    function isOpen(el) {
+        if (!el) return false;
+        const cs = window.getComputedStyle(el);
+        return el.classList.contains('active') ||
+               el.getAttribute('aria-hidden') === 'false' ||
+               (cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0');
+    }
+
+    function syncTemplePopupState() {
+        const open = popupSelectors.some(selector => {
+            return [...document.querySelectorAll(selector)].some(isOpen);
+        });
+        document.body.classList.toggle('temple-popup-open', open);
+    }
+
+    function init() {
+        syncTemplePopupState();
+        const observer = new MutationObserver(syncTemplePopupState);
+        observer.observe(document.documentElement, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ['class', 'style', 'aria-hidden']
+        });
+
+        document.addEventListener('click', () => setTimeout(syncTemplePopupState, 0), true);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+        init();
+    }
+})();
+</script>
 
 </head>
 <body>
