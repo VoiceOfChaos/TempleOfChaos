@@ -4917,9 +4917,18 @@
 .ritual-dedications {
     position: absolute;
     inset: 0;
-    z-index: 12;
+    z-index: 1000 !important;
     pointer-events: none;
-    overflow: hidden;
+    overflow: visible;
+}
+
+/* Dedicated flames are a foreground layer, not part of the photographic
+   background or the altar surface. */
+.ritual-scene > .ritual-altar,
+.ritual-scene > .ritual-candles,
+.ritual-scene > .ritual-offerings {
+    position: relative;
+    z-index: 10;
 }
 
 /* The original altar candles remain in place.
@@ -6384,7 +6393,15 @@ html, body {
         width: 100%;
         max-width: 100%;
         min-height: 390px;
-        overflow: hidden;
+        overflow: visible;
+    }
+
+    .ritual-dedications {
+        overflow: visible;
+    }
+
+    .dedication-flame {
+        z-index: 1001 !important;
     }
 
     .ritual-candles {
@@ -8053,8 +8070,8 @@ function getRandomDedicationPosition(sourceWrap, dedication) {
 
     for (let i = 0; i < 250; i++) {
         const candidate = {
-            x: 6 + Math.random() * 88,
-            y: 8 + Math.random() * 80
+            x: 10 + Math.random() * 80,
+            y: 16 + Math.random() * 68
         };
 
         /* Keep the central altar area relatively clear. */
@@ -8089,8 +8106,8 @@ function getRandomDedicationPosition(sourceWrap, dedication) {
     /* Fallback if the chamber becomes very full. */
     if (!best) {
         best = {
-            x: source.x < 50 ? 78 + Math.random() * 12 : 10 + Math.random() * 12,
-            y: 10 + Math.random() * 80
+            x: source.x < 50 ? 74 + Math.random() * 10 : 16 + Math.random() * 10,
+            y: 18 + Math.random() * 64
         };
     }
 
@@ -9319,6 +9336,10 @@ function openSanctuary() {
     modal.setAttribute("aria-hidden","false");
     document.body.style.overflow = "hidden";
 
+    // Show locally known candles immediately. This prevents the Candles tab
+    // from looking empty while the Supabase request is still loading.
+    sanctuaryCache.candles = getLocalSanctuaryCandles();
+    renderSanctuaryTab(sanctuaryCurrentTab);
     loadSanctuary();
 }
 
@@ -9348,67 +9369,131 @@ async function loadSanctuary() {
 
     const uid = sanctuaryUserId();
 
+    // Never let one missing/broken Sanctuary table prevent the candle tab
+    // from loading. Candles are important enough to have their own request.
     try {
-        const [p,d,de,s,c] = await Promise.all([
+        const [p,d,de,s] = await Promise.all([
             supabaseClient.from("user_prayers").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
             supabaseClient.from("user_devotions").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
             supabaseClient.from("user_deities").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
-            supabaseClient.from("saved_writings").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
-            supabaseClient.from("user_candles").select("*").eq("user_id",uid).order("created_at",{ascending:false})
+            supabaseClient.from("saved_writings").select("*").eq("user_id",uid).order("created_at",{ascending:false})
         ]);
 
-        // A missing optional table must not prevent the rest of the Sanctuary
-        // from rendering. Candles also have a local copy, so mobile/offline
-        // sessions can still display dedicated flames immediately.
-        for (const result of [p,d,de,s]) {
-            if (result.error && result.error.code !== "42P01") throw result.error;
-        }
-
-        sanctuaryCache.prayers = p.data || [];
-        sanctuaryCache.devotions = d.data || [];
-        sanctuaryCache.deities = de.data || [];
-        sanctuaryCache.saved = s.data || [];
-
-        const databaseCandles = (!c.error || c.error.code === "42P01") ? (c.data || []) : [];
-        const localCandles = Array.isArray(activeDedications) ? activeDedications : [];
-
-        // Merge database candles with any local dedicated candles that have
-        // not reached Supabase yet. This is especially important on mobile,
-        // where the Sanctuary can be opened immediately after creating a flame.
-        const byKey = new Map();
-        databaseCandles.forEach(item => {
-            byKey.set(item.dedication_id || item.id, item);
-        });
-        localCandles.forEach(item => {
-            const key = item.id;
-            if (!byKey.has(key)) {
-                byKey.set(key, {
-                    id: key,
-                    user_id: uid,
-                    dedication_id: key,
-                    deity: item.deity || null,
-                    intention: item.intention || null,
-                    status: 'active',
-                    duration: String(item.duration || '3600'),
-                    burn_until: item.burnUntil || 'forever',
-                    candle_color: item.color || '#eee6d6',
-                    flame_color: item.flameColor || '#f5d58a',
-                    hidden: !!item.hidden,
-                    created_at: new Date(item.createdAt || Date.now()).toISOString(),
-                    _localOnly: true
-                });
-            }
-        });
-
-        sanctuaryCache.candles = Array.from(byKey.values())
-            .sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-
-        renderSanctuaryTab(sanctuaryCurrentTab);
+        sanctuaryCache.prayers = (!p.error || p.error.code === "42P01") ? (p.data || []) : [];
+        sanctuaryCache.devotions = (!d.error || d.error.code === "42P01") ? (d.data || []) : [];
+        sanctuaryCache.deities = (!de.error || de.error.code === "42P01") ? (de.data || []) : [];
+        sanctuaryCache.saved = (!s.error || s.error.code === "42P01") ? (s.data || []) : [];
     } catch (error) {
-        console.error(error);
-        document.getElementById("sanctuaryPanelPrayers").innerHTML =
-            '<div class="sanctuary-empty">The Sanctuary database is not ready yet. Run the supplied SQL setup in Supabase.</div>';
+        console.error("Could not load Sanctuary entries:", error);
     }
+
+    // Load candles separately so a problem with another Sanctuary table can
+    // never hide the user's dedicated flames.
+    const localCandles = getLocalSanctuaryCandles();
+    let databaseCandles = [];
+
+    try {
+        const result = await supabaseClient
+            .from("user_candles")
+            .select("*")
+            .eq("user_id", uid)
+            .order("created_at", {ascending:false});
+
+        if (result.error) {
+            // Keep the local flames visible if the database/table/policy is
+            // unavailable. The console message makes the real cause visible
+            // for debugging without breaking the Sanctuary UI.
+            console.error("Could not load dedicated candles from Supabase:", result.error);
+        } else {
+            databaseCandles = result.data || [];
+        }
+    } catch (error) {
+        console.error("Could not load dedicated candles from Supabase:", error);
+    }
+
+    const byKey = new Map();
+
+    databaseCandles.forEach(item => {
+        const key = item.dedication_id || item.id;
+        if (key) byKey.set(key, item);
+    });
+
+    // Local candles are used as an immediate/offline fallback and also cover
+    // the short period before a newly created candle reaches Supabase.
+    localCandles.forEach(item => {
+        const key = item.dedication_id || item.id;
+        if (key && !byKey.has(key)) byKey.set(key, item);
+    });
+
+    sanctuaryCache.candles = Array.from(byKey.values())
+        .sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+    renderSanctuaryTab(sanctuaryCurrentTab);
+}
+
+function getLocalSanctuaryCandles() {
+    const byKey = new Map();
+
+    // Prefer the live in-memory list.
+    if (Array.isArray(activeDedications)) {
+        activeDedications.forEach(item => {
+            if (!item || !item.id) return;
+            byKey.set(item.id, {
+                id: item.id,
+                user_id: currentAuthUser?.id || null,
+                dedication_id: item.id,
+                deity: item.deity || null,
+                intention: item.intention || null,
+                status: item.burnUntil === "forever" ? "BURNING INDEFINITELY" : "ACTIVE",
+                duration: String(item.duration || "3600"),
+                burn_until: item.burnUntil || "forever",
+                candle_color: item.color || "#eee6d6",
+                flame_color: item.flameColor || "#f5d58a",
+                hidden: !!item.hidden,
+                created_at: new Date(item.createdAt || Date.now()).toISOString(),
+                _localOnly: true
+            });
+        });
+    }
+
+    // Also recover candles directly from localStorage. This matters on mobile
+    // after a page reload, before restoreCandles has necessarily finished.
+    for (let i = 0; i < document.querySelectorAll('.ritual-candle-wrap').length; i++) {
+        const raw = localStorage.getItem('templeChaosDedications-' + i);
+        if (!raw) continue;
+
+        try {
+            const list = JSON.parse(raw);
+            if (!Array.isArray(list)) continue;
+
+            list.forEach(item => {
+                if (!item || !item.id) return;
+                if (item.burnUntil !== 'forever' && Number(item.burnUntil) <= Date.now()) return;
+
+                if (!byKey.has(item.id)) {
+                    byKey.set(item.id, {
+                        id: item.id,
+                        user_id: currentAuthUser?.id || null,
+                        dedication_id: item.id,
+                        deity: item.deity || null,
+                        intention: item.intention || null,
+                        status: item.burnUntil === 'forever' ? 'BURNING INDEFINITELY' : 'ACTIVE',
+                        duration: String(item.duration || '3600'),
+                        burn_until: item.burnUntil || 'forever',
+                        candle_color: item.color || '#eee6d6',
+                        flame_color: item.flameColor || '#f5d58a',
+                        hidden: !!item.hidden,
+                        created_at: new Date(item.createdAt || Date.now()).toISOString(),
+                        _localOnly: true
+                    });
+                }
+            });
+        } catch (error) {
+            console.warn('Could not read local dedicated candles:', error);
+        }
+    }
+
+    return Array.from(byKey.values());
 }
 
 function escapeSanctuary(value) {
