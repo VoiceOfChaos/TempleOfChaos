@@ -5476,7 +5476,208 @@
     width: 100%;
 }
 
-\n\n/* =====================================================\n   ACCOUNT SYSTEM\n===================================================== */\n\n.account-button {\n    display: inline-block;\n    margin: 18px 8px 0;\n    padding: 12px 24px;\n    border: 1px solid rgba(210,190,150,.32);\n    background: rgba(0,0,0,.22);\n    color: #cfc5b6;\n    text-decoration: none;\n    text-transform: uppercase;\n    letter-spacing: .16em;\n    font-size: .7rem;\n    cursor: pointer;\n    transition: .3s ease;\n}\n\n.account-button:hover {\n    border-color: rgba(232,227,216,.7);\n    background: rgba(255,255,255,.05);\n    color: #f3eee4;\n}\n\n.account-modal {\n    position: fixed;\n    inset: 0;\n    z-index: 100000;\n    display: none;\n    align-items: center;\n    justify-content: center;\n    padding: 20px;\n}\n\n.account-modal.active {\n    display: flex;\n}\n\n.account-backdrop {\n    position: absolute;\n    inset: 0;\n    background: rgba(0,0,0,.86);\n    backdrop-filter: blur(8px);\n}\n\n.account-card {\n    position: relative;\n    z-index: 2;\n    width: min(460px, 94vw);\n    padding: 46px 38px 36px;\n    background:\n        radial-gradient(circle at 50% 0%, rgba(150,125,90,.12), transparent 55%),\n        linear-gradient(145deg, #171311, #080707 70%);\n    border: 1px solid rgba(210,190,150,.24);\n    box-shadow: 0 30px 100px rgba(0,0,0,.9);\n    text-align: center;\n}\n\n.account-close {\n    position: absolute;\n    top: 15px;\n    right: 18px;\n    width: 36px;\n    height: 36px;\n    border: 1px solid rgba(210,190,150,.2);\n    background: transparent;\n    color: #c7bbab;\n    font-size: 24px;\n    cursor: pointer;\n}\n\n.account-symbol {\n    color: #d5bb8c;\n    font-size: 34px;\n    margin-bottom: 14px;\n    animation: accountSymbolPulse 3.5s ease-in-out infinite;\n}\n\n@keyframes accountSymbolPulse {\n    0%,100% { opacity:.6; transform:scale(1); }\n    50% { opacity:1; transform:scale(1.1); }\n}\n\n.account-card h2 {\n    margin: 0 0 10px;\n    font-size: 24px;\n    letter-spacing: .16em;\n    font-weight: normal;\n}\n\n.account-subtitle {\n    color: #8f877d;\n    font-style: italic;\n    line-height: 1.65;\n    margin: 0 0 24px;\n}\n\n.account-form {\n    display: flex;\n    flex-direction: column;\n    gap: 13px;\n    text-align: left;\n}\n\n.account-form label {\n    color: #bdb1a1;\n    font-size: 10px;\n    letter-spacing: .14em;\n    text-transform: uppercase;\n}\n\n.account-form input {\n    width: 100%;\n    margin-top: 5px;\n    padding: 13px 14px;\n    box-sizing: border-box;\n    border: 1px solid rgba(205,180,140,.2);\n    background: rgba(255,255,255,.025);\n    color: #e7dccd;\n    font-family: Georgia, serif;\n    outline: none;\n}\n\n.account-form input:focus {\n    border-color: rgba(210,180,125,.65);\n    box-shadow: 0 0 18px rgba(190,150,90,.08);\n}\n\n.account-submit {\n    margin-top: 10px;\n    width: 100%;\n    padding: 15px;\n    border: 1px solid rgba(210,180,125,.45);\n    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12));\n    color: #e5d8c5;\n    font-family: Georgia, serif;\n    letter-spacing: .13em;\n    cursor: pointer;\n}\n\n.account-submit:disabled {\n    opacity: .5;\n    cursor: wait;\n}\n\n.account-message {\n    min-height: 38px;\n    margin-top: 16px;\n    color: #b9aa8f;\n    font-size: 13px;\n    line-height: 1.55;\n}\n\n.account-switch {\n    margin-top: 18px;\n    color: #777068;\n    font-size: 13px;\n}\n\n.account-switch button {\n    border: none;\n    background: transparent;\n    color: #c7b38d;\n    cursor: pointer;\n    font-family: Georgia, serif;\n}\n\n.account-user-box {\n    display: none;\n    margin-top: 18px;\n    padding-top: 18px;\n    border-top: 1px solid rgba(210,190,150,.12);\n}\n\n.account-user-box.active {\n    display: block;\n}\n\n.account-user-name {\n    color: #e3d7c8;\n    margin-bottom: 14px;\n}\n\n.account-logout {\n    padding: 10px 20px;\n    border: 1px solid rgba(210,190,150,.3);\n    background: transparent;\n    color: #bda98a;\n    cursor: pointer;\n    font-family: Georgia, serif;\n    letter-spacing: .12em;\n    text-transform: uppercase;\n    font-size: 10px;\n}\n\n@media (max-width: 600px) {\n    .account-card { padding: 40px 24px 28px; }\n}\n
+
+
+/* =====================================================
+   ACCOUNT SYSTEM
+===================================================== */
+
+.account-button {
+    display: inline-block;
+    margin: 18px 8px 0;
+    padding: 12px 24px;
+    border: 1px solid rgba(210,190,150,.32);
+    background: rgba(0,0,0,.22);
+    color: #cfc5b6;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-size: .7rem;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.account-button:hover {
+    border-color: rgba(232,227,216,.7);
+    background: rgba(255,255,255,.05);
+    color: #f3eee4;
+}
+
+.account-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.account-modal.active {
+    display: flex;
+}
+
+.account-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.86);
+    backdrop-filter: blur(8px);
+}
+
+.account-card {
+    position: relative;
+    z-index: 2;
+    width: min(460px, 94vw);
+    padding: 46px 38px 36px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(150,125,90,.12), transparent 55%),
+        linear-gradient(145deg, #171311, #080707 70%);
+    border: 1px solid rgba(210,190,150,.24);
+    box-shadow: 0 30px 100px rgba(0,0,0,.9);
+    text-align: center;
+}
+
+.account-close {
+    position: absolute;
+    top: 15px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(210,190,150,.2);
+    background: transparent;
+    color: #c7bbab;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.account-symbol {
+    color: #d5bb8c;
+    font-size: 34px;
+    margin-bottom: 14px;
+    animation: accountSymbolPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes accountSymbolPulse {
+    0%,100% { opacity:.6; transform:scale(1); }
+    50% { opacity:1; transform:scale(1.1); }
+}
+
+.account-card h2 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    letter-spacing: .16em;
+    font-weight: normal;
+}
+
+.account-subtitle {
+    color: #8f877d;
+    font-style: italic;
+    line-height: 1.65;
+    margin: 0 0 24px;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    text-align: left;
+}
+
+.account-form label {
+    color: #bdb1a1;
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.account-form input {
+    width: 100%;
+    margin-top: 5px;
+    padding: 13px 14px;
+    box-sizing: border-box;
+    border: 1px solid rgba(205,180,140,.2);
+    background: rgba(255,255,255,.025);
+    color: #e7dccd;
+    font-family: Georgia, serif;
+    outline: none;
+}
+
+.account-form input:focus {
+    border-color: rgba(210,180,125,.65);
+    box-shadow: 0 0 18px rgba(190,150,90,.08);
+}
+
+.account-submit {
+    margin-top: 10px;
+    width: 100%;
+    padding: 15px;
+    border: 1px solid rgba(210,180,125,.45);
+    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12));
+    color: #e5d8c5;
+    font-family: Georgia, serif;
+    letter-spacing: .13em;
+    cursor: pointer;
+}
+
+.account-submit:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+
+.account-message {
+    min-height: 38px;
+    margin-top: 16px;
+    color: #b9aa8f;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.account-switch {
+    margin-top: 18px;
+    color: #777068;
+    font-size: 13px;
+}
+
+.account-switch button {
+    border: none;
+    background: transparent;
+    color: #c7b38d;
+    cursor: pointer;
+    font-family: Georgia, serif;
+}
+
+.account-user-box {
+    display: none;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(210,190,150,.12);
+}
+
+.account-user-box.active {
+    display: block;
+}
+
+.account-user-name {
+    color: #e3d7c8;
+    margin-bottom: 14px;
+}
+
+.account-logout {
+    padding: 10px 20px;
+    border: 1px solid rgba(210,190,150,.3);
+    background: transparent;
+    color: #bda98a;
+    cursor: pointer;
+    font-family: Georgia, serif;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+@media (max-width: 600px) {
+    .account-card { padding: 40px 24px 28px; }
+}
+
 
 /* =====================================================
    ACCOUNT BUTTON — FIXED TOP RIGHT
@@ -6075,10 +6276,348 @@
 </style>
 
 
-<style id="nickname-error-style">
-#accountMessage.nickname-taken {
-    color: #d8b9a8 !important;
-    border-color: rgba(180,110,90,.35) !important;
+<style id="nickname-candle-polish">
+#registerAccountForm input#registerUsername {
+    text-transform: none;
+}
+.nickname-availability-note {
+    margin-top: 6px;
+    color: rgba(215,205,194,.55);
+    font-size: 10px;
+    letter-spacing: .08em;
+}
+.sanctuary-candle-item {
+    border-left: 1px solid rgba(205,180,140,.22);
+}
+.sanctuary-delete-candle {
+    border-color: rgba(160,95,80,.38) !important;
+}
+.sanctuary-delete-candle:hover {
+    border-color: rgba(190,120,100,.7) !important;
+    color: #f0cfc2 !important;
+    background: rgba(150,70,50,.10) !important;
+}
+</style>
+
+
+<style id="temple-final-mobile-repair">
+/* =====================================================
+   FINAL MOBILE REPAIR
+   - Prevent headings/long words from being clipped.
+   - Keep ritual cards fully inside the viewport.
+   - Keep the candle designer compact enough for phone screens.
+   - Allow the designer itself to scroll instead of being vertically clipped.
+===================================================== */
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@media (max-width: 800px) {
+    .temple-content,
+    .inside-container,
+    .chamber-content,
+    .ritual-content {
+        width: min(100%, 100vw);
+        max-width: 100%;
+    }
+
+    .temple-content {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .temple h1,
+    .inside-title,
+    .chamber h2 {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        letter-spacing: .055em;
+    }
+
+    .temple h1 {
+        font-size: clamp(2.45rem, 11vw, 4rem);
+    }
+
+    .chamber h2 {
+        font-size: clamp(2.35rem, 10.5vw, 4rem);
+    }
+
+    /* Four ritual cards: two columns, never wider than their grid track. */
+    .ritual-paths {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 2px;
+        margin-left: auto;
+        margin-right: auto;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .ritual-path {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        padding: 20px 7px;
+        overflow: hidden;
+        white-space: normal;
+    }
+
+    .ritual-path h3 {
+        min-width: 0;
+        max-width: 100%;
+        font-size: 12px;
+        letter-spacing: .10em;
+        overflow-wrap: anywhere;
+    }
+
+    .ritual-path p {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    /* The original altar layout is intentionally wide on desktop.
+       On phones shrink the side candles so the scene cannot push the page sideways. */
+    .ritual-scene {
+        width: 100%;
+        max-width: 100%;
+        min-height: 390px;
+        overflow: hidden;
+    }
+
+    .ritual-candles {
+        width: 82px;
+        min-height: 245px;
+        gap: 18px;
+    }
+
+    .ritual-candles-left { left: 0; }
+    .ritual-candles-right { right: 0; }
+
+    .ritual-candle,
+    .candle-button {
+        width: 54px;
+        height: 150px;
+    }
+
+    .candle-body {
+        width: 34px;
+        height: 108px;
+        bottom: 19px;
+    }
+
+    .candle-body::before { width: 34px; }
+    .candle-base { width: 52px; bottom: 8px; }
+    .candle-flame { width: 20px; height: 34px; }
+
+    .candle-label {
+        max-width: 78px;
+        font-size: 7px;
+        letter-spacing: .8px;
+    }
+
+    .ritual-altar {
+        width: 220px;
+        height: 220px;
+        flex: 0 0 220px;
+    }
+
+    .ritual-sigil {
+        width: 145px;
+        height: 145px;
+    }
+
+    .sigil-ring-one { width: 140px; height: 140px; }
+    .sigil-ring-two { width: 112px; height: 112px; }
+    .sigil-ring-three { width: 78px; height: 78px; }
+
+    /* Candle designer: compact preview on top, controls below. */
+    #candleModal {
+        align-items: flex-start;
+        justify-content: center;
+        padding: 12px 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #candleModal .candle-design-window {
+        width: min(94vw, 430px);
+        max-width: calc(100vw - 20px);
+        min-height: 0;
+        height: auto;
+        max-height: calc(100dvh - 24px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    #candleModal .candle-preview-area {
+        flex: 0 0 235px;
+        height: 235px;
+        min-height: 235px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(205,180,140,.12);
+        overflow: hidden;
+    }
+
+    #candleModal .candle-preview-aura {
+        width: 280px;
+        height: 280px;
+    }
+
+    #candleModal .large-candle {
+        width: 120px;
+        height: 185px;
+        transform: none;
+        flex: 0 0 auto;
+    }
+
+    #candleModal .large-candle-body {
+        width: 78px;
+        height: 132px;
+        bottom: 25px;
+        border-radius: 9px 9px 5px 5px;
+    }
+
+    #candleModal .large-candle-body::before { width: 78px; }
+
+    #candleModal .large-candle-wick {
+        top: 42px;
+        height: 27px;
+        width: 4px;
+    }
+
+    #candleModal .large-candle-flame {
+        width: 48px;
+        height: 78px;
+    }
+
+    #candleModal .large-candle-base {
+        width: 112px;
+        height: 17px;
+        bottom: 10px;
+    }
+
+    #candleModal .large-candle-name {
+        margin-top: 0;
+        font-size: 9px;
+        letter-spacing: .22em;
+    }
+
+    #candleModal .candle-control-card {
+        min-height: 0;
+        max-height: calc(100dvh - 271px);
+        overflow-y: auto;
+        padding: 30px 20px 22px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #candleModal .candle-control-card h2 {
+        font-size: 20px;
+        line-height: 1.2;
+        letter-spacing: .13em;
+        padding-right: 18px;
+    }
+
+    #candleModal .candle-control-card .modal-subtitle {
+        font-size: 13px;
+        margin-bottom: 18px;
+    }
+
+    #candleModal .candle-control-card label {
+        margin-top: 15px;
+        font-size: 9px;
+    }
+
+    #candleModal .candle-control-card input[type="text"],
+    #candleModal .candle-control-card textarea,
+    #candleModal .candle-control-card select {
+        padding: 11px 12px;
+        font-size: 14px;
+    }
+
+    #candleModal .candle-control-card textarea {
+        min-height: 76px;
+    }
+
+    #candleModal .candle-swatch,
+    #candleModal .flame-swatch {
+        width: 29px;
+        height: 29px;
+    }
+
+    #candleModal .candle-modal-close {
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        font-size: 22px;
+    }
+
+    /* Account popup remains compact and scrollable on short phones. */
+    #accountModal {
+        align-items: flex-start !important;
+        padding: 12px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #accountModal .account-card {
+        width: min(430px, calc(100vw - 24px)) !important;
+        max-height: calc(100dvh - 24px) !important;
+        margin: 0 auto !important;
+        padding: 34px 20px 24px !important;
+        overflow-y: auto !important;
+    }
+
+    #accountModal .account-card h2 {
+        font-size: 20px !important;
+        overflow-wrap: anywhere;
+    }
+
+    #accountModal .account-subtitle {
+        font-size: 13px !important;
+    }
+
+    #accountModal .account-form input {
+        height: 44px !important;
+    }
+
+    /* Sanctuary tabs should not force horizontal overflow. */
+    #sanctuaryModal {
+        padding: 10px !important;
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    #sanctuaryModal .sanctuary-card {
+        width: min(94vw, 600px);
+        max-height: calc(100dvh - 20px);
+        margin: 0 auto;
+        overflow-y: auto;
+    }
+
+    #sanctuaryModal .sanctuary-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #sanctuaryModal .sanctuary-tab {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 380px) {
+    .temple h1 { font-size: 2.25rem; }
+    .chamber h2 { font-size: 2.15rem; }
+    .ritual-altar { width: 190px; height: 190px; flex-basis: 190px; }
+    .ritual-sigil { width: 125px; height: 125px; }
+    .sigil-ring-one { width: 120px; height: 120px; }
+    .sigil-ring-two { width: 96px; height: 96px; }
+    .sigil-ring-three { width: 67px; height: 67px; }
+    .ritual-candles { width: 68px; }
 }
 </style>
 
@@ -7306,7 +7845,7 @@ const dedicationNodes = new Map();
 let activeDedications = [];
 let pendingCandleDesign = null;
 
-const DAILY_DEDICATION_LIMIT = 10;
+const DAILY_DEDICATION_LIMIT = 2;
 const DAILY_LIMIT_STORAGE_KEY = 'templeChaosDailyDedications';
 
 function getLocalDayKey(date = new Date()) {
@@ -7668,63 +8207,65 @@ function createDedicationNode(dedication, flying = true) {
     }
 }
 
-async function saveDedicatedCandleToAccount(dedication) {
-    if (!supabaseClient || !currentAuthUser || !dedication) return null;
 
-    const uid = currentAuthUser.id;
+async function persistDedicationToSupabase(dedication) {
+    if (!supabaseClient || !currentAuthUser || !dedication) return;
+
     const payload = {
-        user_id: uid,
+        user_id: currentAuthUser.id,
+        dedication_id: dedication.id,
         deity: dedication.deity || null,
         intention: dedication.intention || null,
-        status: 'active'
+        status: dedication.burnUntil === 'forever' ? 'active' : 'active',
+        duration: String(dedication.duration || '3600'),
+        burn_until: dedication.burnUntil || 'forever',
+        candle_color: dedication.color || '#eee6d6',
+        flame_color: dedication.flameColor || '#f5d58a',
+        hidden: !!dedication.hidden
     };
 
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
         .from('user_candles')
-        .insert(payload)
-        .select('*')
-        .single();
+        .upsert(payload, { onConflict: 'dedication_id' });
 
     if (error) {
         console.error('Could not save dedicated candle:', error);
-        return null;
+        setAccountMessage('The flame was created, but could not be saved to your Sanctuary. Check the supplied Supabase SQL setup.');
     }
-
-    return data;
 }
 
-async function deleteDedicatedCandleFromAccount(id) {
-    if (!supabaseClient || !currentAuthUser || !id) return false;
+async function deleteDedicatedCandle(key) {
+    if (!currentAuthUser || !supabaseClient || !key) return;
+
+    if (!confirm('Remove this dedicated candle from your Sanctuary and extinguish its flame?')) {
+        return;
+    }
 
     const { error } = await supabaseClient
         .from('user_candles')
         .delete()
-        .eq('id', id)
-        .eq('user_id', currentAuthUser.id);
+        .eq('user_id', currentAuthUser.id)
+        .eq('dedication_id', key);
 
-    if (error) {
-        console.error('Could not delete dedicated candle:', error);
-        return false;
+    if (error && error.code !== '42703') {
+        alert(error.message);
+        return;
     }
 
-    return true;
-}
-
-function getLocalAccountCandles() {
-    if (!currentAuthUser) return [];
-    try {
-        const key = 'templeChaosAccountCandles-' + currentAuthUser.id;
-        const data = JSON.parse(localStorage.getItem(key) || '[]');
-        return Array.isArray(data) ? data : [];
-    } catch {
-        return [];
+    const localIndex = activeDedications.findIndex(item => item.id === key);
+    if (localIndex !== -1) {
+        extinguishDedication(key, false);
     }
+
+    await loadSanctuary();
 }
 
-function saveLocalAccountCandles(candles) {
-    if (!currentAuthUser) return;
-    const key = 'templeChaosAccountCandles-' + currentAuthUser.id;
-    localStorage.setItem(key, JSON.stringify(candles));
+async function syncLocalDedicationsToSupabase() {
+    if (!supabaseClient || !currentAuthUser || !activeDedications.length) return;
+
+    for (const dedication of activeDedications) {
+        await persistDedicationToSupabase(dedication);
+    }
 }
 
 async function dedicateCandle() {
@@ -7782,6 +8323,8 @@ async function dedicateCandle() {
         createDedicationNode(dedication, false);
         scheduleDedication(dedication);
         saveAllDedications();
+        await persistDedicationToSupabase(dedication);
+        await loadSanctuary();
 
         closeCandleModal();
         return;
@@ -7808,59 +8351,11 @@ async function dedicateCandle() {
     incrementDailyDedications();
     updateDailyFlameStatus();
 
-    /* Put the candle into My Sanctuary IMMEDIATELY.
-       The account view should update even if the database request is still
-       in progress (or if Supabase rejects the insert because of a schema/RLS
-       issue). The database save happens immediately afterwards. */
-    const accountCandle = {
-        id: dedication.id,
-        user_id: currentAuthUser.id,
-        deity: dedication.deity || null,
-        intention: dedication.intention || null,
-        status: 'active',
-        created_at: new Date(dedication.createdAt).toISOString(),
-        local: true
-    };
-
-    sanctuaryCache.candles = sanctuaryCache.candles.filter(
-        candle => String(candle.id) !== String(dedication.id)
-    );
-    sanctuaryCache.candles.unshift(accountCandle);
-    saveLocalAccountCandles(getLocalAccountCandles().filter(
-        candle => String(candle.id) !== String(dedication.id)
-    ).concat([accountCandle]));
-
-    /* If My Sanctuary is currently open, show the new candle right away. */
-    const sanctuaryModal = document.getElementById('sanctuaryModal');
-    if (sanctuaryModal && sanctuaryModal.classList.contains('active')) {
-        renderSanctuaryTab('candles');
-    }
-
-    /* Persist it to the logged-in account. If Supabase succeeds, replace the
-       temporary local record with the real database record. */
-    const savedCandle = await saveDedicatedCandleToAccount(dedication);
-    if (savedCandle) {
-        // Keep the database candle ID linked to the live ritual flame.
-        // Sanctuary deletion can therefore extinguish the matching flame too.
-        dedication.accountId = savedCandle.id;
-
-        sanctuaryCache.candles = sanctuaryCache.candles.map(candle =>
-            String(candle.id) === String(dedication.id) ? savedCandle : candle
-        );
-
-        const localCandles = getLocalAccountCandles().filter(
-            candle => String(candle.id) !== String(dedication.id)
-        );
-        saveLocalAccountCandles(localCandles);
-
-        if (sanctuaryModal && sanctuaryModal.classList.contains('active')) {
-            renderSanctuaryTab('candles');
-        }
-    }
-
     createDedicationNode(dedication, true);
     scheduleDedication(dedication);
     saveAllDedications();
+    await persistDedicationToSupabase(dedication);
+    await loadSanctuary();
 
     closeCandleModal();
 }
@@ -7923,7 +8418,7 @@ function extinguishSelectedDedication() {
     closeDedicationInfo();
 }
 
-function extinguishDedication(id) {
+function extinguishDedication(id, removeFromDatabase = true) {
     const index = activeDedications.findIndex(item => item.id === id);
     if (index === -1) return;
 
@@ -7948,6 +8443,20 @@ function extinguishDedication(id) {
 
     activeDedications.splice(index, 1);
     saveAllDedications();
+
+    if (removeFromDatabase && supabaseClient && currentAuthUser) {
+        supabaseClient
+            .from('user_candles')
+            .delete()
+            .eq('user_id', currentAuthUser.id)
+            .eq('dedication_id', id)
+            .then(({ error }) => {
+                if (error && error.code !== '42703') {
+                    console.error('Could not remove expired candle from Sanctuary:', error);
+                }
+                if (sanctuaryCurrentTab === 'candles') loadSanctuary();
+            });
+    }
 }
 
 function hideSelectedDedication() {
@@ -8098,6 +8607,7 @@ function restoreCandles() {
 
 document.addEventListener('DOMContentLoaded', () => {
     restoreCandles();
+    setTimeout(() => syncLocalDedicationsToSupabase(), 1200);
     updateDailyFlameStatus();
     updateHiddenFlameStatus();
 
@@ -8307,28 +8817,35 @@ async function registerAccount() {
     button.textContent = 'CHECKING THE NAME...';
 
     try {
-        const normalizedNickname = username.trim().toLowerCase();
+        /*
+         * Nicknames are case-insensitive. Do NOT read profiles directly here:
+         * RLS intentionally prevents anonymous users from selecting that table.
+         * The supplied SQL setup exposes nickname_is_taken() as a safe RPC.
+         */
+        const normalizedUsername = username.trim();
 
-        // Check the nickname before creating the account.
-        // The RPC keeps the profiles table private from unauthenticated visitors.
-        const { data: nicknameTaken, error: nicknameError } =
+        /* Support both names used by the supplied SQL revisions. */
+        let nicknameTaken = null;
+        let nicknameCheckError = null;
+
+        ({ data: nicknameTaken, error: nicknameCheckError } =
             await supabaseClient.rpc('is_nickname_taken', {
-                requested_nickname: normalizedNickname
-            });
+                requested_nickname: normalizedUsername
+            }));
 
-        if (nicknameError) {
-            console.error('Nickname check failed:', nicknameError);
-            if (nicknameError.code === 'PGRST202' || nicknameError.code === '42883') {
-                throw new Error('Nickname checking is not set up. Please run the Supabase nickname SQL first.');
-            }
-            throw new Error('Could not check that nickname. Please try again.');
+        if (nicknameCheckError && (nicknameCheckError.code === '42883' || nicknameCheckError.code === 'PGRST202')) {
+            ({ data: nicknameTaken, error: nicknameCheckError } =
+                await supabaseClient.rpc('nickname_is_taken', {
+                    requested_nickname: normalizedUsername
+                }));
+        }
+
+        if (nicknameCheckError) {
+            throw new Error('Could not check that nickname. Please run the supplied Supabase SQL setup, then try again.');
         }
 
         if (nicknameTaken === true) {
-            setAccountMessage('NICKNAME IS TAKEN — please choose another name.');
-            button.disabled = false;
-            button.textContent = 'CREATE ACCOUNT';
-            return;
+            throw new Error('That name is already taken. Please choose another name.');
         }
 
         button.textContent = 'CREATING ACCOUNT...';
@@ -8337,7 +8854,7 @@ async function registerAccount() {
             email,
             password,
             options: {
-                data: { username },
+                data: { username: username.trim() },
                 emailRedirectTo: window.location.origin + window.location.pathname
             }
         });
@@ -8384,7 +8901,18 @@ async function loginAccount() {
             password
         });
 
-        if (error) throw error;
+        if (error) {
+            const message = String(error.message || '').toLowerCase();
+            if (message.includes('email not confirmed')) {
+                throw new Error('Your email is not verified yet. Open the verification email, then return to the Temple and enter your password.');
+            }
+
+            if (message.includes('invalid login credentials')) {
+                throw new Error('The email or password is incorrect.');
+            }
+
+            throw error;
+        }
 
         currentAuthUser = data.user;
         updateAccountButton();
@@ -8399,8 +8927,13 @@ async function loginAccount() {
 }
 
 
-function getPasswordRedirectUrl() {
+function getTempleRedirectUrl() {
+    /* Keep redirects on the exact page the visitor is using. */
     return window.location.origin + window.location.pathname;
+}
+
+function getPasswordRedirectUrl() {
+    return getTempleRedirectUrl();
 }
 
 function openPasswordResetModal() {
@@ -8824,33 +9357,15 @@ async function loadSanctuary() {
             supabaseClient.from("user_candles").select("*").eq("user_id",uid).order("created_at",{ascending:false})
         ]);
 
-        for (const result of [p,d,de,s]) {
+        for (const result of [p,d,de,s,c]) {
             if (result.error && result.error.code !== "42P01") throw result.error;
         }
-
-        // Candles are handled separately so a missing/old user_candles schema
-        // cannot prevent the rest of the Sanctuary from loading.
-        let dbCandles = [];
-        if (!c.error) {
-            dbCandles = c.data || [];
-        } else if (c.error.code !== "42P01") {
-            console.warn('Could not load account candles:', c.error);
-        }
-
-        const localCandles = getLocalAccountCandles();
-        const merged = [...dbCandles];
-        const seen = new Set(dbCandles.map(item => String(item.id)));
-        localCandles.forEach(item => {
-            if (!seen.has(String(item.id))) merged.push(item);
-        });
-
-        merged.sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
         sanctuaryCache.prayers = p.data || [];
         sanctuaryCache.devotions = d.data || [];
         sanctuaryCache.deities = de.data || [];
         sanctuaryCache.saved = s.data || [];
-        sanctuaryCache.candles = merged;
+        sanctuaryCache.candles = c.data || [];
 
         renderSanctuaryTab(sanctuaryCurrentTab);
     } catch (error) {
@@ -8967,53 +9482,25 @@ function renderCandleList() {
         return '<div class="sanctuary-empty">Your dedicated candles will appear here.</div>';
     }
 
-    return `<div class="sanctuary-list">${sanctuaryCache.candles.map(item => `
+    return `<div class="sanctuary-list">${sanctuaryCache.candles.map(item => {
+        const candleKey = item.dedication_id || item.id;
+        const status = item.status || (
+            item.burn_until === 'forever' ? 'BURNING INDEFINITELY' : 'ACTIVE'
+        );
+
+        return `
         <article class="sanctuary-item sanctuary-candle-item">
-            <div class="sanctuary-item-title">🕯 ${escapeSanctuary(item.deity || "DEDICATED FLAME")}</div>
-            <div class="sanctuary-item-meta">${escapeSanctuary(item.status || "active")}</div>
-            <div class="sanctuary-item-text">${escapeSanctuary(item.intention || "An unnamed intention offered to the flame.")}</div>
+            <div class="sanctuary-item-title">🕯 ${escapeSanctuary(item.deity || "Undedicated flame")}</div>
+            <div class="sanctuary-item-meta">${escapeSanctuary(status)}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.intention || "A flame dedicated within the Temple.")}</div>
             <div class="sanctuary-item-actions">
-                <button class="sanctuary-small" onclick="deleteSanctuaryCandle('${escapeSanctuary(item.id)}')">DELETE CANDLE</button>
+                <button class="sanctuary-small sanctuary-delete-candle"
+                    onclick="deleteDedicatedCandle('${escapeSanctuary(candleKey)}')">
+                    DELETE CANDLE
+                </button>
             </div>
-        </article>
-    `).join("")}</div>`;
-}
-
-async function deleteSanctuaryCandle(id) {
-    if (!id || !currentAuthUser) return;
-
-    const item = sanctuaryCache.candles.find(c => String(c.id) === String(id));
-    if (!item) return;
-
-    // Deleting from My Sanctuary must also extinguish the corresponding
-    // live ritual flame instead of leaving a ghost candle burning.
-    const ritualIndex = activeDedications.findIndex(dedication =>
-        String(dedication.id) === String(id) ||
-        String(dedication.accountId || '') === String(id) ||
-        (dedication.deity || '') === (item.deity || '') &&
-        (dedication.intention || '') === (item.intention || '')
-    );
-
-    if (ritualIndex !== -1) {
-        const ritualId = activeDedications[ritualIndex].id;
-        extinguishDedication(ritualId);
-        if (currentDedication && String(currentDedication.id) === String(ritualId)) {
-            closeDedicationInfo();
-        }
-    }
-
-    const isLocal = item.local || String(id).startsWith('flame-');
-
-    if (isLocal) {
-        const localCandles = getLocalAccountCandles().filter(c => String(c.id) !== String(id));
-        saveLocalAccountCandles(localCandles);
-    } else {
-        const deleted = await deleteDedicatedCandleFromAccount(id);
-        if (!deleted) return;
-    }
-
-    sanctuaryCache.candles = sanctuaryCache.candles.filter(c => String(c.id) !== String(id));
-    renderSanctuaryTab('candles');
+        </article>`;
+    }).join("")}</div>`;
 }
 
 function newSanctuaryEntry(type) {
@@ -9163,6 +9650,31 @@ document.addEventListener("DOMContentLoaded", function () {
     // If an older script inserts another copy later, remove it immediately.
     const observer = new MutationObserver(dedupeAccountUI);
     observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script id="temple-final-account-repair">
+(function () {
+    function repairAccountButton() {
+        const buttons = document.querySelectorAll('#accountButton.account-button');
+        buttons.forEach((button, index) => {
+            if (index > 0) button.remove();
+        });
+        const button = document.getElementById('accountButton');
+        if (!button) return;
+        button.type = 'button';
+        button.onclick = function (event) {
+            event.preventDefault();
+            if (typeof openAccountModal === 'function') openAccountModal(event);
+        };
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', repairAccountButton, { once: true });
+    } else {
+        repairAccountButton();
+    }
 })();
 </script>
 
