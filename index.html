@@ -3430,14 +3430,6 @@
                 max-width: 280px;
             }
 
-            .account-button {
-                top: 18px;
-                right: 18px;
-                padding: 10px 14px;
-                font-size: 0.62rem;
-                letter-spacing: 0.12em;
-            }
-
             #inside {
                 padding-top: 100px;
             }
@@ -4392,7 +4384,6 @@
     top: 50%;
     transform: translateY(-50%);
     width: 180px;
-    z-index: 30;
     min-height: 330px;
     display: flex;
     flex-direction: column;
@@ -5488,7 +5479,7 @@
 /* =====================================================
    ACCOUNT SYSTEM
 ===================================================== */
-.account-button { position:absolute; top:28px; right:30px; z-index:10; display:inline-block; margin:0; padding:12px 20px; border:1px solid rgba(210,190,150,.32); background:rgba(0,0,0,.22); color:#cfc5b6; text-decoration:none; text-transform:uppercase; letter-spacing:.16em; font-size:.7rem; cursor:pointer; transition:.3s ease; }
+.account-button { display:inline-block; margin:18px 8px 0; padding:12px 24px; border:1px solid rgba(210,190,150,.32); background:rgba(0,0,0,.22); color:#cfc5b6; text-decoration:none; text-transform:uppercase; letter-spacing:.16em; font-size:.7rem; cursor:pointer; transition:.3s ease; }
 .account-button:hover { border-color:rgba(232,227,216,.7); background:rgba(255,255,255,.05); color:#f3eee4; }
 .account-modal { position:fixed; inset:0; z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
 .account-modal.active { display:flex; }
@@ -5513,7 +5504,6 @@
 .account-user-name { color:#e3d7c8; margin-bottom:14px; }
 .account-logout { padding:10px 20px; border:1px solid rgba(210,190,150,.3); background:transparent; color:#bda98a; cursor:pointer; font-family:Georgia,serif; letter-spacing:.12em; text-transform:uppercase; font-size:10px; }
 @media(max-width:600px) {
-  .account-button { top:8px; right:8px; }
   .account-modal { align-items:flex-start; overflow-y:auto; padding:12px; }
   .account-card { width:100%; max-height:calc(100dvh - 24px); padding:38px 20px 24px; margin:auto 0; }
   .account-card h2 { font-size:clamp(20px,6vw,24px); }
@@ -5574,21 +5564,6 @@
 .sanctuary-empty { padding:35px; text-align:center; color:#756d64; border:1px dashed rgba(210,185,145,.13); font-style:italic; }
 .sanctuary-loading { color:#81776c; text-align:center; padding:25px; }
 @media(max-width:700px){ .sanctuary-card{padding:28px 17px}.sanctuary-form-grid,.sanctuary-grid{grid-template-columns:1fr}.sanctuary-form .full{grid-column:auto}.sanctuary-toolbar{align-items:flex-start;flex-direction:column} }
-@media(max-width:700px){
-    #sanctuaryCandlesList .sanctuary-item{
-        width:100%;
-        min-width:0;
-        overflow-wrap:anywhere;
-    }
-    #sanctuaryCandlesList .sanctuary-item-actions{
-        width:100%;
-    }
-    #sanctuaryCandlesList .sanctuary-item-actions button{
-        width:100%;
-        min-height:42px;
-    }
-}
-
 
 
 
@@ -7415,36 +7390,20 @@ function createDedicationNode(dedication, flying = true) {
    ACCOUNT CANDLE SYNC
 ===================================================== */
 async function saveCandleToAccount(dedication) {
-    if (!supabaseClient || !currentAuthUser || !dedication) return false;
-
-    const durationSeconds = dedication.duration === '0'
-        ? 0
-        : Number(dedication.duration || 3600);
-
-    const { data, error } = await supabaseClient
-        .from('user_candles')
-        .insert({
-            user_id: currentAuthUser.id,
-            deity: dedication.deity || null,
-            intention: dedication.intention || null,
-            color: dedication.color || '#eee6d6',
-            duration_seconds: durationSeconds,
-            started_at: new Date(Number(dedication.createdAt || Date.now())).toISOString()
-        })
-        .select('id')
-        .single();
-
-    if (error) {
-        console.error('Could not save candle to account:', error);
-        return false;
-    }
-
-    if (data && data.id) {
+    if (!supabaseClient || !currentAuthUser) return;
+    const durationSeconds = dedication.duration === '0' ? 0 : Number(dedication.duration || 3600);
+    const { data, error } = await supabaseClient.from('user_candles').insert({
+        user_id: currentAuthUser.id,
+        deity: dedication.deity || null,
+        intention: dedication.intention || null,
+        color: dedication.color || '#eee6d6',
+        duration_seconds: durationSeconds,
+        started_at: new Date(Number(dedication.createdAt || Date.now())).toISOString()
+    }).select('id').single();
+    if (!error && data) {
         dedication.supabase_id = data.id;
         saveAllDedications();
     }
-
-    return true;
 }
 
 async function updateCandleInAccount(dedication) {
@@ -7551,7 +7510,7 @@ function dedicateCandle() {
     createDedicationNode(dedication, true);
     scheduleDedication(dedication);
     saveAllDedications();
-    await saveCandleToAccount(dedication);
+    saveCandleToAccount(dedication);
 
     closeCandleModal();
 }
@@ -7969,68 +7928,20 @@ async function registerAccount() {
         setAccountMessage('The account system could not connect to Supabase. Please refresh and try again.');
         return;
     }
-
     const username = document.getElementById('registerUsername').value.trim();
     const email = document.getElementById('registerEmail').value.trim();
     const password = document.getElementById('registerPassword').value;
     const button = document.getElementById('registerButton');
-
-    if (!username || !email || !password) {
-        setAccountMessage('Please complete every field.');
-        return;
-    }
-
-    if (password.length < 6) {
-        setAccountMessage('Your password must contain at least 6 characters.');
-        return;
-    }
-
+    if (!username || !email || !password) return setAccountMessage('Please complete every field.');
+    if (password.length < 6) return setAccountMessage('Your password must contain at least 6 characters.');
     button.disabled = true;
-    button.textContent = 'CHECKING THE NAME...';
-
+    button.textContent = 'CREATING ACCOUNT...';
     try {
-        /*
-         * Check the nickname before creating the account.
-         * Support both RPC names used by the supplied Supabase SQL revisions.
-         */
-        const normalizedUsername = username.trim();
-        let nicknameTaken = null;
-        let nicknameCheckError = null;
-
-        ({ data: nicknameTaken, error: nicknameCheckError } =
-            await supabaseClient.rpc('is_nickname_taken', {
-                requested_nickname: normalizedUsername
-            }));
-
-        if (nicknameCheckError &&
-            (nicknameCheckError.code === '42883' || nicknameCheckError.code === 'PGRST202')) {
-            ({ data: nicknameTaken, error: nicknameCheckError } =
-                await supabaseClient.rpc('nickname_is_taken', {
-                    requested_nickname: normalizedUsername
-                }));
-        }
-
-        if (nicknameCheckError) {
-            throw new Error('Could not check that nickname. Please run the supplied Supabase SQL setup, then try again.');
-        }
-
-        if (nicknameTaken === true) {
-            throw new Error('That name is already taken. Please choose another name.');
-        }
-
-        button.textContent = 'CREATING ACCOUNT...';
-
         const { data, error } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: {
-                data: { username },
-                emailRedirectTo: SITE_URL
-            }
+            email, password,
+            options: { data: { username }, emailRedirectTo: SITE_URL }
         });
-
         if (error) throw error;
-
         if (data.session && data.user) {
             currentAuthUser = data.user;
             updateAccountButton();
@@ -8438,9 +8349,7 @@ async function saveTempleWriting(writingType,title,content='',sourceUrl=window.l
 }
 
 async function deleteCandleFromAccount(id) {
-    if (!supabaseClient || !currentAuthUser || !id) {
-        return { ok: false, error: 'Not signed in.' };
-    }
+    if (!supabaseClient || !currentAuthUser || !id) return { ok: false, missingTable: false };
 
     const { error } = await supabaseClient
         .from('user_candles')
@@ -8448,59 +8357,40 @@ async function deleteCandleFromAccount(id) {
         .eq('id', id)
         .eq('user_id', currentAuthUser.id);
 
+    /* PGRST205 / 42P01 means the table has not been created yet.
+       Do not turn this into a confusing generic browser error. */
     if (error) {
-        console.error('Could not delete candle:', error);
-        return { ok: false, error: error.message || 'Delete failed.' };
+        const missingTable = error.code === 'PGRST205' || error.code === '42P01' || /user_candles.*schema cache|relation.*user_candles.*does not exist/i.test(error.message || '');
+        return { ok: false, missingTable };
     }
 
-    return { ok: true, error: null };
+    return { ok: true, missingTable: false };
 }
 
 async function deleteSanctuaryCandle(id) {
-    if (!currentAuthUser || !id) return;
+    if (!currentAuthUser) return;
     if (!confirm('Delete this candle from your sanctuary?')) return;
 
     const result = await deleteCandleFromAccount(id);
 
-    if (!result.ok) {
-        alert(result.error || 'Could not delete this candle. Please try again.');
+    if (result.ok) {
+        await loadSanctuaryCandles();
         return;
     }
 
-    const localIndex = activeDedications.findIndex(item => item.supabase_id === id);
-
-    if (localIndex !== -1) {
-        const dedication = activeDedications[localIndex];
-
-        if (dedicationTimers.has(dedication.id)) {
-            clearTimeout(dedicationTimers.get(dedication.id));
-            dedicationTimers.delete(dedication.id);
-        }
-
-        const node = dedicationNodes.get(dedication.id);
-        if (node) {
-            node.remove();
-            dedicationNodes.delete(dedication.id);
-        }
-
-        activeDedications.splice(localIndex, 1);
-        saveAllDedications();
-        updateHiddenFlameStatus();
-        updateDailyFlameStatus();
+    if (result.missingTable) {
+        alert('The candle table is not set up in Supabase yet. Run the supplied user_candles SQL setup once, then try again.');
+        return;
     }
 
-    await loadSanctuaryCandles();
+    alert('Could not delete this candle. Please try again.');
 }
 
 async function loadSanctuaryCandles(){
     const el=document.getElementById('sanctuaryCandlesList'); if(!el) return;
     if(!currentAuthUser){emptySanctuary('sanctuaryCandlesList','Enter the Temple first.');return;}
 
-    const {data,error}=await supabaseClient
-        .from('user_candles')
-        .select('*')
-        .eq('user_id', currentAuthUser.id)
-        .order('created_at',{ascending:false});
+    const {data,error}=await supabaseClient.from('user_candles').select('*').order('created_at',{ascending:false});
 
     if(error){
         const missingTable = error.code === 'PGRST205' || error.code === '42P01' || /user_candles.*schema cache|relation.*user_candles.*does not exist/i.test(error.message || '');
