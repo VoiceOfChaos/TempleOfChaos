@@ -7305,6 +7305,32 @@ body.temple-popup-open .account-button {
 }
 </style>
 
+
+<style id="public-burning-candles">
+.public-candle-list { display:grid; gap:10px; }
+.public-candle { cursor:pointer; }
+.sanctuary-candle-burner {
+    margin-top:6px;
+    font-size:9px;
+    letter-spacing:.08em;
+    opacity:.72;
+}
+.sanctuary-candle-time {
+    margin-top:4px;
+    font-size:9px;
+    letter-spacing:.06em;
+}
+</style>
+<script id="public-burning-candle-refresh">
+setInterval(() => {
+    if (typeof sanctuaryCache !== 'undefined' &&
+        typeof sanctuaryCurrentTab !== 'undefined' &&
+        sanctuaryCurrentTab === 'candles') {
+        renderSanctuaryTab('candles');
+    }
+}, 1000);
+</script>
+
 </head>
 <body>
 <button
@@ -7585,10 +7611,6 @@ body.temple-popup-open .account-button {
                 Before boundaries.
                 Before the world had a name.
             </p>
-
-            <div class="chamber-placeholder">
-                This chamber awaits its story.
-            </div>
 
             <br>
 <!-- =====================================================
@@ -10242,7 +10264,7 @@ async function loadSanctuary() {
         const result = await supabaseClient
             .from("user_candles")
             .select("*")
-            .eq("user_id", uid)
+            .eq("status", "active")
             .order("created_at", {ascending:false});
 
         if (result.error) {
@@ -10445,7 +10467,7 @@ function renderSanctuaryTab(tab) {
     } else if (tab === "candles") {
         panel.innerHTML = `
             <div class="sanctuary-toolbar">
-                <h3>MY CANDLES</h3>
+                <h3>ALL BURNING CANDLES</h3>
             </div>
             ${renderCandleList()}
         `;
@@ -10514,33 +10536,53 @@ function renderSavedList() {
 }
 
 function renderCandleList() {
-    // Only show candles that are still burning.
-    sanctuaryCache.candles = (sanctuaryCache.candles || []).filter(isCandleCurrentlyBurning);
+    const candles = (sanctuaryCache.candles || [])
+        .filter(isCandleCurrentlyBurning);
 
-    if (!sanctuaryCache.candles.length) {
-        return '<div class="sanctuary-empty">Your dedicated candles will appear here.</div>';
+    if (!candles.length) {
+        return '<div class="sanctuary-empty">No candles are burning at this moment.</div>';
     }
 
-    return `<div class="sanctuary-list">${sanctuaryCache.candles.map(item => {
-        const candleKey = item.dedication_id || item.id;
-        const status = item.status || (
-            item.burn_until === 'forever' ? 'BURNING INDEFINITELY' : 'ACTIVE'
-        );
+    return `<div class="public-candle-list">
+        ${candles.map(candle => {
+            const candleKey = candle.dedication_id || candle.id;
+            const burner = candle.burner_name ||
+                           candle.display_name ||
+                           candle.username ||
+                           candle.user_name ||
+                           candle.email ||
+                           'Anonymous';
+            const deity = candle.deity || 'Undedicated';
+            const intention = candle.intention || 'A quiet flame of devotion';
+            const remaining = candle.burnUntil || candle.burn_until;
 
-        return `
-        <article class="sanctuary-item sanctuary-candle-item">
-            <div class="sanctuary-item-title">🕯 ${escapeSanctuary(item.deity || "Undedicated flame")}</div>
-            <div class="sanctuary-item-meta">${escapeSanctuary(status)}</div>
-            <div class="sanctuary-item-text">${escapeSanctuary(item.intention || "A flame dedicated within the Temple.")}</div>
-            <div class="sanctuary-item-actions">
-                <button class="sanctuary-small sanctuary-delete-candle"
-                    type="button"
-                    data-candle-key="${escapeSanctuary(candleKey)}">
-                    DELETE CANDLE
-                </button>
-            </div>
-        </article>`;
-    }).join("")}</div>`;
+            let remainingText = 'ETERNAL FLAME';
+            if (remaining !== 'forever') {
+                const seconds = Math.max(0, Math.floor((Number(remaining) - Date.now()) / 1000));
+                const days = Math.floor(seconds / 86400);
+                const hours = Math.floor((seconds % 86400) / 3600);
+                const mins = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+
+                if (days) remainingText = `${days}d ${hours}h ${mins}m`;
+                else if (hours) remainingText = `${hours}h ${mins}m ${secs}s`;
+                else if (mins) remainingText = `${mins}m ${secs}s`;
+                else remainingText = `${secs}s`;
+            }
+
+            return `
+                <article class="sanctuary-candle-item public-candle" data-candle-key="${escapeSanctuary(candleKey)}">
+                    <div class="sanctuary-candle-symbol">🕯️</div>
+                    <div class="sanctuary-candle-details">
+                        <div class="sanctuary-candle-deity">${escapeSanctuary(deity)}</div>
+                        <div class="sanctuary-candle-intention">${escapeSanctuary(intention)}</div>
+                        <div class="sanctuary-candle-burner">BURNED BY: ${escapeSanctuary(burner)}</div>
+                        <div class="sanctuary-candle-time">TIME LEFT: ${escapeSanctuary(remainingText)}</div>
+                    </div>
+                </article>
+            `;
+        }).join('')}
+    </div>`;
 }
 
 function newSanctuaryEntry(type) {
