@@ -9357,7 +9357,10 @@ async function loadSanctuary() {
             supabaseClient.from("user_candles").select("*").eq("user_id",uid).order("created_at",{ascending:false})
         ]);
 
-        for (const result of [p,d,de,s,c]) {
+        // A missing optional table must not prevent the rest of the Sanctuary
+        // from rendering. Candles also have a local copy, so mobile/offline
+        // sessions can still display dedicated flames immediately.
+        for (const result of [p,d,de,s]) {
             if (result.error && result.error.code !== "42P01") throw result.error;
         }
 
@@ -9365,7 +9368,40 @@ async function loadSanctuary() {
         sanctuaryCache.devotions = d.data || [];
         sanctuaryCache.deities = de.data || [];
         sanctuaryCache.saved = s.data || [];
-        sanctuaryCache.candles = c.data || [];
+
+        const databaseCandles = (!c.error || c.error.code === "42P01") ? (c.data || []) : [];
+        const localCandles = Array.isArray(activeDedications) ? activeDedications : [];
+
+        // Merge database candles with any local dedicated candles that have
+        // not reached Supabase yet. This is especially important on mobile,
+        // where the Sanctuary can be opened immediately after creating a flame.
+        const byKey = new Map();
+        databaseCandles.forEach(item => {
+            byKey.set(item.dedication_id || item.id, item);
+        });
+        localCandles.forEach(item => {
+            const key = item.id;
+            if (!byKey.has(key)) {
+                byKey.set(key, {
+                    id: key,
+                    user_id: uid,
+                    dedication_id: key,
+                    deity: item.deity || null,
+                    intention: item.intention || null,
+                    status: 'active',
+                    duration: String(item.duration || '3600'),
+                    burn_until: item.burnUntil || 'forever',
+                    candle_color: item.color || '#eee6d6',
+                    flame_color: item.flameColor || '#f5d58a',
+                    hidden: !!item.hidden,
+                    created_at: new Date(item.createdAt || Date.now()).toISOString(),
+                    _localOnly: true
+                });
+            }
+        });
+
+        sanctuaryCache.candles = Array.from(byKey.values())
+            .sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
         renderSanctuaryTab(sanctuaryCurrentTab);
     } catch (error) {
