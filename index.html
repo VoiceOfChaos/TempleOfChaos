@@ -7815,6 +7815,47 @@ setInterval(() => {
 }
 </style>
 
+
+<style id="candle-hide-owner-final">
+#dedicationInfo .dedication-hide-button {
+    width: 100%;
+    min-height: 38px;
+    margin-top: 9px;
+}
+
+#dedicationInfo .dedication-extinguish-button {
+    width: 100%;
+    min-height: 38px;
+    margin-top: 9px;
+}
+
+#dedicationInfo .dedication-delete-button,
+#dedicationInfo .account-mobile-candle-delete {
+    display: none !important;
+}
+</style>
+
+
+<style id="hidden-flames-button-final">
+#hiddenFlameStatus {
+    display: inline-block;
+    min-height: 14px;
+}
+button[onclick="showHiddenDedications()"] {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+</style>
+
+
+<style id="strict-owner-extinguish-visibility">
+#dedicationInfo .dedication-extinguish-button[hidden] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+</style>
+
 </head>
 <body>
 <button
@@ -9045,6 +9086,59 @@ const GUEST_DAILY_DEDICATION_LIMIT = 5;
 const REGISTERED_DAILY_DEDICATION_LIMIT = 15;
 const DAILY_LIMIT_STORAGE_KEY = 'templeChaosDailyDedications';
 
+const VIEWER_HIDDEN_CANDLES_KEY = 'templeChaosViewerHiddenCandles';
+
+function getViewerHiddenStorageKey() {
+    if (currentAuthUser) {
+        return `${VIEWER_HIDDEN_CANDLES_KEY}:user:${currentAuthUser.id}`;
+    }
+
+    return `${VIEWER_HIDDEN_CANDLES_KEY}:guest:${getGuestSessionId()}`;
+}
+
+function getViewerHiddenCandleIds() {
+    try {
+        const raw = localStorage.getItem(getViewerHiddenStorageKey());
+        const list = JSON.parse(raw || '[]');
+        return Array.isArray(list) ? list.map(String) : [];
+    } catch (_) {
+        return [];
+    }
+}
+
+function setViewerHiddenCandleIds(ids) {
+    try {
+        localStorage.setItem(
+            getViewerHiddenStorageKey(),
+            JSON.stringify([...new Set(ids.map(String))])
+        );
+    } catch (_) {}
+}
+
+function isViewerCandleHidden(dedication) {
+    if (!dedication) return false;
+    const id = dedication.id || dedication.dedication_id;
+    return getViewerHiddenCandleIds().includes(String(id));
+}
+
+function hideCandleForViewer(dedication) {
+    if (!dedication) return;
+    const id = dedication.id || dedication.dedication_id;
+    const ids = getViewerHiddenCandleIds();
+    if (!ids.includes(String(id))) ids.push(String(id));
+    setViewerHiddenCandleIds(ids);
+}
+
+function showCandleForViewer(dedication) {
+    if (!dedication) return;
+    const id = dedication.id || dedication.dedication_id;
+    setViewerHiddenCandleIds(
+        getViewerHiddenCandleIds().filter(item => item !== String(id))
+    );
+}
+
+
+
 /*
  * Every logged-out browser session gets its own private guest ID.
  * This is deliberately NOT an account ID and is never sent to Supabase.
@@ -9175,7 +9269,7 @@ function updateHiddenFlameStatus() {
     const status = document.getElementById('hiddenFlameStatus');
     if (!status) return;
 
-    const hiddenCount = activeDedications.filter(item => item.hidden).length;
+    const hiddenCount = activeDedications.filter(isViewerCandleHidden).length;
     status.textContent = hiddenCount > 0
         ? `${hiddenCount} hidden flame${hiddenCount === 1 ? '' : 's'}`
         : '';
@@ -9463,7 +9557,7 @@ function createDedicationNode(dedication, flying = true) {
     node.querySelector('.dedication-flame-age').textContent =
         dedication.burnUntil === 'forever' ? 'ETERNAL FLAME' : 'BURNING';
 
-    node.classList.toggle('is-hidden', !!dedication.hidden);
+    node.classList.toggle('is-hidden', isViewerCandleHidden(dedication));
 
     const start = getSourceApproxPosition(sourceWrap);
 
@@ -9542,7 +9636,7 @@ async function deleteDedicatedCandle(key) {
 
     /*
      * EXTINQUISH LOCALLY FIRST.
-     * Do not wait for Supabase. This makes DELETE CANDLE immediately remove
+     * Do not wait for Supabase. This makes  immediately remove
      * the visible flame and stop its timer.
      */
     const normalizedKey = String(key);
@@ -9900,26 +9994,63 @@ function openDedicationInfo(id) {
     const editButton = document.querySelector('.dedication-edit-button');
     const extinguishButton = document.querySelector('.dedication-extinguish-button');
 
-    const ownerId = dedication.user_id || dedication.owner_id || null;
+    /*
+     * Resolve ownership from both the live candle and the Sanctuary copy.
+     * The Sanctuary copy is useful after a refresh when the live object may
+     * not yet contain its database owner field.
+     */
+    const sanctuaryCopy = (sanctuaryCache.candles || []).find(item => {
+        const key = item && (item.dedication_id || item.id);
+        return String(key || '') === String(dedication.id || '');
+    });
+
+    const ownerId =
+        dedication.user_id ||
+        dedication.owner_id ||
+        (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)) ||
+        null;
+
     const isOwner = !!currentAuthUser &&
         !!ownerId &&
         String(currentAuthUser.id) === String(ownerId);
 
     /* Everyone may hide/show. Only the creator gets edit/extinguish. */
     if (hideButton) {
+        const viewerHidden = isViewerCandleHidden(dedication);
         hideButton.hidden = false;
-        hideButton.textContent = dedication.hidden ? 'SHOW FLAME' : 'HIDE FLAME';
-        hideButton.onclick = dedication.hidden ? showSelectedDedication : hideSelectedDedication;
+        hideButton.style.display = 'block';
+        hideButton.style.pointerEvents = 'auto';
+        hideButton.textContent = viewerHidden ? 'SHOW FLAME' : 'HIDE FLAME';
+        hideButton.onclick = viewerHidden ? showSelectedDedication : hideSelectedDedication;
     }
 
     if (editButton) {
         editButton.hidden = !isOwner;
+        editButton.style.display = isOwner ? 'block' : 'none';
+        editButton.style.pointerEvents = isOwner ? 'auto' : 'none';
         editButton.onclick = isOwner ? editSelectedDedication : null;
     }
 
     if (extinguishButton) {
-        extinguishButton.hidden = !isOwner;
-        extinguishButton.onclick = isOwner ? extinguishSelectedDedication : null;
+        extinguishButton.textContent = 'EXTINGUISH FLAME';
+
+        if (isOwner) {
+            /* Owner: button exists and works. */
+            extinguishButton.hidden = false;
+            extinguishButton.disabled = false;
+            extinguishButton.style.display = 'block';
+            extinguishButton.style.visibility = 'visible';
+            extinguishButton.style.pointerEvents = 'auto';
+            extinguishButton.onclick = extinguishSelectedDedication;
+        } else {
+            /* Not the owner: button is physically absent from the panel. */
+            extinguishButton.hidden = true;
+            extinguishButton.disabled = true;
+            extinguishButton.style.display = 'none';
+            extinguishButton.style.visibility = 'hidden';
+            extinguishButton.style.pointerEvents = 'none';
+            extinguishButton.onclick = null;
+        }
     }
 
     document.getElementById('dedicationReactionStatus').textContent = '';
@@ -9991,7 +10122,17 @@ function closeDedicationInfo() {
 function extinguishSelectedDedication() {
     if (!currentDedication) return;
 
-    const ownerId = currentDedication.user_id || currentDedication.owner_id || null;
+    const sanctuaryCopy = (sanctuaryCache.candles || []).find(item => {
+        const key = item && (item.dedication_id || item.id);
+        return String(key || '') === String(currentDedication.id || '');
+    });
+
+    const ownerId =
+        currentDedication.user_id ||
+        currentDedication.owner_id ||
+        (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)) ||
+        null;
+
     if (!currentAuthUser || !ownerId ||
         String(currentAuthUser.id) !== String(ownerId)) {
         alert('Only the account that created this candle can extinguish it.');
@@ -10075,43 +10216,67 @@ function extinguishDedication(id, removeFromDatabase = true, internalExpiry = fa
 function hideSelectedDedication() {
     if (!currentDedication) return;
 
-    currentDedication.hidden = true;
+    const dedication = currentDedication;
+    hideCandleForViewer(dedication);
 
-    const node = dedicationNodes.get(currentDedication.id);
-    if (node) node.classList.add('is-hidden');
+    const node = dedicationNodes.get(dedication.id);
+    if (node) {
+        node.classList.add('is-hidden');
+        node.classList.remove('is-visible');
+        node.style.opacity = '0';
+        node.style.pointerEvents = 'none';
+    }
 
-    saveAllDedications();
     updateHiddenFlameStatus();
     closeDedicationInfo();
+
+    if (typeof renderSanctuaryTab === 'function') {
+        renderSanctuaryTab(sanctuaryCurrentTab);
+    }
 }
 
 function showSelectedDedication() {
     if (!currentDedication) return;
 
-    currentDedication.hidden = false;
+    const dedication = currentDedication;
+    showCandleForViewer(dedication);
 
-    const node = dedicationNodes.get(currentDedication.id);
-    if (node) node.classList.remove('is-hidden');
+    const node = dedicationNodes.get(dedication.id);
+    if (node) {
+        node.classList.remove('is-hidden');
+        node.classList.add('is-visible');
+        node.style.opacity = '.96';
+        node.style.pointerEvents = 'auto';
+    }
 
-    saveAllDedications();
     updateHiddenFlameStatus();
+    closeDedicationInfo();
 
-    const hideButton = document.querySelector('.dedication-hide-button');
-    if (hideButton) {
-        hideButton.textContent = 'HIDE FLAME';
-        hideButton.onclick = hideSelectedDedication;
+    if (typeof renderSanctuaryTab === 'function') {
+        renderSanctuaryTab(sanctuaryCurrentTab);
     }
 }
 
 function showHiddenDedications() {
-    activeDedications.forEach(dedication => {
-        dedication.hidden = false;
+    const hidden = activeDedications.filter(isViewerCandleHidden);
+
+    hidden.forEach(dedication => {
+        showCandleForViewer(dedication);
+
         const node = dedicationNodes.get(dedication.id);
-        if (node) node.classList.remove('is-hidden');
+        if (node) {
+            node.classList.remove('is-hidden');
+            node.classList.add('is-visible');
+            node.style.opacity = '.96';
+            node.style.pointerEvents = 'auto';
+        }
     });
 
-    saveAllDedications();
     updateHiddenFlameStatus();
+
+    if (typeof renderSanctuaryTab === 'function') {
+        renderSanctuaryTab(sanctuaryCurrentTab);
+    }
 }
 
 function editSelectedDedication() {
@@ -11310,7 +11475,7 @@ function renderWritingList(items,type) {
             <div class="sanctuary-item-text">${escapeSanctuary(item.content)}</div>
             <div class="sanctuary-item-actions">
                 <button class="sanctuary-small" onclick="togglePublic('${type}','${item.id}',${!item.is_public})">${item.is_public ? "MAKE PRIVATE" : "MAKE PUBLIC"}</button>
-                <button class="sanctuary-small" onclick="deleteSanctuaryEntry('${type}','${item.id}')">DELETE</button>
+                
             </div>
         </article>
     `).join("")}</div>`;
@@ -11326,7 +11491,7 @@ function renderDeityList() {
             <div class="sanctuary-item-text">${escapeSanctuary(item.description || "")}</div>
             <div class="sanctuary-item-actions">
                 <button class="sanctuary-small" onclick="togglePublic('deity','${item.id}',${!item.is_public})">${item.is_public ? "MAKE PRIVATE" : "MAKE PUBLIC"}</button>
-                <button class="sanctuary-small" onclick="deleteSanctuaryEntry('deity','${item.id}')">DELETE</button>
+                
             </div>
         </article>
     `).join("")}</div>`;
@@ -11768,7 +11933,7 @@ document.addEventListener("DOMContentLoaded", function () {
 /*
  * FINAL DIRECT DELETE HANDLER
  * The Sanctuary renderer attaches the click listener directly to every
- * DELETE CANDLE button. This function only handles the actual deletion.
+ *  button. This function only handles the actual deletion.
  */
 window.deleteDedicatedCandle = async function (key) {
     if (!key) return;
@@ -11991,6 +12156,40 @@ document.addEventListener('click', function (event) {
         console.error('Burn candle failed:', error);
         alert('The candle could not be lit. Please try again.');
     });
+}, true);
+</script>
+
+
+<script id="candle-owner-extinguish-guard">
+document.addEventListener('click', function (event) {
+    const button = event.target.closest(
+        '#dedicationInfo .dedication-extinguish-button'
+    );
+    if (!button) return;
+
+    const dedication = window.currentDedication || currentDedication;
+    const sanctuaryCopy = dedication && (sanctuaryCache.candles || []).find(item => {
+        const key = item && (item.dedication_id || item.id);
+        return String(key || '') === String(dedication.id || '');
+    });
+
+    const ownerId =
+        dedication &&
+        (dedication.user_id ||
+         dedication.owner_id ||
+         (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)));
+
+    const allowed = !!currentAuthUser &&
+        !!ownerId &&
+        String(currentAuthUser.id) === String(ownerId);
+
+    if (!allowed) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        button.style.display = 'none';
+        button.style.visibility = 'hidden';
+        button.style.pointerEvents = 'none';
+    }
 }, true);
 </script>
 
