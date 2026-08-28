@@ -7856,6 +7856,562 @@ button[onclick="showHiddenDedications()"] {
 }
 </style>
 
+
+<style id="candle-editor-no-scroll-final">
+#candleModal .candle-design-window {
+    width: min(900px, 94vw) !important;
+    height: min(650px, 90vh) !important;
+    max-height: 90vh !important;
+    min-height: 0 !important;
+    grid-template-columns: 38% 62% !important;
+    overflow: hidden !important;
+}
+
+#candleModal .candle-preview-area {
+    min-height: 0 !important;
+    height: 100% !important;
+    padding: 18px 14px !important;
+    overflow: hidden !important;
+}
+
+#candleModal #largeCandle {
+    width: 165px !important;
+    height: 410px !important;
+    flex-basis: 410px !important;
+}
+
+#candleModal #largeCandle .large-candle-flame {
+    width: 68px !important;
+    height: 108px !important;
+}
+
+#candleModal #largeCandle .large-candle-wick {
+    top: 56px !important;
+    height: 38px !important;
+}
+
+#candleModal #largeCandle .large-candle-body {
+    width: 112px !important;
+    height: 300px !important;
+    bottom: 38px !important;
+}
+
+#candleModal #largeCandle .large-candle-body::before {
+    width: 112px !important;
+}
+
+#candleModal #largeCandle .large-candle-base {
+    width: 155px !important;
+    height: 24px !important;
+    bottom: 13px !important;
+}
+
+#candleModal .candle-control-card {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    padding: 28px 30px 24px !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#candleModal .candle-control-card .modal-symbol {
+    margin-bottom: 7px !important;
+    font-size: 28px !important;
+}
+
+#candleModal .candle-control-card h2 {
+    margin-bottom: 8px !important;
+    font-size: clamp(20px, 2.3vw, 30px) !important;
+}
+
+#candleModal .candle-control-card .candle-subtitle,
+#candleModal .candle-control-card > p {
+    margin-bottom: 11px !important;
+    font-size: 12px !important;
+}
+
+#candleModal .candle-form-group {
+    margin-bottom: 9px !important;
+}
+
+#candleModal .candle-form-group label {
+    margin-bottom: 4px !important;
+    font-size: 9px !important;
+}
+
+#candleModal #candleDeity {
+    height: 38px !important;
+}
+
+#candleModal #candleIntention {
+    height: 58px !important;
+    min-height: 58px !important;
+}
+
+#candleModal #candleDuration {
+    height: 38px !important;
+}
+
+#candleModal .candle-palette,
+#candleModal .flame-palette {
+    gap: 8px !important;
+    margin-bottom: 4px !important;
+}
+
+#candleModal .candle-swatch,
+#candleModal .flame-swatch {
+    width: 31px !important;
+    height: 31px !important;
+    flex-basis: 31px !important;
+}
+
+#candleModal #dailyFlameStatus {
+    margin: 7px 0 7px !important;
+    min-height: 15px !important;
+    font-size: 10px !important;
+}
+
+#candleModal #candleSaveButton {
+    position: static !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-height: 44px !important;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+#candleModal #extinguish-candle-button {
+    flex: 0 0 auto !important;
+    min-height: 40px !important;
+    margin-top: 7px !important;
+}
+
+#candleModal .candle-modal-close {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    width: 36px !important;
+    height: 36px !important;
+    z-index: 9999 !important;
+}
+
+@media (max-width: 800px) {
+    #candleModal .candle-design-window {
+        width: 94vw !important;
+        height: 92vh !important;
+        max-height: 92vh !important;
+        grid-template-columns: 1fr !important;
+        grid-template-rows: 215px minmax(0, 1fr) !important;
+    }
+
+    #candleModal .candle-preview-area {
+        height: 215px !important;
+        min-height: 215px !important;
+    }
+
+    #candleModal #largeCandle {
+        width: 95px !important;
+        height: 195px !important;
+        flex-basis: 195px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-flame {
+        width: 45px !important;
+        height: 70px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-wick {
+        top: 37px !important;
+        height: 24px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-body {
+        width: 68px !important;
+        height: 130px !important;
+        bottom: 18px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-body::before {
+        width: 68px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-base {
+        width: 100px !important;
+        height: 14px !important;
+        bottom: 5px !important;
+    }
+
+    #candleModal .candle-control-card {
+        overflow: hidden !important;
+        padding: 22px 18px 18px !important;
+    }
+
+    #candleModal #candleIntention {
+        height: 48px !important;
+        min-height: 48px !important;
+    }
+
+    #candleModal .candle-swatch,
+    #candleModal .flame-swatch {
+        width: 28px !important;
+        height: 28px !important;
+        flex-basis: 28px !important;
+    }
+}
+</style>
+
+
+<style id="candle-final-buttons-visible">
+#candleModal .candle-design-window {
+    width: min(900px, 94vw) !important;
+    height: min(620px, calc(100vh - 28px)) !important;
+    max-height: calc(100vh - 28px) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    grid-template-columns: 37% 63% !important;
+}
+
+#candleModal .candle-preview-area {
+    min-height: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    padding: 8px !important;
+}
+
+#candleModal #largeCandle {
+    width: 140px !important;
+    height: 350px !important;
+    flex: 0 0 350px !important;
+}
+
+#candleModal #largeCandle .large-candle-flame {
+    width: 60px !important;
+    height: 95px !important;
+}
+
+#candleModal #largeCandle .large-candle-wick {
+    top: 50px !important;
+    height: 32px !important;
+}
+
+#candleModal #largeCandle .large-candle-body {
+    width: 98px !important;
+    height: 250px !important;
+    bottom: 32px !important;
+}
+
+#candleModal #largeCandle .large-candle-body::before {
+    width: 98px !important;
+}
+
+#candleModal #largeCandle .large-candle-base {
+    width: 135px !important;
+    height: 21px !important;
+    bottom: 9px !important;
+}
+
+#candleModal .candle-control-card {
+    position: relative !important;
+    box-sizing: border-box !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    padding: 20px 26px 80px !important;
+}
+
+#candleModal .candle-control-card .modal-symbol {
+    font-size: 23px !important;
+    margin-bottom: 2px !important;
+}
+
+#candleModal .candle-control-card h2 {
+    font-size: 24px !important;
+    line-height: 1.05 !important;
+    margin: 2px 0 4px !important;
+}
+
+#candleModal .candle-control-card .modal-subtitle {
+    font-size: 10px !important;
+    margin: 0 0 6px !important;
+}
+
+#candleModal .candle-control-card > label {
+    display: block !important;
+    margin: 5px 0 3px !important;
+    font-size: 8px !important;
+}
+
+#candleModal #candleDeity {
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 6px 10px !important;
+}
+
+#candleModal #candleIntention {
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 6px 10px !important;
+}
+
+#candleModal #candleDuration {
+    height: 32px !important;
+    min-height: 32px !important;
+}
+
+#candleModal .candle-palette,
+#candleModal .flame-palette {
+    margin: 4px 0 2px !important;
+    gap: 6px !important;
+}
+
+#candleModal .candle-swatch,
+#candleModal .flame-swatch {
+    width: 27px !important;
+    height: 27px !important;
+    flex: 0 0 27px !important;
+}
+
+#candleModal .custom-colour-row {
+    margin: 5px 0 2px !important;
+    height: 25px !important;
+}
+
+#candleModal .custom-colour-row input {
+    width: 38px !important;
+    height: 25px !important;
+}
+
+#candleModal #dailyFlameStatus {
+    position: absolute !important;
+    left: 26px !important;
+    right: 26px !important;
+    bottom: 67px !important;
+    margin: 0 !important;
+    min-height: 13px !important;
+    font-size: 8px !important;
+    text-align: center !important;
+}
+
+#candleModal #candleSaveButton {
+    position: absolute !important;
+    left: 26px !important;
+    right: 26px !important;
+    bottom: 16px !important;
+    width: auto !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    z-index: 100 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+#candleModal #extinguish-candle-button {
+    position: absolute !important;
+    left: 26px !important;
+    right: 26px !important;
+    bottom: 65px !important;
+    width: auto !important;
+    height: 37px !important;
+    min-height: 37px !important;
+    margin: 0 !important;
+    z-index: 101 !important;
+}
+
+#candleModal .candle-modal-close {
+    top: 9px !important;
+    right: 9px !important;
+    width: 34px !important;
+    height: 34px !important;
+    z-index: 1000 !important;
+}
+
+@media (max-width: 800px) {
+    #candleModal .candle-design-window {
+        width: 94vw !important;
+        height: min(92vh, 720px) !important;
+        grid-template-columns: 1fr !important;
+        grid-template-rows: 180px minmax(0, 1fr) !important;
+    }
+
+    #candleModal .candle-preview-area {
+        height: 180px !important;
+        min-height: 180px !important;
+    }
+
+    #candleModal #largeCandle {
+        width: 80px !important;
+        height: 155px !important;
+        flex-basis: 155px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-flame {
+        width: 40px !important;
+        height: 64px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-wick {
+        top: 32px !important;
+        height: 22px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-body {
+        width: 58px !important;
+        height: 106px !important;
+        bottom: 14px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-body::before {
+        width: 58px !important;
+    }
+
+    #candleModal #largeCandle .large-candle-base {
+        width: 84px !important;
+        height: 12px !important;
+        bottom: 3px !important;
+    }
+
+    #candleModal .candle-control-card {
+        padding: 18px 16px 78px !important;
+    }
+
+    #candleModal #dailyFlameStatus {
+        left: 16px !important;
+        right: 16px !important;
+    }
+
+    #candleModal #candleSaveButton,
+    #candleModal #extinguish-candle-button {
+        left: 16px !important;
+        right: 16px !important;
+    }
+}
+</style>
+
+
+<style id="candle-edit-mode-clean-final">
+/* In EDIT mode the red extinguish action is intentionally absent.
+   Only SAVE CHANGES is shown. */
+#candleModal.edit-mode #extinguish-candle-button {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* The daily dedication counter is relevant only when creating a new candle. */
+#candleModal.edit-mode #dailyFlameStatus {
+    display: none !important;
+}
+
+/* Make the two text controls unquestionably editable. */
+#candleModal #candleDeity,
+#candleModal #candleIntention {
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    cursor: text !important;
+    opacity: 1 !important;
+}
+
+/* Edit-mode action button is always visible and reachable. */
+#candleModal.edit-mode #candleSaveButton {
+    display: block !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+</style>
+
+
+
+
+
+<style id="owner-actions-final">
+#dedicationInfo .dedication-edit-button,
+#dedicationInfo .dedication-hide-button,
+#dedicationInfo .dedication-extinguish-button {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 9px;
+}
+
+#dedicationInfo .dedication-extinguish-button {
+    border-color: rgba(150,110,90,.35);
+    background: rgba(90,50,40,.12);
+    color: #bca99a;
+}
+
+#dedicationInfo .dedication-extinguish-button[hidden],
+#dedicationInfo .dedication-edit-button[hidden] {
+    display: none !important;
+}
+</style>
+
+
+<style id="candle-actions-clean-final">
+#dedicationInfo .dedication-hide-button {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    min-height: 42px !important;
+    margin-top: 9px !important;
+}
+
+#dedicationInfo .dedication-extinguish-button[hidden] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+#dedicationInfo .dedication-extinguish-button:not([hidden]) {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    min-height: 42px !important;
+    margin-top: 9px !important;
+}
+</style>
+
+
+<style id="single-hide-extinguish-final">
+#dedicationInfo .dedication-edit-button,
+#dedicationInfo .dedication-hide-button,
+#dedicationInfo .dedication-extinguish-button {
+    width: 100% !important;
+    min-height: 42px !important;
+    margin-top: 9px !important;
+}
+
+#dedicationInfo .dedication-extinguish-button {
+    border: 1px solid rgba(150,110,90,.38) !important;
+    background: rgba(90,50,40,.12) !important;
+    color: #bca99a !important;
+}
+
+#dedicationInfo .dedication-edit-button[hidden],
+#dedicationInfo .dedication-extinguish-button[hidden] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+</style>
+
+
+<style id="definitive-extinguish-button">
+#dedicationInfo .dedication-extinguish-button:not([hidden]) {
+    display: block !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+</style>
+
 </head>
 <body>
 <button
@@ -8895,7 +9451,7 @@ button[onclick="showHiddenDedications()"] {
                 id="extinguish-candle-button"
                 class="candle-extinguish-button"
                 type="button"
-                onclick="extinguishSelectedCandle()"
+                onclick="extinguishSelectedDedication()"
                 hidden
             >
                 EXTINGUISH THE FLAME
@@ -8930,7 +9486,7 @@ button[onclick="showHiddenDedications()"] {
                 <div id="dedicationReactionStatus" class="dedication-reaction-status"></div>
                 <button class="dedication-edit-button" type="button" onclick="editSelectedDedication()">EDIT FLAME</button>
                 <button class="dedication-hide-button" type="button" onclick="hideSelectedDedication()">HIDE FLAME</button>
-                <button class="dedication-extinguish-button" type="button" onclick="extinguishSelectedDedication()">EXTINGUISH FLAME</button>
+                <button class="dedication-extinguish-button" type="button" onclick="extinguishSelectedDedication(this.dataset.candleId)">EXTINGUISH CANDLE</button>
             </div>
         </div>
 
@@ -9288,61 +9844,69 @@ function generateDedicationId() {
 }
 
 function openCandleModal(candle) {
+    /* NEW CANDLE MODE */
     selectedCandle = candle;
-    updateDailyFlameStatus();
     pendingCandleDesign = null;
 
+    const modal = document.getElementById('candleModal');
+    const deity = document.getElementById('candleDeity');
+    const intention = document.getElementById('candleIntention');
+    const duration = document.getElementById('candleDuration');
+    const colorPicker = document.getElementById('candleColorPicker');
     const saveButton = document.getElementById('candleSaveButton');
-    if (saveButton) saveButton.innerHTML = '✦ &nbsp; BURN THE CANDLE';
+    const largeName = document.getElementById('largeCandleName');
+    const extinguish = document.getElementById('extinguish-candle-button');
+    const dailyStatus = document.getElementById('dailyFlameStatus');
 
-    /* Every click on an altar candle starts a NEW dedication. */
-    document.getElementById('candleDeity').value = '';
-    document.getElementById('candleIntention').value = '';
-    document.getElementById('candleDuration').value = '3600';
-    document.getElementById('candleColorPicker').value = '#eee6d6';
+    if (modal) modal.classList.remove('edit-mode');
+
+    if (deity) deity.value = '';
+    if (intention) intention.value = '';
+    if (duration) duration.value = '3600';
+    if (colorPicker) colorPicker.value = '#eee6d6';
 
     setLargeCandleColor('#eee6d6');
     setLargeCandleFlame('#f5d58a');
 
-    document.getElementById('largeCandleName').textContent = 'YOUR CANDLE';
+    if (largeName) largeName.textContent = 'YOUR CANDLE';
+    if (saveButton) saveButton.innerHTML = '✦ &nbsp; BURN THE CANDLE';
+
+    if (extinguish) {
+        extinguish.hidden = true;
+        extinguish.style.display = 'none';
+    }
+
+    if (dailyStatus) dailyStatus.style.display = 'block';
 
     document.querySelectorAll('.candle-swatch').forEach(swatch => {
         swatch.classList.toggle('active', swatch.dataset.color === '#eee6d6');
     });
+
     document.querySelectorAll('.flame-swatch').forEach(swatch => {
         swatch.classList.remove('active');
     });
-    const defaultFlame = [...document.querySelectorAll('.flame-swatch')][0];
-    if (defaultFlame) defaultFlame.classList.add('active');
 
-    const extinguish = document.getElementById('extinguish-candle-button');
-    if (extinguish) extinguish.hidden = true;
+    const defaultFlame = document.querySelector('.flame-swatch');
+    if (defaultFlame) defaultFlame.classList.add('active');
 
     updateDailyFlameStatus();
 
-    const modal = document.getElementById('candleModal');
     if (!modal) return;
 
-    /* Re-open the editor even if the previous close hid it inline. */
     modal.style.display = 'flex';
     modal.style.visibility = 'visible';
     modal.style.pointerEvents = 'auto';
     modal.style.zIndex = '2147483646';
-
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-
-    /* Guarantee the new-candle preview starts with the default design. */
-    setLargeCandleColor('#eee6d6');
-    setLargeCandleFlame('#f5d58a');
 }
 
 function closeCandleModal() {
     const modal = document.getElementById('candleModal');
     if (!modal) return;
 
-    modal.classList.remove('active');
+    modal.classList.remove('active', 'edit-mode');
     modal.setAttribute('aria-hidden', 'true');
 
     // Remove the inline display/z-index values used when opening the editor.
@@ -9994,11 +10558,6 @@ function openDedicationInfo(id) {
     const editButton = document.querySelector('.dedication-edit-button');
     const extinguishButton = document.querySelector('.dedication-extinguish-button');
 
-    /*
-     * Resolve ownership from both the live candle and the Sanctuary copy.
-     * The Sanctuary copy is useful after a refresh when the live object may
-     * not yet contain its database owner field.
-     */
     const sanctuaryCopy = (sanctuaryCache.candles || []).find(item => {
         const key = item && (item.dedication_id || item.id);
         return String(key || '') === String(dedication.id || '');
@@ -10014,36 +10573,37 @@ function openDedicationInfo(id) {
         !!ownerId &&
         String(currentAuthUser.id) === String(ownerId);
 
-    /* Everyone may hide/show. Only the creator gets edit/extinguish. */
+    /* Exactly ONE HIDE button. Everyone can hide. */
     if (hideButton) {
-        const viewerHidden = isViewerCandleHidden(dedication);
         hideButton.hidden = false;
         hideButton.style.display = 'block';
+        hideButton.style.visibility = 'visible';
         hideButton.style.pointerEvents = 'auto';
-        hideButton.textContent = viewerHidden ? 'SHOW FLAME' : 'HIDE FLAME';
-        hideButton.onclick = viewerHidden ? showSelectedDedication : hideSelectedDedication;
+        hideButton.textContent = 'HIDE FLAME';
+        hideButton.onclick = hideSelectedDedication;
     }
 
+    /* EDIT + EXTINGUISH only belong to the candle creator. */
     if (editButton) {
         editButton.hidden = !isOwner;
         editButton.style.display = isOwner ? 'block' : 'none';
+        editButton.style.visibility = isOwner ? 'visible' : 'hidden';
         editButton.style.pointerEvents = isOwner ? 'auto' : 'none';
         editButton.onclick = isOwner ? editSelectedDedication : null;
     }
 
     if (extinguishButton) {
-        extinguishButton.textContent = 'EXTINGUISH FLAME';
+        extinguishButton.dataset.candleId = String(dedication.id || dedication.dedication_id || '');
 
         if (isOwner) {
-            /* Owner: button exists and works. */
             extinguishButton.hidden = false;
             extinguishButton.disabled = false;
             extinguishButton.style.display = 'block';
             extinguishButton.style.visibility = 'visible';
             extinguishButton.style.pointerEvents = 'auto';
+            extinguishButton.textContent = 'EXTINGUISH CANDLE';
             extinguishButton.onclick = extinguishSelectedDedication;
         } else {
-            /* Not the owner: button is physically absent from the panel. */
             extinguishButton.hidden = true;
             extinguishButton.disabled = true;
             extinguishButton.style.display = 'none';
@@ -10119,30 +10679,59 @@ function closeDedicationInfo() {
     currentDedication = null;
 }
 
-function extinguishSelectedDedication() {
-    if (!currentDedication) return;
+async function extinguishSelectedDedication(candleIdOverride = null) {
+    const requestedId =
+        candleIdOverride ??
+        document.querySelector('#dedicationInfo .dedication-extinguish-button')?.dataset.candleId ??
+        currentDedication?.id;
 
-    const sanctuaryCopy = (sanctuaryCache.candles || []).find(item => {
-        const key = item && (item.dedication_id || item.id);
-        return String(key || '') === String(currentDedication.id || '');
-    });
+    if (requestedId == null || requestedId === '') return;
 
-    const ownerId =
-        currentDedication.user_id ||
-        currentDedication.owner_id ||
-        (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)) ||
-        null;
+    const dedication = activeDedications.find(item =>
+        item && String(item.id || item.dedication_id || '') === String(requestedId)
+    );
 
-    if (!currentAuthUser || !ownerId ||
-        String(currentAuthUser.id) !== String(ownerId)) {
-        alert('Only the account that created this candle can extinguish it.');
+    if (!dedication) {
+        alert('This candle is no longer burning.');
         return;
     }
 
-    const id = currentDedication.id;
-    extinguishDedication(id);
+    const sanctuaryCopy = (sanctuaryCache.candles || []).find(item => {
+        const itemKey = item && (item.dedication_id || item.id);
+        return String(itemKey || '') === String(dedication.id || '');
+    });
+
+    const ownerId =
+        dedication.user_id ||
+        dedication.owner_id ||
+        (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)) ||
+        null;
+
+    /* Registered owner only. Guests and other accounts are blocked. */
+    if (!currentAuthUser || !ownerId ||
+        String(currentAuthUser.id) !== String(ownerId)) {
+        return;
+    }
+
+    if (!confirm('Extinguish this candle?')) return;
+
+    /*
+     * Pass the EXACT stored id/type from activeDedications. This avoids the
+     * old string-vs-number lookup mismatch inside extinguishDedication().
+     */
+    const exactId = dedication.id;
+
+    if (typeof extinguishDedication === 'function') {
+        extinguishDedication(exactId, true, false);
+    } else {
+        return;
+    }
+
+    /* The canonical function removes the live candle. Close the panel now. */
     closeDedicationInfo();
 }
+
+
 
 function extinguishDedication(id, removeFromDatabase = true, internalExpiry = false) {
     const target = activeDedications.find(item => item && String(item.id) === String(id));
@@ -10234,29 +10823,6 @@ function hideSelectedDedication() {
         renderSanctuaryTab(sanctuaryCurrentTab);
     }
 }
-
-function showSelectedDedication() {
-    if (!currentDedication) return;
-
-    const dedication = currentDedication;
-    showCandleForViewer(dedication);
-
-    const node = dedicationNodes.get(dedication.id);
-    if (node) {
-        node.classList.remove('is-hidden');
-        node.classList.add('is-visible');
-        node.style.opacity = '.96';
-        node.style.pointerEvents = 'auto';
-    }
-
-    updateHiddenFlameStatus();
-    closeDedicationInfo();
-
-    if (typeof renderSanctuaryTab === 'function') {
-        renderSanctuaryTab(sanctuaryCurrentTab);
-    }
-}
-
 function showHiddenDedications() {
     const hidden = activeDedications.filter(isViewerCandleHidden);
 
@@ -10282,7 +10848,6 @@ function showHiddenDedications() {
 function editSelectedDedication() {
     if (!currentDedication) return;
 
-    /* Keep a permanent reference before closing the info popup. */
     const dedication = currentDedication;
     const ownerId = dedication.user_id || dedication.owner_id || null;
 
@@ -10306,29 +10871,45 @@ function editSelectedDedication() {
         return;
     }
 
-    /* Store the candle for the editor BEFORE touching the info popup. */
-    currentDedication = dedication;
-    selectedCandle = altarCandle;
-    pendingCandleDesign = dedication;
-
-    /* Close ONLY the information popup. Do not call closeDedicationInfo(),
-       because that function intentionally clears currentDedication. */
-    const infoPanel = document.getElementById('dedicationInfo');
-    if (infoPanel) {
-        infoPanel.classList.remove('active');
-        infoPanel.setAttribute('aria-hidden', 'true');
-    }
-
-    /* Load the existing candle values into the editor. */
+    const modal = document.getElementById('candleModal');
     const deityInput = document.getElementById('candleDeity');
     const intentionInput = document.getElementById('candleIntention');
     const durationInput = document.getElementById('candleDuration');
     const colorPicker = document.getElementById('candleColorPicker');
+    const saveButton = document.getElementById('candleSaveButton');
+    const extinguishButton = document.getElementById('extinguish-candle-button');
+    const dailyStatus = document.getElementById('dailyFlameStatus');
+    const largeName = document.getElementById('largeCandleName');
 
-    if (deityInput) deityInput.value = dedication.deity || '';
-    if (intentionInput) intentionInput.value = dedication.intention || '';
-    if (durationInput) durationInput.value = String(dedication.duration || '3600');
-    if (colorPicker) colorPicker.value = dedication.color || '#eee6d6';
+    currentDedication = dedication;
+    selectedCandle = altarCandle;
+    pendingCandleDesign = dedication;
+
+    /* Mark the editor as EDIT mode. */
+    if (modal) modal.classList.add('edit-mode');
+
+    /* Load existing text/settings and make the fields editable. */
+    if (deityInput) {
+        deityInput.disabled = false;
+        deityInput.readOnly = false;
+        deityInput.value = dedication.deity || '';
+    }
+
+    if (intentionInput) {
+        intentionInput.disabled = false;
+        intentionInput.readOnly = false;
+        intentionInput.value = dedication.intention || '';
+    }
+
+    if (durationInput) {
+        durationInput.disabled = false;
+        durationInput.value = String(dedication.duration || '3600');
+    }
+
+    if (colorPicker) {
+        colorPicker.disabled = false;
+        colorPicker.value = dedication.color || '#eee6d6';
+    }
 
     chooseCandleColor(dedication.color || '#eee6d6');
     setLargeCandleFlame(dedication.flameColor || '#f5d58a');
@@ -10341,31 +10922,56 @@ function editSelectedDedication() {
         );
     });
 
-    const saveButton = document.getElementById('candleSaveButton');
-    if (saveButton) saveButton.innerHTML = '✦ &nbsp; SAVE CHANGES';
-
-    const largeName = document.getElementById('largeCandleName');
-    if (largeName) largeName.textContent = 'EDIT YOUR CANDLE';
-
-    const extinguishButton = document.getElementById('extinguish-candle-button');
-    if (extinguishButton) extinguishButton.hidden = false;
-
-    /* Show the editor immediately and put it above every other popup. */
-    const modal = document.getElementById('candleModal');
-    if (!modal) return;
-
-    modal.classList.add('active');
-    modal.setAttribute('aria-hidden', 'false');
-    modal.style.display = 'flex';
-    modal.style.zIndex = '2147483646';
-
-    const windowEl = modal.querySelector('.candle-design-window');
-    if (windowEl) {
-        windowEl.style.zIndex = '2';
+    if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.innerHTML = '✦ &nbsp; SAVE CHANGES';
     }
 
+    if (largeName) largeName.textContent = 'EDIT YOUR CANDLE';
+
+    /* No daily dedication counter and no red extinguish button in edit mode. */
+    if (dailyStatus) {
+        dailyStatus.style.display = 'none';
+    }
+
+    if (extinguishButton) {
+        extinguishButton.hidden = true;
+        extinguishButton.disabled = true;
+        extinguishButton.style.display = 'none';
+        extinguishButton.style.visibility = 'hidden';
+        extinguishButton.style.pointerEvents = 'none';
+        extinguishButton.onclick = null;
+    }
+
+    /* Close the flame-info card without clearing currentDedication. */
+    const infoPanel = document.getElementById('dedicationInfo');
+    if (infoPanel) {
+        infoPanel.classList.remove('active');
+        infoPanel.setAttribute('aria-hidden', 'true');
+    }
+
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+    modal.style.visibility = 'visible';
+    modal.style.pointerEvents = 'auto';
+    modal.style.zIndex = '2147483646';
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+
+    /* Put keyboard focus directly into the dedication field. */
+    if (intentionInput) {
+        setTimeout(() => {
+            intentionInput.focus();
+            intentionInput.setSelectionRange(
+                intentionInput.value.length,
+                intentionInput.value.length
+            );
+        }, 0);
+    }
 }
+
 function reactToDedication(type) {
     const messages = {
         blessing: 'A blessing is offered to the flame.',
@@ -10637,9 +11243,20 @@ async function registerAccount() {
     }
 
     const username = document.getElementById('registerUsername').value.trim();
-    const email = document.getElementById('registerEmail').value.trim();
+
+    /*
+     * Normalize the email before it reaches Supabase so the same address
+     * cannot be entered with accidental leading/trailing spaces or casing.
+     */
+    const emailInput = document.getElementById('registerEmail');
+    const email = emailInput.value.trim().toLowerCase();
+
     const password = document.getElementById('registerPassword').value;
     const button = document.getElementById('registerButton');
+
+    if (emailInput) {
+        emailInput.value = email;
+    }
 
     if (!username || !email || !password) {
         setAccountMessage('Please complete every field.');
@@ -10655,14 +11272,9 @@ async function registerAccount() {
     button.textContent = 'CHECKING THE NAME...';
 
     try {
-        /*
-         * Nicknames are case-insensitive. Do NOT read profiles directly here:
-         * RLS intentionally prevents anonymous users from selecting that table.
-         * The supplied SQL setup exposes nickname_is_taken() as a safe RPC.
-         */
         const normalizedUsername = username.trim();
 
-        /* Support both names used by the supplied SQL revisions. */
+        /* Existing nickname protection. */
         let nicknameTaken = null;
         let nicknameCheckError = null;
 
@@ -10671,7 +11283,8 @@ async function registerAccount() {
                 requested_nickname: normalizedUsername
             }));
 
-        if (nicknameCheckError && (nicknameCheckError.code === '42883' || nicknameCheckError.code === 'PGRST202')) {
+        if (nicknameCheckError &&
+            (nicknameCheckError.code === '42883' || nicknameCheckError.code === 'PGRST202')) {
             ({ data: nicknameTaken, error: nicknameCheckError } =
                 await supabaseClient.rpc('nickname_is_taken', {
                     requested_nickname: normalizedUsername
@@ -10679,7 +11292,9 @@ async function registerAccount() {
         }
 
         if (nicknameCheckError) {
-            throw new Error('Could not check that nickname. Please run the supplied Supabase SQL setup, then try again.');
+            throw new Error(
+                'Could not check that nickname. Please run the supplied Supabase SQL setup, then try again.'
+            );
         }
 
         if (nicknameTaken === true) {
@@ -10692,24 +11307,66 @@ async function registerAccount() {
             email,
             password,
             options: {
-                data: { username: username.trim() },
+                data: { username: normalizedUsername },
                 emailRedirectTo: window.location.origin + window.location.pathname
             }
         });
 
-        if (error) throw error;
+        if (error) {
+            const message = String(error.message || '').toLowerCase();
 
-        if (data.session) {
+            if (
+                message.includes('already registered') ||
+                message.includes('already been registered') ||
+                message.includes('user already exists') ||
+                message.includes('user_already_exists') ||
+                message.includes('email exists') ||
+                message.includes('email_exists')
+            ) {
+                throw new Error('An account already exists with this email address. Please enter the Temple instead.');
+            }
+
+            throw error;
+        }
+
+        /*
+         * With email confirmation enabled, Supabase may deliberately return a
+         * user without an error for an already-registered address. In that
+         * case the returned user has no identities, which lets the UI refuse
+         * the duplicate registration instead of pretending a new account was
+         * created.
+         */
+        if (
+            data &&
+            data.user &&
+            Array.isArray(data.user.identities) &&
+            data.user.identities.length === 0
+        ) {
+            throw new Error(
+                'An account already exists with this email address. Please enter the Temple instead.'
+            );
+        }
+
+        if (data.session && data.user) {
             currentAuthUser = data.user;
             updateAccountButton();
+
+            /* Only the guest candles from the current guest session are claimed. */
             await claimGuestCandlesForUser(currentAuthUser);
-            if (typeof loadSanctuary === 'function') await loadSanctuary();
+
+            if (typeof loadSanctuary === 'function') {
+                await loadSanctuary();
+            }
+
             setAccountMessage('Welcome to the Temple.');
             setTimeout(closeAccountModal, 700);
         } else {
-            setAccountMessage('Account created. Check your email to verify your account, then return here to enter the Temple.');
+            setAccountMessage(
+                'Account created. Check your email to verify your account, then return here to enter the Temple.'
+            );
         }
     } catch (error) {
+        console.error('Registration error:', error);
         setAccountMessage(error.message || 'Unable to create the account.');
     } finally {
         button.disabled = false;
@@ -12158,37 +12815,89 @@ document.addEventListener('click', function (event) {
     });
 }, true);
 </script>
+<script id="one-account-per-email-validation">
+(function () {
+    const email = document.getElementById('registerEmail');
+    if (!email) return;
+
+    email.setAttribute('type', 'email');
+    email.setAttribute('autocomplete', 'email');
+    email.setAttribute('spellcheck', 'false');
+
+    email.addEventListener('blur', function () {
+        email.value = email.value.trim().toLowerCase();
+    });
+})();
+</script>
 
 
-<script id="candle-owner-extinguish-guard">
-document.addEventListener('click', function (event) {
-    const button = event.target.closest(
-        '#dedicationInfo .dedication-extinguish-button'
-    );
+<script id="candle-editor-x-no-scroll-final">
+document.addEventListener('click', function(event) {
+    const button = event.target.closest('#candleModal .candle-modal-close');
     if (!button) return;
 
-    const dedication = window.currentDedication || currentDedication;
-    const sanctuaryCopy = dedication && (sanctuaryCache.candles || []).find(item => {
-        const key = item && (item.dedication_id || item.id);
-        return String(key || '') === String(dedication.id || '');
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (typeof closeCandleModal === 'function') {
+        closeCandleModal();
+    }
+}, true);
+</script>
+
+
+<script id="candle-save-button-final">
+document.addEventListener('click', function (event) {
+    const button = event.target.closest('#candleSaveButton');
+    if (!button) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (typeof dedicateCandle !== 'function') {
+        alert('Candle dedication is unavailable. Please reload the page.');
+        return;
+    }
+
+    Promise.resolve(dedicateCandle()).catch(function (error) {
+        console.error('Candle dedication failed:', error);
+        alert('The candle could not be dedicated. Please try again.');
     });
+}, true);
+</script>
 
-    const ownerId =
-        dedication &&
-        (dedication.user_id ||
-         dedication.owner_id ||
-         (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)));
 
-    const allowed = !!currentAuthUser &&
-        !!ownerId &&
-        String(currentAuthUser.id) === String(ownerId);
-
-    if (!allowed) {
+<script id="clean-edit-mode-final-handler">
+document.addEventListener('click', function(event) {
+    const closeButton = event.target.closest('#candleModal .candle-modal-close');
+    if (closeButton) {
         event.preventDefault();
         event.stopImmediatePropagation();
-        button.style.display = 'none';
-        button.style.visibility = 'hidden';
-        button.style.pointerEvents = 'none';
+        if (typeof closeCandleModal === 'function') {
+            closeCandleModal();
+        }
+    }
+}, true);
+</script>
+
+
+
+
+<script id="extinguish-candle-definitive-handler">
+document.addEventListener('click', function(event) {
+    const button = event.target.closest('#dedicationInfo .dedication-extinguish-button');
+    if (!button) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const id = button.dataset.candleId;
+
+    if (typeof extinguishSelectedDedication === 'function') {
+        Promise.resolve(extinguishSelectedDedication(id)).catch(function(error) {
+            console.error('Extinguish candle failed:', error);
+            alert('The candle could not be extinguished. Please try again.');
+        });
     }
 }, true);
 </script>
