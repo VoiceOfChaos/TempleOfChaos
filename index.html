@@ -4800,7 +4800,7 @@
 .candle-control-card select {
     width: 100%;
     box-sizing: border-box;
-    padding: 16px 15px;
+    padding: 13px 14px;
     border: 1px solid rgba(205,180,140,.2);
     background: rgba(255,255,255,.025);
     color: #e5dacb;
@@ -4809,7 +4809,7 @@
 }
 
 .candle-control-card textarea {
-    min-height: 115px;
+    min-height: 95px;
     resize: vertical;
 }
 
@@ -10321,44 +10321,21 @@ async function deleteDedicatedCandle(key) {
     }
 }
 
-function markGuestCandleClaimForRegistration() {
-    /*
-     * A guest candle is NOT transferred when an existing user logs in.
-     * It is only eligible to become account-owned after the visitor has
-     * successfully registered a NEW account in this guest session.
-     */
-    try {
-        localStorage.setItem(
-            'templeChaosPendingCandleRegistration',
-            getGuestSessionId()
-        );
-    } catch (error) {
-        console.warn('Could not remember pending candle registration:', error);
-    }
-}
-
-async function claimGuestCandlesAfterRegistration(user) {
+async function claimGuestCandlesForUser(user) {
     if (!user) return;
 
-    let pendingGuestSessionId = null;
-
-    try {
-        pendingGuestSessionId =
-            localStorage.getItem('templeChaosPendingCandleRegistration');
-    } catch (error) {
-        console.warn('Could not read pending candle registration:', error);
-    }
-
-    /*
-     * IMPORTANT:
-     * Login never calls this function unless registration previously
-     * created the explicit pending-registration marker.
-     */
-    if (!pendingGuestSessionId) return;
-
     const userId = String(user.id);
+    const guestSessionId = getGuestSessionId();
     const claimed = [];
 
+    /*
+     * ONLY claim candles that:
+     *   1. have no owner, AND
+     *   2. were explicitly created in THIS guest session.
+     *
+     * This means logging into an account does NOT absorb every anonymous
+     * candle stored in localStorage.
+     */
     activeDedications.forEach(dedication => {
         if (!dedication) return;
 
@@ -10367,23 +10344,13 @@ async function claimGuestCandlesAfterRegistration(user) {
 
         if (ownerId) return;
         if (!guestId) return;
-        if (String(guestId) !== String(pendingGuestSessionId)) return;
+        if (String(guestId) !== String(guestSessionId)) return;
 
         dedication.user_id = userId;
         dedication.owner_id = userId;
         dedication.guest_session_id = null;
         claimed.push(dedication);
     });
-
-    /*
-     * Clear the marker even when there are no candles. This prevents a
-     * later ordinary login from accidentally claiming an old guest session.
-     */
-    try {
-        localStorage.removeItem('templeChaosPendingCandleRegistration');
-    } catch (error) {
-        console.warn('Could not clear pending candle registration:', error);
-    }
 
     if (!claimed.length) return;
 
@@ -11380,18 +11347,12 @@ async function registerAccount() {
             );
         }
 
-        /*
-         * Registration is the ONLY account action that can adopt candles
-         * made while logged out. Remember this guest session before changing
-         * auth state so email-confirmation flows can also complete the claim.
-         */
-        markGuestCandleClaimForRegistration();
-
         if (data.session && data.user) {
             currentAuthUser = data.user;
             updateAccountButton();
 
-            await claimGuestCandlesAfterRegistration(currentAuthUser);
+            /* Only the guest candles from the current guest session are claimed. */
+            await claimGuestCandlesForUser(currentAuthUser);
 
             if (typeof loadSanctuary === 'function') {
                 await loadSanctuary();
@@ -11452,11 +11413,7 @@ async function loginAccount() {
 
         currentAuthUser = data.user;
         updateAccountButton();
-
-        /*
-         * IMPORTANT: logging into an existing account NEVER adopts guest
-         * candles. Only a successful NEW registration can do that.
-         */
+        await claimGuestCandlesForUser(currentAuthUser);
         if (typeof loadSanctuary === 'function') await loadSanctuary();
         setAccountMessage('Welcome back.');
         setTimeout(closeAccountModal, 500);
@@ -11681,11 +11638,7 @@ async function initialiseAccountSystem() {
     updateAccountButton();
 
     if (currentAuthUser) {
-        /*
-         * Restoring an existing login must never claim anonymous candles.
-         * A pending registration marker is handled below by the auth-state
-         * listener, but ordinary session restoration does not adopt candles.
-         */
+        await claimGuestCandlesForUser(currentAuthUser);
         if (typeof loadSanctuary === 'function') await loadSanctuary();
     }
 
@@ -11695,7 +11648,7 @@ async function initialiseAccountSystem() {
         updateAccountButton();
 
         if (currentAuthUser && String(currentAuthUser.id) !== String(previousUserId || '')) {
-            await claimGuestCandlesAfterRegistration(currentAuthUser);
+            await claimGuestCandlesForUser(currentAuthUser);
             if (typeof loadSanctuary === 'function') await loadSanctuary();
         }
         if (event === 'PASSWORD_RECOVERY') {
