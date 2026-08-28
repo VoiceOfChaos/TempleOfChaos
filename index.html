@@ -3430,14 +3430,6 @@
                 max-width: 280px;
             }
 
-            .account-button {
-                top: 18px;
-                right: 18px;
-                padding: 10px 14px;
-                font-size: 0.62rem;
-                letter-spacing: 0.12em;
-            }
-
             #inside {
                 padding-top: 100px;
             }
@@ -4925,9 +4917,18 @@
 .ritual-dedications {
     position: absolute;
     inset: 0;
-    z-index: 12;
+    z-index: 1000 !important;
     pointer-events: none;
-    overflow: hidden;
+    overflow: visible;
+}
+
+/* Dedicated flames are a foreground layer, not part of the photographic
+   background or the altar surface. */
+.ritual-scene > .ritual-altar,
+.ritual-scene > .ritual-candles,
+.ritual-scene > .ritual-offerings {
+    position: relative;
+    z-index: 10;
 }
 
 /* The original altar candles remain in place.
@@ -5484,323 +5485,430 @@
     width: 100%;
 }
 
+
+
 /* =====================================================
    ACCOUNT SYSTEM
 ===================================================== */
-.account-button { position:absolute; top:28px; right:30px; z-index:10; display:inline-block; margin:0; padding:12px 20px; border:1px solid rgba(210,190,150,.32); background:rgba(0,0,0,.22); color:#cfc5b6; text-decoration:none; text-transform:uppercase; letter-spacing:.16em; font-size:.7rem; cursor:pointer; transition:.3s ease; }
-.account-button:hover { border-color:rgba(232,227,216,.7); background:rgba(255,255,255,.05); color:#f3eee4; }
-.account-modal { position:fixed; inset:0; z-index:100000; display:none; align-items:center; justify-content:center; padding:20px; }
-.account-modal.active { display:flex; }
-.account-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.86); backdrop-filter:blur(8px); }
-.account-card { position:relative; z-index:2; width:min(460px,94vw); max-height:calc(100dvh - 40px); overflow-y:auto; padding:46px 38px 36px; background:radial-gradient(circle at 50% 0%,rgba(150,125,90,.12),transparent 55%),linear-gradient(145deg,#171311,#080707 70%); border:1px solid rgba(210,190,150,.24); box-shadow:0 30px 100px rgba(0,0,0,.9); text-align:center; }
-.account-close { position:absolute; top:15px; right:18px; width:36px; height:36px; border:1px solid rgba(210,190,150,.2); background:transparent; color:#c7bbab; font-size:24px; cursor:pointer; }
-.account-symbol { color:#d5bb8c; font-size:34px; margin-bottom:14px; }
-.account-card h2 { margin:0 0 10px; font-size:24px; line-height:1.25; letter-spacing:.16em; font-weight:normal; }
-.account-subtitle { color:#8f877d; font-style:italic; line-height:1.65; margin:0 0 24px; }
-.account-form { display:flex; flex-direction:column; gap:13px; text-align:left; }
-.account-form label { color:#bdb1a1; font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
-.account-form input { width:100%; margin-top:5px; padding:13px 14px; box-sizing:border-box; border:1px solid rgba(205,180,140,.2); background:rgba(255,255,255,.025); color:#e7dccd; font-family:Georgia,serif; outline:none; }
-.account-form input:focus { border-color:rgba(210,180,125,.65); box-shadow:0 0 18px rgba(190,150,90,.08); }
-.account-submit { margin-top:10px; width:100%; padding:15px; border:1px solid rgba(210,180,125,.45); background:linear-gradient(135deg,rgba(180,145,85,.14),rgba(60,45,30,.12)); color:#e5d8c5; font-family:Georgia,serif; letter-spacing:.13em; cursor:pointer; }
-.account-submit:disabled { opacity:.5; cursor:wait; }
-.account-secondary { margin-top:8px; width:100%; padding:11px 14px; border:1px solid rgba(210,190,150,.22); background:transparent; color:#9f9383; font-family:Georgia,serif; letter-spacing:.1em; text-transform:uppercase; font-size:10px; cursor:pointer; }
-.account-message { min-height:38px; margin-top:16px; color:#b9aa8f; font-size:13px; line-height:1.55; }
-.account-switch { margin-top:18px; color:#777068; font-size:13px; }
-.account-switch button { border:none; background:transparent; color:#c7b38d; cursor:pointer; font-family:Georgia,serif; }
-.account-user-box { display:none; margin-top:18px; padding-top:18px; border-top:1px solid rgba(210,190,150,.12); }
-.account-user-box.active { display:block; }
-.account-user-name { color:#e3d7c8; margin-bottom:14px; }
-.account-logout { padding:10px 20px; border:1px solid rgba(210,190,150,.3); background:transparent; color:#bda98a; cursor:pointer; font-family:Georgia,serif; letter-spacing:.12em; text-transform:uppercase; font-size:10px; }
-@media(max-width:600px) {
-  .account-modal { align-items:flex-start; overflow-y:auto; padding:12px; }
-  .account-card { width:100%; max-height:calc(100dvh - 24px); padding:38px 20px 24px; margin:auto 0; }
-  .account-card h2 { font-size:clamp(20px,6vw,24px); }
-  .account-subtitle { font-size:16px; }
-  .account-form input { min-height:48px; font-size:16px; }
+
+.account-button {
+    display: inline-block;
+    margin: 18px 8px 0;
+    padding: 12px 24px;
+    border: 1px solid rgba(210,190,150,.32);
+    background: rgba(0,0,0,.22);
+    color: #cfc5b6;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-size: .7rem;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.account-button:hover {
+    border-color: rgba(232,227,216,.7);
+    background: rgba(255,255,255,.05);
+    color: #f3eee4;
+}
+
+.account-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.account-modal.active {
+    display: flex;
+}
+
+.account-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.86);
+    backdrop-filter: blur(8px);
+}
+
+.account-card {
+    position: relative;
+    z-index: 2;
+    width: min(460px, 94vw);
+    padding: 46px 38px 36px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(150,125,90,.12), transparent 55%),
+        linear-gradient(145deg, #171311, #080707 70%);
+    border: 1px solid rgba(210,190,150,.24);
+    box-shadow: 0 30px 100px rgba(0,0,0,.9);
+    text-align: center;
+}
+
+.account-close {
+    position: absolute;
+    top: 15px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(210,190,150,.2);
+    background: transparent;
+    color: #c7bbab;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.account-symbol {
+    color: #d5bb8c;
+    font-size: 34px;
+    margin-bottom: 14px;
+    animation: accountSymbolPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes accountSymbolPulse {
+    0%,100% { opacity:.6; transform:scale(1); }
+    50% { opacity:1; transform:scale(1.1); }
+}
+
+.account-card h2 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    letter-spacing: .16em;
+    font-weight: normal;
+}
+
+.account-subtitle {
+    color: #8f877d;
+    font-style: italic;
+    line-height: 1.65;
+    margin: 0 0 24px;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    text-align: left;
+}
+
+.account-form label {
+    color: #bdb1a1;
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.account-form input {
+    width: 100%;
+    margin-top: 5px;
+    padding: 13px 14px;
+    box-sizing: border-box;
+    border: 1px solid rgba(205,180,140,.2);
+    background: rgba(255,255,255,.025);
+    color: #e7dccd;
+    font-family: Georgia, serif;
+    outline: none;
+}
+
+.account-form input:focus {
+    border-color: rgba(210,180,125,.65);
+    box-shadow: 0 0 18px rgba(190,150,90,.08);
+}
+
+.account-submit {
+    margin-top: 10px;
+    width: 100%;
+    padding: 15px;
+    border: 1px solid rgba(210,180,125,.45);
+    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12));
+    color: #e5d8c5;
+    font-family: Georgia, serif;
+    letter-spacing: .13em;
+    cursor: pointer;
+}
+
+.account-submit:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+
+.account-message {
+    min-height: 38px;
+    margin-top: 16px;
+    color: #b9aa8f;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.account-switch {
+    margin-top: 18px;
+    color: #777068;
+    font-size: 13px;
+}
+
+.account-switch button {
+    border: none;
+    background: transparent;
+    color: #c7b38d;
+    cursor: pointer;
+    font-family: Georgia, serif;
+}
+
+.account-user-box {
+    display: none;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(210,190,150,.12);
+}
+
+.account-user-box.active {
+    display: block;
+}
+
+.account-user-name {
+    color: #e3d7c8;
+    margin-bottom: 14px;
+}
+
+.account-logout {
+    padding: 10px 20px;
+    border: 1px solid rgba(210,190,150,.3);
+    background: transparent;
+    color: #bda98a;
+    cursor: pointer;
+    font-family: Georgia, serif;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+/* Dedicated candles live directly in the account on phones. */
+.account-mobile-candles {
+    display: none;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(210,190,150,.12);
+}
+
+.account-mobile-candles-title {
+    margin-bottom: 12px;
+    color: #b9aa8f;
+    font-size: 9px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.account-mobile-candle-list {
+    display: grid;
+    gap: 9px;
+}
+
+.account-mobile-candle {
+    padding: 12px;
+    border: 1px solid rgba(205,180,140,.18);
+    border-left: 1px solid rgba(205,180,140,.38);
+    background: rgba(255,255,255,.018);
+}
+
+.account-mobile-candle-name {
+    color: #e3d7c8;
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.account-mobile-candle-meta {
+    margin-top: 5px;
+    color: #8f8579;
+    font-size: 9px;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+}
+
+.account-mobile-candle-intention {
+    margin-top: 7px;
+    color: #aaa095;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.account-mobile-candle-delete {
+    width: 100%;
+    margin-top: 10px;
+    padding: 9px;
+    border: 1px solid rgba(160,95,80,.38);
+    background: rgba(90,50,40,.10);
+    color: #bca99a;
+    font-family: Georgia, serif;
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.account-mobile-candle-delete:hover {
+    border-color: rgba(190,120,100,.7);
+    color: #f0cfc2;
+    background: rgba(150,70,50,.10);
+}
+
+.account-mobile-candles-empty {
+    color: #777068;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+@media (max-width: 800px) {
+    .account-mobile-candles {
+        display: block;
+    }
+}
+
+@media (max-width: 600px) {
+    .account-card { padding: 40px 24px 28px; }
+}
+
+
+/* =====================================================
+   ACCOUNT BUTTON — FIXED TOP RIGHT
+===================================================== */
+.account-button {
+    position: fixed !important;
+    top: 22px !important;
+    right: 24px !important;
+    z-index: 100002 !important;
+    margin: 0 !important;
+    display: block !important;
+    padding: 11px 17px !important;
+    background: rgba(5,5,7,.78) !important;
+    backdrop-filter: blur(8px);
+}
+@media (max-width:600px) {
+    .account-button {
+        top: 14px !important;
+        right: 14px !important;
+        padding: 9px 12px !important;
+        font-size: .62rem !important;
+    }
 }
 
 /* =====================================================
-   MY SANCTUARY — PERSONAL ACCOUNT CONTENT
+   SANCTUARY
 ===================================================== */
-.sanctuary-open-button {
-    width:100%; margin-top:12px; padding:13px 16px; cursor:pointer;
-    border:1px solid rgba(210,185,145,.35); background:rgba(180,145,85,.10);
-    color:#e5d8c5; font-family:Georgia,serif; letter-spacing:.12em;
-    text-transform:uppercase; font-size:10px;
+.sanctuary-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100010;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
 }
-.sanctuary-open-button:hover { background:rgba(180,145,85,.18); }
-.sanctuary-modal { position:fixed; inset:0; z-index:100000; display:none;
-    align-items:center; justify-content:center; background:rgba(0,0,0,.86); backdrop-filter:blur(9px); }
 .sanctuary-modal.active { display:flex; }
-.sanctuary-backdrop { position:absolute; inset:0; }
-.sanctuary-card { position:relative; z-index:2; width:min(1100px,94vw); max-height:90vh; overflow:auto;
-    padding:38px; background:linear-gradient(145deg,rgba(22,18,16,.99),rgba(7,6,6,.99));
-    border:1px solid rgba(210,185,145,.25); box-shadow:0 30px 120px rgba(0,0,0,.9); }
-.sanctuary-close { position:absolute; top:12px; right:17px; border:0; background:none; color:#b8ab9c; font-size:28px; cursor:pointer; }
-.sanctuary-header { text-align:center; margin:0 0 26px; }
-.sanctuary-symbol { color:#d4bc90; font-size:34px; }
-.sanctuary-header h2 { margin:8px 0; color:#eee6da; font-size:27px; font-weight:normal; letter-spacing:.16em; }
-.sanctuary-header p { margin:0; color:#90877b; font-style:italic; }
-.sanctuary-tabs { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:22px; }
-.sanctuary-tab { padding:10px 13px; border:1px solid rgba(210,185,145,.22); background:transparent; color:#aa9d8e; cursor:pointer; font-family:Georgia,serif; font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
-.sanctuary-tab.active { color:#e5d8c5; border-color:rgba(210,185,145,.55); background:rgba(180,145,85,.1); }
-.sanctuary-panel { display:none; }
-.sanctuary-panel.active { display:block; }
-.sanctuary-toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:15px; }
-.sanctuary-toolbar h3 { margin:0; color:#d9cdbd; font-weight:normal; letter-spacing:.12em; font-size:16px; }
-.sanctuary-add { padding:9px 13px; border:1px solid rgba(210,185,145,.3); background:rgba(180,145,85,.08); color:#d9cdbd; cursor:pointer; font-family:Georgia,serif; font-size:10px; letter-spacing:.1em; }
-.sanctuary-form { display:none; margin-bottom:18px; padding:18px; border:1px solid rgba(210,185,145,.14); background:rgba(255,255,255,.02); }
-.sanctuary-form.active { display:block; }
-.sanctuary-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
-.sanctuary-form label { display:block; color:#a99c8e; font-size:9px; letter-spacing:.1em; text-transform:uppercase; }
-.sanctuary-form input,.sanctuary-form textarea,.sanctuary-form select { box-sizing:border-box; width:100%; margin-top:6px; padding:11px; border:1px solid rgba(210,185,145,.2); background:#0c0a09; color:#e7ded0; font-family:Georgia,serif; outline:none; }
-.sanctuary-form textarea { min-height:130px; resize:vertical; }
-.sanctuary-form .full { grid-column:1/-1; }
-.sanctuary-check { display:flex!important; align-items:center; gap:8px; margin-top:13px; cursor:pointer; }
-.sanctuary-check input { width:auto!important; margin:0!important; }
-.sanctuary-form-actions { display:flex; gap:9px; margin-top:14px; }
-.sanctuary-form-actions button { padding:10px 14px; border:1px solid rgba(210,185,145,.28); background:transparent; color:#d9cdbd; cursor:pointer; font-family:Georgia,serif; }
-.sanctuary-form-actions .primary { background:rgba(180,145,85,.12); }
-.sanctuary-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-.sanctuary-item { padding:17px; border:1px solid rgba(210,185,145,.14); background:rgba(255,255,255,.018); }
-.sanctuary-item h4 { margin:0 0 8px; color:#e0d5c6; font-weight:normal; font-size:17px; }
-.sanctuary-item .meta { color:#887e72; font-size:9px; letter-spacing:.09em; text-transform:uppercase; margin-bottom:9px; }
-.sanctuary-item .body { white-space:pre-wrap; color:#bcb1a3; line-height:1.65; font-size:13px; }
-.sanctuary-badge { display:inline-block; margin-bottom:9px; padding:4px 7px; border:1px solid rgba(210,185,145,.2); color:#a9977d; font-size:8px; letter-spacing:.1em; text-transform:uppercase; }
-.sanctuary-item-actions { display:flex; gap:7px; flex-wrap:wrap; margin-top:13px; }
-.sanctuary-item-actions button { padding:7px 9px; border:1px solid rgba(210,185,145,.2); background:transparent; color:#aa9e90; cursor:pointer; font-family:Georgia,serif; font-size:9px; }
-.sanctuary-empty { padding:35px; text-align:center; color:#756d64; border:1px dashed rgba(210,185,145,.13); font-style:italic; }
-.sanctuary-loading { color:#81776c; text-align:center; padding:25px; }
-@media(max-width:700px){ .sanctuary-card{padding:28px 17px}.sanctuary-form-grid,.sanctuary-grid{grid-template-columns:1fr}.sanctuary-form .full{grid-column:auto}.sanctuary-toolbar{align-items:flex-start;flex-direction:column} }
-
-
-
-/* =====================================================
-   MOBILE REFINEMENT — TEMPLE / RITUAL / CANDLE MODAL
-   Keeps the desktop composition intact while preventing
-   horizontal overflow on narrow screens.
-===================================================== */
-@media (max-width: 700px) {
-
-    html,
-    body {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    /* Never let the chamber content define a desktop-sized
-       containing block on a phone. */
-    .chamber,
-    .chamber-content {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-    }
-
-    .chamber {
-        padding-left: 14px;
-        padding-right: 14px;
-    }
-
-    .chamber-content {
-        padding-left: 0;
-        padding-right: 0;
-    }
-
-    /* Chamber titles must be allowed to wrap instead of
-       creating horizontal overflow (e.g. PRIMORDIAL). */
-    .chamber h2 {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(2.25rem, 13vw, 4rem);
-        letter-spacing: .055em;
-        line-height: 1.05;
-        overflow-wrap: anywhere;
-    }
-
-    .chamber-subtitle {
-        width: 100%;
-        max-width: 620px;
-        font-size: 1rem;
-        line-height: 1.7;
-    }
-
-    /* RITUAL PATH CARDS — fit the actual phone viewport. */
-    .ritual-paths {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .ritual-path {
-        width: 100%;
-        min-width: 0;
-        min-height: 0;
-        padding: 18px 8px;
-        overflow: hidden;
-    }
-
-    .ritual-path > span {
-        font-size: 19px;
-        margin-bottom: 7px;
-    }
-
-    .ritual-path h3 {
-        font-size: clamp(10px, 2.8vw, 13px);
-        letter-spacing: .08em;
-        line-height: 1.35;
-        overflow-wrap: anywhere;
-        word-break: normal;
-        margin-bottom: 0;
-    }
-
-    .ritual-path p {
-        font-size: 11px;
-        line-height: 1.45;
-    }
-
-    /* The candle designer is deliberately compact on phones:
-       candle preview first, controls immediately underneath. */
-    .candle-modal {
-        padding: 10px;
-        align-items: flex-start;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .candle-design-window {
-        width: 100%;
-        max-width: 430px;
-        min-height: 0;
-        margin: 10px auto;
-        display: grid;
-        grid-template-columns: 1fr;
-        overflow: hidden;
-    }
-
-    .candle-preview-area {
-        min-height: 245px;
-        height: 245px;
-        padding: 0;
-        border-right: 0;
-        border-bottom: 1px solid rgba(205,180,140,.12);
-    }
-
-    .candle-preview-aura {
-        width: 260px;
-        height: 260px;
-    }
-
-    .large-candle {
-        width: 190px;
-        height: 250px;
-        transform: scale(.48);
-        transform-origin: center center;
-        flex: 0 0 250px;
-    }
-
-    .large-candle-name {
-        position: absolute;
-        bottom: 14px;
-        margin: 0;
-        font-size: 9px;
-        letter-spacing: .22em;
-    }
-
-    .candle-control-card {
-        padding: 28px 18px 24px;
-        max-height: none;
-        overflow: visible;
-    }
-
-    .candle-modal-close {
-        top: 10px;
-        right: 10px;
-        width: 34px;
-        height: 34px;
-        font-size: 21px;
-        z-index: 10;
-    }
-
-    .candle-control-card .modal-symbol {
-        font-size: 27px;
-        margin-bottom: 8px;
-    }
-
-    .candle-control-card h2 {
-        font-size: clamp(20px, 6vw, 25px);
-        letter-spacing: .12em;
-        line-height: 1.15;
-    }
-
-    .candle-control-card .modal-subtitle {
-        margin: 9px 0 18px;
-        line-height: 1.45;
-        font-size: 14px;
-    }
-
-    .candle-control-card label {
-        margin: 14px 0 6px;
-        font-size: 10px;
-    }
-
-    .candle-control-card input[type="text"],
-    .candle-control-card textarea,
-    .candle-control-card select {
-        padding: 11px 12px;
-    }
-
-    .candle-control-card textarea {
-        min-height: 72px;
-    }
-
-    .candle-palette,
-    .flame-palette {
-        gap: 8px;
-        margin-top: 7px;
-    }
-
-    .candle-swatch,
-    .flame-swatch {
-        width: 29px;
-        height: 29px;
-    }
-
-    .candle-control-card .light-candle-button,
-    .candle-control-card .candle-extinguish-button {
-        margin-top: 18px;
-        padding: 13px;
-    }
+.sanctuary-backdrop {
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.9);
+    backdrop-filter:blur(9px);
 }
-
-@media (max-width: 380px) {
-    .ritual-paths {
-        gap: 8px;
-    }
-
-    .ritual-path {
-        padding-left: 5px;
-        padding-right: 5px;
-    }
-
-    .ritual-path h3 {
-        font-size: 10px;
-        letter-spacing: .055em;
-    }
-
-    .candle-preview-area {
-        min-height: 225px;
-        height: 225px;
-    }
-
-    .large-candle {
-        transform: scale(.42);
-    }
+.sanctuary-card {
+    position:relative;
+    z-index:2;
+    width:min(1000px,96vw);
+    max-height:92vh;
+    overflow:auto;
+    padding:36px;
+    background:
+      radial-gradient(circle at 50% 0%,rgba(150,125,90,.12),transparent 45%),
+      linear-gradient(145deg,#171311,#080707 75%);
+    border:1px solid rgba(210,190,150,.25);
+    box-shadow:0 30px 110px rgba(0,0,0,.92);
+}
+.sanctuary-close {
+    position:absolute;
+    top:14px;
+    right:17px;
+    width:38px;height:38px;
+    border:1px solid rgba(210,190,150,.22);
+    background:transparent;color:#cfc2b0;
+    font-size:24px;cursor:pointer;
+}
+.sanctuary-head{text-align:center;padding:10px 45px 25px}
+.sanctuary-symbol{font-size:34px;color:#d5bb8c;margin-bottom:8px}
+.sanctuary-head h2{font-size:25px;font-weight:normal;letter-spacing:.18em}
+.sanctuary-head p{margin-top:9px;color:#8f877d;font-style:italic}
+.sanctuary-tabs{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:7px;
+    margin-bottom:20px;
+}
+.sanctuary-tab{
+    padding:12px 7px;
+    border:1px solid rgba(210,190,150,.18);
+    background:rgba(255,255,255,.025);
+    color:#a99e90;
+    cursor:pointer;
+    font:10px Georgia,serif;
+    letter-spacing:.1em;
+}
+.sanctuary-tab.active,.sanctuary-tab:hover{
+    border-color:rgba(210,180,125,.5);
+    color:#eadfce;
+    background:rgba(180,145,85,.08);
+}
+.sanctuary-panel{display:none}
+.sanctuary-panel.active{display:block}
+.sanctuary-toolbar{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:12px;margin-bottom:14px;
+}
+.sanctuary-toolbar h3{
+    font-size:16px;font-weight:normal;letter-spacing:.12em;
+}
+.sanctuary-action{
+    padding:10px 14px;
+    border:1px solid rgba(210,180,125,.38);
+    background:rgba(180,145,85,.09);
+    color:#d9ccb9;
+    cursor:pointer;font:10px Georgia,serif;letter-spacing:.11em;
+}
+.sanctuary-list{display:grid;gap:10px}
+.sanctuary-item{
+    padding:16px;
+    border:1px solid rgba(210,190,150,.14);
+    background:rgba(255,255,255,.018);
+}
+.sanctuary-item-title{color:#e4d9ca;font-size:16px}
+.sanctuary-item-meta{color:#766f67;font-size:10px;letter-spacing:.1em;margin-top:6px;text-transform:uppercase}
+.sanctuary-item-text{color:#a79e94;line-height:1.65;margin-top:9px;white-space:pre-wrap}
+.sanctuary-item-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.sanctuary-small{
+    padding:7px 10px;border:1px solid rgba(210,190,150,.18);
+    background:transparent;color:#bcae9b;cursor:pointer;font:9px Georgia,serif;letter-spacing:.08em;
+}
+.sanctuary-empty{padding:35px;text-align:center;color:#746e67;font-style:italic;border:1px solid rgba(210,190,150,.1)}
+.sanctuary-form{
+    display:grid;gap:12px;padding:18px;
+    border:1px solid rgba(210,190,150,.14);
+    background:rgba(0,0,0,.16);margin-bottom:18px;
+}
+.sanctuary-form label{color:#a99e90;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.sanctuary-form input,.sanctuary-form textarea{
+    width:100%;margin-top:6px;padding:12px;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(205,180,140,.2);
+    color:#e7dccd;font:14px Georgia,serif;outline:none;
+}
+.sanctuary-form textarea{min-height:130px;resize:vertical}
+.sanctuary-form-actions{display:flex;gap:8px}
+.sanctuary-public{display:flex;align-items:center;gap:8px;color:#958a7e;font-size:11px}
+.sanctuary-public input{width:auto}
+#sanctuaryAccountButton{margin-top:10px}
+@media(max-width:700px){
+    .sanctuary-card{padding:25px 16px}
+    .sanctuary-tabs{grid-template-columns:repeat(2,1fr)}
 }
 
 </style>
@@ -5811,40 +5919,1440 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-<script id="strict-candle-ownership">
-/*
- * Candle ownership rule:
- * - anonymous candles: user_id is NULL -> nobody owns them
- * - registered candle: user_id is the Supabase Auth UUID -> only that account owns it
- * Browser/PC/localStorage is NEVER used as proof of ownership.
- */
-function candleBelongsToCurrentUser(candle) {
-    if (!candle || !currentAuthUser || !currentAuthUser.id) return false;
-    const ownerId = candle.user_id;
-    return !!ownerId && String(ownerId) === String(currentAuthUser.id);
+<style id="final-account-button-css">
+#accountButton.account-button {
+    position: fixed !important;
+    top: 20px !important;
+    right: 22px !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 999999 !important;
+
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+
+    margin: 0 !important;
+    padding: 10px 6px !important;
+    width: auto !important;
+    height: auto !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    color: #ded3c3 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 11px !important;
+    letter-spacing: .16em !important;
+    text-transform: uppercase !important;
+
+    cursor: pointer !important;
+    text-shadow: 0 1px 8px rgba(0,0,0,.9) !important;
 }
 
-async function assertCandleOwner(candleId) {
-    if (!currentAuthUser || !currentAuthUser.id) {
-        throw new Error('You must be logged in to manage a candle.');
-    }
-
-    const { data, error } = await supabaseClient
-        .from('user_candles')
-        .select('id,user_id')
-        .eq('id', candleId)
-        .maybeSingle();
-
-    if (error) throw error;
-    if (!data || !candleBelongsToCurrentUser(data)) {
-        throw new Error('You can only manage candles created by your account.');
-    }
-    return data;
+#accountButton.account-button:hover {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
 }
+
+@media (max-width: 600px) {
+    #accountButton.account-button {
+        top: 12px !important;
+        right: 12px !important;
+        padding: 8px 4px !important;
+        font-size: 9px !important;
+    }
+}
+</style>
+
+
+<style id="account-modal-repair-css">
+#accountModal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1000000 !important;
+}
+#accountModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+#accountModal[aria-hidden="true"] {
+    visibility: hidden;
+}
+</style>
+
+
+
+
+
+
+
+
+<style id="account-original-style">
+/* RESTORED ORIGINAL ACCOUNT POPUP */
+#accountModal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1000000 !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+}
+
+#accountModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#accountModal .account-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,.72) !important;
+    backdrop-filter: blur(3px) !important;
+}
+
+#accountModal .account-card {
+    position: relative !important;
+    z-index: 2 !important;
+    width: min(530px, calc(100vw - 40px)) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: calc(100vh - 40px) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 42px 42px 34px !important;
+    border: 1px solid rgba(210,190,150,.24) !important;
+    border-radius: 0 !important;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(150,125,90,.12), transparent 55%),
+        linear-gradient(145deg, #171311, #080707 70%) !important;
+    box-shadow: 0 30px 100px rgba(0,0,0,.9) !important;
+    text-align: center !important;
+}
+
+#accountModal .account-close {
+    position: absolute !important;
+    top: 10px !important;
+    right: 12px !important;
+    z-index: 3 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #cfc5b6 !important;
+    font-size: 22px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+}
+
+#accountModal .account-symbol {
+    display: block !important;
+    margin-bottom: 10px !important;
+    color: #ded3c3 !important;
+    font-size: 25px !important;
+}
+
+#accountModal .account-card h2 {
+    margin: 0 0 10px !important;
+    color: #e5ddd1 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 25px !important;
+    line-height: 1.15 !important;
+    letter-spacing: .12em !important;
+    font-weight: normal !important;
+}
+
+#accountModal .account-subtitle {
+    margin: 0 auto 26px !important;
+    max-width: 440px !important;
+    color: #bdb1a1 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+}
+
+#accountModal .account-form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+#accountModal .account-form label {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    color: #bdb1a1 !important;
+    font-size: 10px !important;
+    letter-spacing: .14em !important;
+    text-transform: uppercase !important;
+}
+
+#accountModal .account-form input {
+    display: block !important;
+    width: 100% !important;
+    height: 42px !important;
+    margin: 6px 0 0 !important;
+    padding: 10px 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(205,180,140,.25) !important;
+    border-radius: 0 !important;
+    background: rgba(255,255,255,.025) !important;
+    color: #e7dccd !important;
+    font-family: Georgia, serif !important;
+    font-size: 14px !important;
+    outline: none !important;
+}
+
+#accountModal .account-submit {
+    display: block !important;
+    width: 100% !important;
+    height: 56px !important;
+    margin: 8px 0 0 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(210,180,125,.45) !important;
+    border-radius: 0 !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12)) !important;
+    color: #e5d8c5 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 14px !important;
+    letter-spacing: .13em !important;
+    cursor: pointer !important;
+}
+
+#accountModal .account-message {
+    min-height: 18px !important;
+    margin-top: 12px !important;
+    color: #bdb1a1 !important;
+    font-family: Georgia, serif !important;
+    font-size: 12px !important;
+}
+
+#accountModal .account-switch {
+    margin-top: 18px !important;
+    color: #777068 !important;
+    font-family: Georgia, serif !important;
+    font-size: 13px !important;
+}
+
+#accountModal .account-switch button {
+    border: 0 !important;
+    background: transparent !important;
+    color: #c7b38d !important;
+    font-family: Georgia, serif !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+}
+
+/* Keep the account trigger in the top-right, as requested previously. */
+#accountButton.account-button {
+    position: fixed !important;
+    top: 20px !important;
+    right: 24px !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 1000001 !important;
+    margin: 0 !important;
+    padding: 10px 6px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #ded3c3 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 11px !important;
+    letter-spacing: .16em !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 1px 8px rgba(0,0,0,.9) !important;
+}
+
+@media (max-width: 600px) {
+    #accountModal {
+        padding: 14px !important;
+    }
+
+    #accountModal .account-card {
+        width: calc(100vw - 28px) !important;
+        max-height: calc(100vh - 28px) !important;
+        padding: 36px 24px 28px !important;
+    }
+
+    #accountModal .account-card h2 {
+        font-size: 21px !important;
+    }
+
+    #accountButton.account-button {
+        top: 12px !important;
+        right: 12px !important;
+        font-size: 9px !important;
+    }
+}
+</style>
+
+
+<style id="account-no-duplicates">
+#accountUserBox { display:none !important; }
+#accountUserBox.active { display:block !important; }
+#sanctuaryAccountButton,
+.account-logout { display:block !important; width:100% !important; box-sizing:border-box !important; }
+
+/* FINAL ACCOUNT FORM VISIBILITY FIX
+   The login/register forms must never display at the same time.
+   This intentionally overrides the older !important form styling. */
+#accountModal #registerAccountForm {
+    display: none !important;
+}
+#accountModal #loginAccountForm {
+    display: none !important;
+}
+#accountModal #registerAccountForm.account-form-visible {
+    display: flex !important;
+}
+#accountModal #loginAccountForm.account-form-visible {
+    display: flex !important;
+}
+
+</style>
+
+<style id="account-password-reset-css">
+#accountModal .account-forgot {
+    display: block !important;
+    width: 100% !important;
+    margin: 8px 0 0 !important;
+    padding: 8px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #b9aa91 !important;
+    font-family: Georgia, serif !important;
+    font-size: 12px !important;
+    letter-spacing: .08em !important;
+    cursor: pointer !important;
+}
+#accountModal .account-forgot:hover { color: #e1d1b5 !important; }
+#passwordResetModal, #newPasswordModal {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1000002 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 14px !important;
+    box-sizing: border-box !important;
+}
+#passwordResetModal.active, #newPasswordModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+#passwordResetModal .account-backdrop, #newPasswordModal .account-backdrop {
+    position: absolute !important; inset: 0 !important;
+    background: rgba(0,0,0,.78) !important;
+    backdrop-filter: blur(3px) !important;
+}
+#passwordResetModal .account-card, #newPasswordModal .account-card {
+    position: relative !important; z-index: 2 !important;
+    width: min(530px, calc(100vw - 28px)) !important;
+    max-height: calc(100vh - 28px) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 36px 24px 28px !important;
+    border: 1px solid rgba(210,190,150,.24) !important;
+    background: radial-gradient(circle at 50% 0%, rgba(150,125,90,.12), transparent 55%), linear-gradient(145deg,#171311,#080707 70%) !important;
+    box-shadow: 0 30px 100px rgba(0,0,0,.9) !important;
+    text-align: center !important;
+}
+
+<style id="password-reset-button-style-fix">
+/* Make password-restoration controls match the Temple's existing account buttons */
+#passwordResetModal .account-close,
+#newPasswordModal .account-close {
+    position: absolute !important;
+    top: 15px !important;
+    right: 18px !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 1px solid rgba(210,190,150,.2) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #c7bbab !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 20px !important;
+    line-height: 34px !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+
+#passwordResetModal .account-close:hover,
+#newPasswordModal .account-close:hover {
+    border-color: rgba(232,227,216,.7) !important;
+    background: rgba(255,255,255,.05) !important;
+    color: #f3eee4 !important;
+}
+
+#passwordResetModal .account-submit,
+#newPasswordModal .account-submit {
+    display: block !important;
+    width: 100% !important;
+    height: 56px !important;
+    margin: 8px 0 0 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(210,180,125,.45) !important;
+    border-radius: 0 !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12)) !important;
+    color: #e5d8c5 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 14px !important;
+    letter-spacing: .13em !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+
+#passwordResetModal .account-submit:hover,
+#newPasswordModal .account-submit:hover {
+    border-color: rgba(232,227,216,.7) !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.22), rgba(80,60,40,.18)) !important;
+    color: #f3eee4 !important;
+}
+
+#passwordResetModal .account-form input,
+#newPasswordModal .account-form input {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    border-radius: 0 !important;
+}
+</style>
+
+</style>
+
+<style id="account-logout-style-fix">
+#accountModal .account-logout {
+    display: block !important;
+    width: 100% !important;
+    height: 56px !important;
+    box-sizing: border-box !important;
+    margin: 8px 0 0 !important;
+    padding: 12px !important;
+    border: 1px solid rgba(210,180,125,.45) !important;
+    border-radius: 0 !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.14), rgba(60,45,30,.12)) !important;
+    color: #e5d8c5 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 14px !important;
+    letter-spacing: .13em !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+#accountModal .account-logout:hover {
+    border-color: rgba(232,227,216,.7) !important;
+    background: linear-gradient(135deg, rgba(180,145,85,.22), rgba(80,60,40,.18)) !important;
+    color: #f3eee4 !important;
+}
+</style>
+
+
+<style id="nickname-candle-polish">
+#registerAccountForm input#registerUsername {
+    text-transform: none;
+}
+.nickname-availability-note {
+    margin-top: 6px;
+    color: rgba(215,205,194,.55);
+    font-size: 10px;
+    letter-spacing: .08em;
+}
+.sanctuary-candle-item {
+    border-left: 1px solid rgba(205,180,140,.22);
+}
+.sanctuary-delete-candle {
+    border-color: rgba(160,95,80,.38) !important;
+}
+.sanctuary-delete-candle:hover {
+    border-color: rgba(190,120,100,.7) !important;
+    color: #f0cfc2 !important;
+    background: rgba(150,70,50,.10) !important;
+}
+</style>
+
+
+<style id="temple-final-mobile-repair">
+/* =====================================================
+   FINAL MOBILE REPAIR
+   - Prevent headings/long words from being clipped.
+   - Keep ritual cards fully inside the viewport.
+   - Keep the candle designer compact enough for phone screens.
+   - Allow the designer itself to scroll instead of being vertically clipped.
+===================================================== */
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@media (max-width: 800px) {
+    .temple-content,
+    .inside-container,
+    .chamber-content,
+    .ritual-content {
+        width: min(100%, 100vw);
+        max-width: 100%;
+    }
+
+    .temple-content {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .temple h1,
+    .inside-title,
+    .chamber h2 {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        letter-spacing: .055em;
+    }
+
+    .temple h1 {
+        font-size: clamp(2.45rem, 11vw, 4rem);
+    }
+
+    .chamber h2 {
+        font-size: clamp(2.35rem, 10.5vw, 4rem);
+    }
+
+    /* Four ritual cards: two columns, never wider than their grid track. */
+    .ritual-paths {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 2px;
+        margin-left: auto;
+        margin-right: auto;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .ritual-path {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        padding: 20px 7px;
+        overflow: hidden;
+        white-space: normal;
+    }
+
+    .ritual-path h3 {
+        min-width: 0;
+        max-width: 100%;
+        font-size: 12px;
+        letter-spacing: .10em;
+        overflow-wrap: anywhere;
+    }
+
+    .ritual-path p {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    /* The original altar layout is intentionally wide on desktop.
+       On phones shrink the side candles so the scene cannot push the page sideways. */
+    .ritual-scene {
+        width: 100%;
+        max-width: 100%;
+        min-height: 390px;
+        overflow: visible;
+    }
+
+    .ritual-dedications {
+        overflow: visible;
+    }
+
+    .dedication-flame {
+        z-index: 1001 !important;
+    }
+
+    .ritual-candles {
+        width: 82px;
+        min-height: 245px;
+        gap: 18px;
+    }
+
+    .ritual-candles-left { left: 0; }
+    .ritual-candles-right { right: 0; }
+
+    .ritual-candle,
+    .candle-button {
+        width: 54px;
+        height: 150px;
+    }
+
+    .candle-body {
+        width: 34px;
+        height: 108px;
+        bottom: 19px;
+    }
+
+    .candle-body::before { width: 34px; }
+    .candle-base { width: 52px; bottom: 8px; }
+    .candle-flame { width: 20px; height: 34px; }
+
+    .candle-label {
+        max-width: 78px;
+        font-size: 7px;
+        letter-spacing: .8px;
+    }
+
+    .ritual-altar {
+        width: 220px;
+        height: 220px;
+        flex: 0 0 220px;
+    }
+
+    .ritual-sigil {
+        width: 145px;
+        height: 145px;
+    }
+
+    .sigil-ring-one { width: 140px; height: 140px; }
+    .sigil-ring-two { width: 112px; height: 112px; }
+    .sigil-ring-three { width: 78px; height: 78px; }
+
+    /* Candle designer: compact preview on top, controls below. */
+    #candleModal {
+        align-items: flex-start;
+        justify-content: center;
+        padding: 12px 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #candleModal .candle-design-window {
+        width: min(94vw, 430px);
+        max-width: calc(100vw - 20px);
+        min-height: 0;
+        height: auto;
+        max-height: calc(100dvh - 24px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    #candleModal .candle-preview-area {
+        flex: 0 0 235px;
+        height: 235px;
+        min-height: 235px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(205,180,140,.12);
+        overflow: hidden;
+    }
+
+    #candleModal .candle-preview-aura {
+        width: 280px;
+        height: 280px;
+    }
+
+    #candleModal .large-candle {
+        width: 120px;
+        height: 185px;
+        transform: none;
+        flex: 0 0 auto;
+    }
+
+    #candleModal .large-candle-body {
+        width: 78px;
+        height: 132px;
+        bottom: 25px;
+        border-radius: 9px 9px 5px 5px;
+    }
+
+    #candleModal .large-candle-body::before { width: 78px; }
+
+    #candleModal .large-candle-wick {
+        top: 42px;
+        height: 27px;
+        width: 4px;
+    }
+
+    #candleModal .large-candle-flame {
+        width: 48px;
+        height: 78px;
+    }
+
+    #candleModal .large-candle-base {
+        width: 112px;
+        height: 17px;
+        bottom: 10px;
+    }
+
+    #candleModal .large-candle-name {
+        margin-top: 0;
+        font-size: 9px;
+        letter-spacing: .22em;
+    }
+
+    #candleModal .candle-control-card {
+        min-height: 0;
+        max-height: calc(100dvh - 271px);
+        overflow-y: auto;
+        padding: 30px 20px 22px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #candleModal .candle-control-card h2 {
+        font-size: 20px;
+        line-height: 1.2;
+        letter-spacing: .13em;
+        padding-right: 18px;
+    }
+
+    #candleModal .candle-control-card .modal-subtitle {
+        font-size: 13px;
+        margin-bottom: 18px;
+    }
+
+    #candleModal .candle-control-card label {
+        margin-top: 15px;
+        font-size: 9px;
+    }
+
+    #candleModal .candle-control-card input[type="text"],
+    #candleModal .candle-control-card textarea,
+    #candleModal .candle-control-card select {
+        padding: 11px 12px;
+        font-size: 14px;
+    }
+
+    #candleModal .candle-control-card textarea {
+        min-height: 76px;
+    }
+
+    #candleModal .candle-swatch,
+    #candleModal .flame-swatch {
+        width: 29px;
+        height: 29px;
+    }
+
+    #candleModal .candle-modal-close {
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        font-size: 22px;
+    }
+
+    /* Account popup remains compact and scrollable on short phones. */
+    #accountModal {
+        align-items: flex-start !important;
+        padding: 12px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #accountModal .account-card {
+        width: min(430px, calc(100vw - 24px)) !important;
+        max-height: calc(100dvh - 24px) !important;
+        margin: 0 auto !important;
+        padding: 34px 20px 24px !important;
+        overflow-y: auto !important;
+    }
+
+    #accountModal .account-card h2 {
+        font-size: 20px !important;
+        overflow-wrap: anywhere;
+    }
+
+    #accountModal .account-subtitle {
+        font-size: 13px !important;
+    }
+
+    #accountModal .account-form input {
+        height: 44px !important;
+    }
+
+    /* Sanctuary tabs should not force horizontal overflow. */
+    #sanctuaryModal {
+        padding: 10px !important;
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    #sanctuaryModal .sanctuary-card {
+        width: min(94vw, 600px);
+        max-height: calc(100dvh - 20px);
+        margin: 0 auto;
+        overflow-y: auto;
+    }
+
+    #sanctuaryModal .sanctuary-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #sanctuaryModal .sanctuary-tab {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 380px) {
+    .temple h1 { font-size: 2.25rem; }
+    .chamber h2 { font-size: 2.15rem; }
+    .ritual-altar { width: 190px; height: 190px; flex-basis: 190px; }
+    .ritual-sigil { width: 125px; height: 125px; }
+    .sigil-ring-one { width: 120px; height: 120px; }
+    .sigil-ring-two { width: 96px; height: 96px; }
+    .sigil-ring-three { width: 67px; height: 67px; }
+    .ritual-candles { width: 68px; }
+}
+</style>
+
+
+<style id="final-candle-popup-repair">
+/* Final candle/popup repair: overrides earlier rules without deleting them. */
+.candle-design-window {
+    width: min(900px, 88vw) !important;
+    min-height: 560px !important;
+    max-height: 88vh !important;
+    overflow: hidden !important;
+    grid-template-columns: 42% 58% !important;
+}
+.candle-preview-area {
+    min-height: 560px !important;
+}
+.candle-control-card {
+    min-width: 0 !important;
+    padding: 42px 38px 34px !important;
+    overflow-y: auto !important;
+}
+.candle-control-card h2 {
+    font-size: 23px !important;
+    line-height: 1.25 !important;
+}
+.candle-control-card .modal-subtitle { margin-bottom: 20px !important; }
+.candle-control-card label { margin: 14px 0 7px !important; }
+.candle-control-card textarea { min-height: 72px !important; }
+.candle-modal-close {
+    z-index: 20 !important;
+    top: 12px !important;
+    right: 12px !important;
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0,0,0,.18) !important;
+    border: 1px solid rgba(210,190,150,.55) !important;
+    color: #e8dfd2 !important;
+    font-size: 22px !important;
+    line-height: 1 !important;
+}
+.candle-modal-close:hover { background: rgba(255,255,255,.05) !important; }
+
+/* Keep altar candles away from the central typography. */
+.ritual-candles {
+    width: 105px !important;
+    height: 510px !important;
+    z-index: 3 !important;
+}
+.ritual-candles-left { left: 0 !important; }
+.ritual-candles-right { right: 0 !important; }
+.ritual-candle-wrap { width: 90px !important; height: 220px !important; flex-basis: 220px !important; }
+.ritual-candle, .candle-button { width: 64px !important; height: 200px !important; flex-basis: 200px !important; }
+
+@media (max-width: 800px) {
+    .candle-design-window {
+        width: min(92vw, 420px) !important;
+        max-width: calc(100vw - 20px) !important;
+        max-height: calc(100dvh - 20px) !important;
+        grid-template-columns: 1fr !important;
+    }
+    .candle-preview-area {
+        flex: 0 0 190px !important;
+        height: 190px !important;
+        min-height: 190px !important;
+    }
+    .candle-control-card {
+        padding: 32px 18px 20px !important;
+        max-height: calc(100dvh - 230px) !important;
+    }
+    .candle-control-card h2 { font-size: 19px !important; }
+    .candle-control-card .modal-subtitle { font-size: 12px !important; }
+    .candle-modal-close { top: 8px !important; right: 8px !important; }
+
+    .ritual-candles {
+        width: 68px !important;
+        height: 360px !important;
+    }
+    .ritual-candles-left { left: 0 !important; }
+    .ritual-candles-right { right: 0 !important; }
+    .ritual-candle-wrap { width: 62px !important; height: 155px !important; flex-basis: 155px !important; }
+    .ritual-candle, .candle-button { width: 50px !important; height: 140px !important; flex-basis: 140px !important; }
+}
+</style>
+
+
+
+<style id="final-ritual-layout-and-global-popup-fix">
+/* FINAL OVERRIDE — do not remove earlier systems. */
+
+/* The side candle groups MUST be absolutely positioned. An earlier rule
+   changed them to position:relative, which made them enter the flex layout
+   and pushed them over the title/subtitle. */
+.ritual-scene > .ritual-candles {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    transform: none !important;
+    width: 92px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 18px 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0 !important;
+    z-index: 3 !important;
+}
+
+.ritual-scene > .ritual-candles-left {
+    left: 0 !important;
+    right: auto !important;
+}
+
+.ritual-scene > .ritual-candles-right {
+    right: 0 !important;
+    left: auto !important;
+}
+
+.ritual-candle-wrap {
+    position: relative !important;
+    width: 92px !important;
+    height: 190px !important;
+    flex: 0 0 190px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    box-sizing: border-box !important;
+}
+
+.ritual-candle-wrap .ritual-candle,
+.ritual-candle-wrap .candle-button {
+    width: 62px !important;
+    height: 166px !important;
+    flex: 0 0 166px !important;
+    margin: 0 !important;
+}
+
+.ritual-candle-wrap .candle-body {
+    width: 42px !important;
+    height: 128px !important;
+    bottom: 20px !important;
+}
+
+.ritual-candle-wrap .candle-body::before {
+    width: 42px !important;
+}
+
+.ritual-candle-wrap .candle-base {
+    width: 62px !important;
+    bottom: 7px !important;
+}
+
+.ritual-candle-wrap .candle-flame {
+    width: 22px !important;
+    height: 36px !important;
+}
+
+.ritual-candle-wrap .candle-label {
+    width: 92px !important;
+    max-width: 92px !important;
+    margin-top: 5px !important;
+    font-size: 8px !important;
+    letter-spacing: 1.1px !important;
+}
+
+/* Keep the center content visually clear. */
+.ritual-scene > .ritual-altar {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Crisp top-right account/entry button. */
+#accountButton.account-button {
+    z-index: 100002 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 1px solid rgba(210,190,150,.55) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+}
+
+/* One global state: when ANY Temple overlay is open, the top-right button
+   is removed from view. This catches account/login/register, password,
+   sanctuary, candle designer, dedication info and ritual-path popups. */
+body.temple-popup-open #accountButton.account-button,
+body.temple-popup-open .account-button {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+@media (max-width: 800px) {
+    .ritual-scene {
+        min-height: 390px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .ritual-scene > .ritual-candles {
+        width: 68px !important;
+        padding: 10px 0 !important;
+    }
+
+    .ritual-candle-wrap {
+        width: 68px !important;
+        height: 155px !important;
+        flex-basis: 155px !important;
+    }
+
+    .ritual-candle-wrap .ritual-candle,
+    .ritual-candle-wrap .candle-button {
+        width: 50px !important;
+        height: 135px !important;
+        flex-basis: 135px !important;
+    }
+
+    .ritual-candle-wrap .candle-body {
+        width: 34px !important;
+        height: 104px !important;
+        bottom: 17px !important;
+    }
+
+    .ritual-candle-wrap .candle-body::before { width: 34px !important; }
+    .ritual-candle-wrap .candle-base { width: 50px !important; bottom: 6px !important; }
+    .ritual-candle-wrap .candle-flame { width: 19px !important; height: 32px !important; }
+    .ritual-candle-wrap .candle-label {
+        width: 68px !important;
+        max-width: 68px !important;
+        font-size: 7px !important;
+        letter-spacing: .8px !important;
+    }
+
+    #accountButton.account-button {
+        top: 12px !important;
+        right: 12px !important;
+        padding: 8px 12px !important;
+    }
+}
+</style>
+
+<script id="global-temple-popup-button-controller">
+(function () {
+    const popupSelectors = [
+        '#accountModal',
+        '#passwordResetModal',
+        '#newPasswordModal',
+        '#sanctuaryModal',
+        '#candleModal',
+        '#ritualPathPopup',
+        '.dedication-info'
+    ];
+
+    function isOpen(el) {
+        if (!el) return false;
+        const cs = window.getComputedStyle(el);
+        return el.classList.contains('active') ||
+               el.getAttribute('aria-hidden') === 'false' ||
+               (cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0');
+    }
+
+    function syncTemplePopupState() {
+        const open = popupSelectors.some(selector => {
+            return [...document.querySelectorAll(selector)].some(isOpen);
+        });
+        document.body.classList.toggle('temple-popup-open', open);
+    }
+
+    function init() {
+        syncTemplePopupState();
+        const observer = new MutationObserver(syncTemplePopupState);
+        observer.observe(document.documentElement, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ['class', 'style', 'aria-hidden']
+        });
+
+        document.addEventListener('click', () => setTimeout(syncTemplePopupState, 0), true);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+        init();
+    }
+})();
 </script>
+
+
+<style id="candle-menu-size-repair">
+/* =====================================================
+   CANDLE MENU — RESTORE FULL MENU, COMPACTLY
+   The candle designer keeps every existing field/control.
+   We only reduce the overall footprint and spacing so the
+   complete menu fits inside the viewport instead of being
+   physically cropped.
+===================================================== */
+
+.candle-modal {
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.candle-design-window {
+    width: min(820px, calc(100vw - 30px)) !important;
+    height: min(680px, calc(100dvh - 30px)) !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 30px) !important;
+    grid-template-columns: 39% 61% !important;
+    overflow: hidden !important;
+}
+
+.candle-preview-area {
+    min-height: 0 !important;
+    height: 100% !important;
+}
+
+.candle-preview-aura {
+    width: 430px !important;
+    height: 430px !important;
+}
+
+.large-candle {
+    width: 150px !important;
+    height: 390px !important;
+}
+
+.large-candle-body {
+    width: 105px !important;
+    height: 275px !important;
+    bottom: 34px !important;
+}
+
+.large-candle-body::before {
+    width: 105px !important;
+}
+
+.large-candle-wick {
+    top: 48px !important;
+    height: 35px !important;
+}
+
+.large-candle-flame {
+    width: 62px !important;
+    height: 98px !important;
+}
+
+.large-candle-base {
+    width: 145px !important;
+    height: 22px !important;
+    bottom: 14px !important;
+}
+
+.large-candle-name {
+    margin-top: 5px !important;
+    font-size: 9px !important;
+}
+
+.candle-control-card {
+    height: 100% !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    padding: 30px 32px 24px !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin;
+}
+
+.candle-control-card .modal-symbol {
+    font-size: 26px !important;
+    margin-bottom: 7px !important;
+}
+
+.candle-control-card h2 {
+    font-size: 21px !important;
+    line-height: 1.15 !important;
+    margin-bottom: 5px !important;
+}
+
+.candle-control-card .modal-subtitle {
+    font-size: 12px !important;
+    margin-bottom: 13px !important;
+}
+
+.candle-control-card label {
+    margin: 10px 0 5px !important;
+    font-size: 9px !important;
+}
+
+.candle-control-card input[type="text"],
+.candle-control-card textarea,
+.candle-control-card select {
+    box-sizing: border-box !important;
+    padding: 9px 11px !important;
+    font-size: 12px !important;
+}
+
+.candle-control-card textarea {
+    min-height: 58px !important;
+    height: 58px !important;
+}
+
+.candle-palette,
+.flame-palette {
+    gap: 7px !important;
+}
+
+.candle-modal .candle-swatch,
+.candle-modal .flame-swatch {
+    width: 27px !important;
+    height: 27px !important;
+    min-width: 27px !important;
+    min-height: 27px !important;
+}
+
+.custom-colour-row {
+    margin-top: 5px !important;
+}
+
+.light-candle-button,
+.candle-extinguish-button {
+    margin-top: 14px !important;
+    min-height: 40px !important;
+    padding: 9px 12px !important;
+    font-size: 10px !important;
+}
+
+/* Keep the close X visible while the control column scrolls. */
+.candle-modal-close {
+    position: absolute !important;
+    top: 9px !important;
+    right: 9px !important;
+    width: 32px !important;
+    height: 32px !important;
+    z-index: 100 !important;
+}
+
+/* Mobile: retain the complete menu, but make the preview compact. */
+@media (max-width: 800px) {
+    .candle-modal {
+        padding: 8px !important;
+        align-items: center !important;
+        overflow: hidden !important;
+    }
+
+    .candle-design-window {
+        width: min(94vw, 430px) !important;
+        height: min(94dvh, 720px) !important;
+        max-height: calc(100dvh - 16px) !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .candle-preview-area {
+        flex: 0 0 145px !important;
+        height: 145px !important;
+        min-height: 145px !important;
+    }
+
+    .candle-preview-aura {
+        width: 210px !important;
+        height: 210px !important;
+    }
+
+    .large-candle {
+        width: 95px !important;
+        height: 125px !important;
+    }
+
+    .large-candle-body {
+        width: 62px !important;
+        height: 88px !important;
+        bottom: 17px !important;
+    }
+
+    .large-candle-body::before {
+        width: 62px !important;
+    }
+
+    .large-candle-wick {
+        top: 27px !important;
+        height: 20px !important;
+        width: 3px !important;
+    }
+
+    .large-candle-flame {
+        width: 39px !important;
+        height: 58px !important;
+    }
+
+    .large-candle-base {
+        width: 88px !important;
+        height: 14px !important;
+        bottom: 6px !important;
+    }
+
+    .candle-control-card {
+        flex: 1 1 auto !important;
+        height: auto !important;
+        max-height: none !important;
+        padding: 25px 17px 18px !important;
+        overflow-y: auto !important;
+    }
+
+    .candle-control-card .modal-symbol {
+        font-size: 23px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .candle-control-card h2 {
+        font-size: 18px !important;
+    }
+
+    .candle-control-card .modal-subtitle {
+        font-size: 11px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .candle-control-card label {
+        margin: 8px 0 4px !important;
+    }
+
+    .candle-control-card input[type="text"],
+    .candle-control-card textarea,
+    .candle-control-card select {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+    }
+
+    .candle-control-card textarea {
+        min-height: 52px !important;
+        height: 52px !important;
+    }
+
+    .candle-modal .candle-swatch,
+    .candle-modal .flame-swatch {
+        width: 25px !important;
+        height: 25px !important;
+        min-width: 25px !important;
+        min-height: 25px !important;
+    }
+
+    .light-candle-button,
+    .candle-extinguish-button {
+        margin-top: 11px !important;
+        min-height: 38px !important;
+        padding: 8px 10px !important;
+    }
+}
+</style>
+
+
+<style id="dedication-live-countdown-style">
+.dedication-live-countdown {
+    margin: 14px auto 4px;
+    padding: 9px 12px;
+    border: 1px solid rgba(210,190,150,.35);
+    background: rgba(0,0,0,.18);
+    text-align: center;
+    letter-spacing: .08em;
+}
+.dedication-live-countdown span {
+    display: block;
+    font-size: 8px;
+    opacity: .7;
+}
+.dedication-live-countdown strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+    color: #f1e5ce;
+}
+</style>
+
+
+<style id="public-burning-candles">
+.public-candle-list { display:grid; gap:10px; }
+.public-candle { cursor:pointer; }
+.sanctuary-candle-burner {
+    margin-top:6px;
+    font-size:9px;
+    letter-spacing:.08em;
+    opacity:.72;
+}
+.sanctuary-candle-time {
+    margin-top:4px;
+    font-size:9px;
+    letter-spacing:.06em;
+}
+</style>
+<script id="public-burning-candle-refresh">
+setInterval(() => {
+    if (typeof sanctuaryCache !== 'undefined' &&
+        typeof sanctuaryCurrentTab !== 'undefined' &&
+        sanctuaryCurrentTab === 'candles') {
+        renderSanctuaryTab('candles');
+    }
+}, 1000);
+</script>
+
+
+<style id="candle-owner-controls-final">
+.public-candle-owner-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+.public-candle-owner-controls button {
+    flex: 1;
+}
+</style>
 
 </head>
 <body>
+<button
+    id="accountButton"
+    class="account-button"
+    type="button"
+    aria-label="Open account"
+>
+    ENTER THE TEMPLE
+</button>
 
     <!-- =====================================================
          HERO
@@ -5876,10 +7384,6 @@ async function assertCandleOwner(candleId) {
 
             <a href="#inside" class="enter-button">
                 Enter the Temple
-            </a>
-
-            <a href="#" id="accountButton" class="account-button" onclick="openAccountModal(event)">
-                ENTER THE TEMPLE
             </a>
 
         </div>
@@ -6119,10 +7623,6 @@ async function assertCandleOwner(candleId) {
                 Before boundaries.
                 Before the world had a name.
             </p>
-
-            <div class="chamber-placeholder">
-                This chamber awaits its story.
-            </div>
 
             <br>
 <!-- =====================================================
@@ -6898,7 +8398,12 @@ async function assertCandleOwner(candleId) {
         <div id="dedicationInfo" class="dedication-info" aria-hidden="true">
             <div class="dedication-info-card">
                 <button class="dedication-info-close" type="button" onclick="closeDedicationInfo()" aria-label="Close">×</button>
-                <div class="dedication-info-symbol">✦</div>
+                <div class="dedication-info-symbol">✦
+        <div class="dedication-live-countdown">
+            <span>TIME LEFT BURNING</span>
+            <strong id="dedicationLiveCountdown">—</strong>
+        </div>
+</div>
                 <div class="dedication-info-kicker">DEDICATED FLAME</div>
                 <h3 id="dedicationInfoTitle">YOUR FLAME</h3>
                 <div class="dedication-info-meta" id="dedicationInfoMeta"></div>
@@ -7063,7 +8568,8 @@ const dedicationNodes = new Map();
 let activeDedications = [];
 let pendingCandleDesign = null;
 
-const DAILY_DEDICATION_LIMIT = 2;
+const GUEST_DAILY_DEDICATION_LIMIT = 5;
+const REGISTERED_DAILY_DEDICATION_LIMIT = 15;
 const DAILY_LIMIT_STORAGE_KEY = 'templeChaosDailyDedications';
 
 function getLocalDayKey(date = new Date()) {
@@ -7073,26 +8579,39 @@ function getLocalDayKey(date = new Date()) {
     return `${year}-${month}-${day}`;
 }
 
+function getDailyLimit() {
+    return currentAuthUser
+        ? REGISTERED_DAILY_DEDICATION_LIMIT
+        : GUEST_DAILY_DEDICATION_LIMIT;
+}
+
+function getDailyUsageKey() {
+    return currentAuthUser
+        ? `${DAILY_LIMIT_STORAGE_KEY}:user:${currentAuthUser.id}`
+        : `${DAILY_LIMIT_STORAGE_KEY}:guest`;
+}
+
 function getDailyUsage() {
     const today = getLocalDayKey();
+    const storageKey = getDailyUsageKey();
     let usage = null;
 
     try {
-        usage = JSON.parse(localStorage.getItem(DAILY_LIMIT_STORAGE_KEY) || 'null');
+        usage = JSON.parse(localStorage.getItem(storageKey) || 'null');
     } catch {
         usage = null;
     }
 
     if (!usage || usage.day !== today || !Number.isFinite(Number(usage.count))) {
         usage = { day: today, count: 0 };
-        localStorage.setItem(DAILY_LIMIT_STORAGE_KEY, JSON.stringify(usage));
+        localStorage.setItem(storageKey, JSON.stringify(usage));
     }
 
     return usage;
 }
 
 function getRemainingDailyDedications() {
-    return Math.max(0, DAILY_DEDICATION_LIMIT - getDailyUsage().count);
+    return Math.max(0, getDailyLimit() - getDailyUsage().count);
 }
 
 function incrementDailyDedications() {
@@ -7119,11 +8638,12 @@ function updateDailyFlameStatus() {
 
     const remaining = getRemainingDailyDedications();
     const resetText = getNextDailyResetText();
+    const dailyLimit = getDailyLimit();
 
     status.classList.toggle('limit-reached', remaining === 0);
 
     if (remaining > 0) {
-        status.textContent = `${remaining} flame${remaining === 1 ? '' : 's'} remaining · resets in ${resetText}`;
+        status.textContent = `${remaining} of ${dailyLimit} flames remaining · resets in ${resetText}`;
     } else {
         status.textContent = `No flames remaining · resets in ${resetText}`;
     }
@@ -7271,8 +8791,8 @@ function getRandomDedicationPosition(sourceWrap, dedication) {
 
     for (let i = 0; i < 250; i++) {
         const candidate = {
-            x: 6 + Math.random() * 88,
-            y: 8 + Math.random() * 80
+            x: 10 + Math.random() * 80,
+            y: 16 + Math.random() * 68
         };
 
         /* Keep the central altar area relatively clear. */
@@ -7307,8 +8827,8 @@ function getRandomDedicationPosition(sourceWrap, dedication) {
     /* Fallback if the chamber becomes very full. */
     if (!best) {
         best = {
-            x: source.x < 50 ? 78 + Math.random() * 12 : 10 + Math.random() * 12,
-            y: 10 + Math.random() * 80
+            x: source.x < 50 ? 74 + Math.random() * 10 : 16 + Math.random() * 10,
+            y: 18 + Math.random() * 64
         };
     }
 
@@ -7426,71 +8946,172 @@ function createDedicationNode(dedication, flying = true) {
 }
 
 
+async function persistDedicationToSupabase(dedication) {
+    if (!supabaseClient || !currentAuthUser || !dedication) return;
 
-/* =====================================================
-   ACCOUNT CANDLE SYNC
-===================================================== */
-async function saveCandleToAccount(dedication) {
-    if (!supabaseClient || !currentAuthUser || !dedication) return false;
-
-    const durationSeconds = dedication.duration === '0'
-        ? 0
-        : Number(dedication.duration || 3600);
-
-    const { data, error } = await supabaseClient
-        .from('user_candles')
-        .insert({
-            user_id: currentAuthUser.id,
-            deity: dedication.deity || null,
-            intention: dedication.intention || null,
-            color: dedication.color || '#eee6d6',
-            duration_seconds: durationSeconds,
-            started_at: new Date(Number(dedication.createdAt || Date.now())).toISOString()
-        })
-        .select('id')
-        .single();
-
-    if (error) {
-        console.error('Could not save candle to account:', error);
-        return false;
-    }
-
-    if (data?.id) {
-        dedication.supabase_id = data.id;
-        saveAllDedications();
-    }
-
-    return true;
-}
-
-async function updateCandleInAccount(dedication) {
-    if (!supabaseClient || !currentAuthUser || !dedication.supabase_id) return;
-    await supabaseClient.from('user_candles').update({
+    const payload = {
+        user_id: currentAuthUser.id,
+        dedication_id: dedication.id,
         deity: dedication.deity || null,
         intention: dedication.intention || null,
-        color: dedication.color || '#eee6d6',
-        duration_seconds: dedication.duration === '0' ? 0 : Number(dedication.duration || 3600),
-        started_at: new Date(Number(dedication.createdAt || Date.now())).toISOString(),
-        extinguished_at: null
-    }).eq('id', dedication.supabase_id).eq('user_id', currentAuthUser.id);
+        status: dedication.burnUntil === 'forever' ? 'active' : 'active',
+        duration: String(dedication.duration || '3600'),
+        burn_until: dedication.burnUntil || 'forever',
+        candle_color: dedication.color || '#eee6d6',
+        flame_color: dedication.flameColor || '#f5d58a',
+        hidden: !!dedication.hidden
+    };
+
+    const { error } = await supabaseClient
+        .from('user_candles')
+        .upsert(payload, { onConflict: 'dedication_id' });
+
+    if (error) {
+        console.error('Could not save dedicated candle:', error);
+        setAccountMessage('The flame was created, but could not be saved to your Sanctuary. Check the supplied Supabase SQL setup.');
+    }
 }
 
-async function extinguishCandleInAccount(dedication) {
-    if (!supabaseClient || !currentAuthUser || !dedication.supabase_id) return;
-    await supabaseClient.from('user_candles').update({
-        extinguished_at: new Date().toISOString()
-    }).eq('id', dedication.supabase_id).eq('user_id', currentAuthUser.id);
-}
+async function deleteDedicatedCandle(key) {
+    if (!key) return;
 
-function dedicateCandle() {
-    if (!selectedCandle) return;
-
-    if (!currentAuthUser) {
-        closeCandleModal();
-        openAccountModal();
-        setAccountMessage("Create an account or enter the Temple before lighting a personal flame.");
+    if (!confirm('Remove this dedicated candle from your Sanctuary and extinguish its flame?')) {
         return;
     }
+
+    /*
+     * EXTINQUISH LOCALLY FIRST.
+     * Do not wait for Supabase. This makes DELETE CANDLE immediately remove
+     * the visible flame and stop its timer.
+     */
+    const normalizedKey = String(key);
+
+    const matches = activeDedications.filter(item =>
+        item && (
+            String(item.id) === normalizedKey ||
+            String(item.dedication_id || '') === normalizedKey
+        )
+    );
+
+    matches.forEach(dedication => {
+        const id = dedication.id;
+
+        if (dedicationTimers.has(id)) {
+            clearTimeout(dedicationTimers.get(id));
+            dedicationTimers.delete(id);
+        }
+
+        const node = dedicationNodes.get(id);
+        if (node) {
+            node.classList.remove('is-visible');
+            node.classList.add('is-fading-out');
+
+            setTimeout(() => {
+                if (node && node.isConnected) node.remove();
+                dedicationNodes.delete(id);
+            }, 700);
+        }
+
+        const index = activeDedications.findIndex(item =>
+            item && String(item.id) === String(id)
+        );
+
+        if (index !== -1) {
+            activeDedications.splice(index, 1);
+        }
+    });
+
+    /*
+     * Remove the candle from every local candle list too, so a refresh cannot
+     * resurrect a candle that the user has just deleted.
+     */
+    try {
+        for (let i = 0; i < 20; i++) {
+            const storageKey = 'templeChaosDedications-' + i;
+            const raw = localStorage.getItem(storageKey);
+            if (!raw) continue;
+
+            const list = JSON.parse(raw);
+            if (!Array.isArray(list)) continue;
+
+            const filtered = list.filter(item => {
+                if (!item) return false;
+
+                return (
+                    String(item.id) !== normalizedKey &&
+                    String(item.dedication_id || '') !== normalizedKey
+                );
+            });
+
+            if (filtered.length !== list.length) {
+                localStorage.setItem(storageKey, JSON.stringify(filtered));
+            }
+        }
+    } catch (error) {
+        console.warn('Could not clean local candle storage:', error);
+    }
+
+    saveAllDedications();
+    updateDailyFlameStatus();
+
+    /* Update both Sanctuary and account displays immediately. */
+    if (typeof renderSanctuaryTab === 'function') {
+        renderSanctuaryTab(sanctuaryCurrentTab);
+    }
+    if (typeof renderAccountMobileCandles === 'function') {
+        renderAccountMobileCandles();
+    }
+
+    /*
+     * Now delete the persisted record. The visual flame is already gone,
+     * regardless of whether the network request takes a moment.
+     */
+    if (currentAuthUser && supabaseClient) {
+        let query = supabaseClient
+            .from('user_candles')
+            .delete()
+            .eq('user_id', currentAuthUser.id);
+
+        /*
+         * dedication_id is the normal key. If the database row uses a plain
+         * id instead, try that as a fallback.
+         */
+        let result = await query.eq('dedication_id', key);
+
+        if (result.error && result.error.code === '42703') {
+            result = await supabaseClient
+                .from('user_candles')
+                .delete()
+                .eq('user_id', currentAuthUser.id)
+                .eq('id', key);
+        }
+
+        if (result.error) {
+            console.error('Could not delete dedicated candle from Sanctuary:', result.error);
+            alert('The candle was extinguished, but could not be removed from your saved Sanctuary: ' + result.error.message);
+            return;
+        }
+    }
+
+    if (typeof loadSanctuary === 'function') {
+        await loadSanctuary();
+    }
+
+    if (typeof renderAccountMobileCandles === 'function') {
+        renderAccountMobileCandles();
+    }
+}
+
+async function syncLocalDedicationsToSupabase() {
+    if (!supabaseClient || !currentAuthUser || !activeDedications.length) return;
+
+    for (const dedication of activeDedications) {
+        await persistDedicationToSupabase(dedication);
+    }
+}
+
+async function dedicateCandle() {
+    if (!selectedCandle) return;
 
     const sourceWrap = selectedCandle.closest('.ritual-candle-wrap');
     const sourceIndex = getSourceIndex(sourceWrap);
@@ -7537,7 +9158,8 @@ function dedicateCandle() {
         createDedicationNode(dedication, false);
         scheduleDedication(dedication);
         saveAllDedications();
-        updateCandleInAccount(dedication);
+        await persistDedicationToSupabase(dedication);
+        await loadSanctuary();
 
         closeCandleModal();
         return;
@@ -7552,6 +9174,7 @@ function dedicateCandle() {
         color,
         flameColor,
         createdAt: now,
+        owner_id: currentAuthUser ? currentAuthUser.id : null,
         burnUntil: duration === '0'
             ? 'forever'
             : String(now + Number(duration) * 1000),
@@ -7567,7 +9190,8 @@ function dedicateCandle() {
     createDedicationNode(dedication, true);
     scheduleDedication(dedication);
     saveAllDedications();
-    await saveCandleToAccount(dedication);
+    await persistDedicationToSupabase(dedication);
+    await loadSanctuary();
 
     closeCandleModal();
 }
@@ -7597,6 +9221,43 @@ function openDedicationInfo(id) {
     document.getElementById('dedicationInfo').classList.add('active');
     document.getElementById('dedicationInfo').setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+
+    const liveCountdown = document.getElementById('dedicationLiveCountdown');
+    if (liveCountdown) {
+        if (dedication.burnUntil === 'forever') {
+            liveCountdown.textContent = 'ETERNAL FLAME';
+        } else {
+            if (liveCountdown._timer) clearInterval(liveCountdown._timer);
+
+            const updateLiveCountdown = () => {
+                const remaining = Math.max(0, Number(dedication.burnUntil) - Date.now());
+                const total = Math.floor(remaining / 1000);
+                const days = Math.floor(total / 86400);
+                const hours = Math.floor((total % 86400) / 3600);
+                const minutes = Math.floor((total % 3600) / 60);
+                const seconds = total % 60;
+
+                if (days > 0) {
+                    liveCountdown.textContent = `${days}d ${hours}h ${minutes}m remaining`;
+                } else if (hours > 0) {
+                    liveCountdown.textContent = `${hours}h ${minutes}m ${seconds}s remaining`;
+                } else if (minutes > 0) {
+                    liveCountdown.textContent = `${minutes}m ${seconds}s remaining`;
+                } else {
+                    liveCountdown.textContent = `${seconds}s remaining`;
+                }
+
+                if (remaining <= 0) {
+                    clearInterval(liveCountdown._timer);
+                    liveCountdown._timer = null;
+                    liveCountdown.textContent = 'EXTINGUISHED';
+                }
+            };
+
+            updateLiveCountdown();
+            liveCountdown._timer = setInterval(updateLiveCountdown, 1000);
+        }
+    }
 }
 
 function getDedicationTimeText(dedication) {
@@ -7630,7 +9291,24 @@ function extinguishSelectedDedication() {
     closeDedicationInfo();
 }
 
-function extinguishDedication(id) {
+function extinguishDedication(id, removeFromDatabase = true) {
+    /* A flame that stops burning must no longer appear in the account. */
+    const extinguished = activeDedications.find(item =>
+        item && String(item.id) === String(id)
+    );
+
+    if (extinguished) {
+        sanctuaryCache.candles = (sanctuaryCache.candles || []).filter(item =>
+            String(item.dedication_id || item.id || '') !== String(id)
+        );
+        removeExpiredCandleFromLocalStorage(id);
+
+        if (typeof renderSanctuaryTab === 'function' &&
+            sanctuaryCurrentTab === 'candles') {
+            renderSanctuaryTab('candles');
+        }
+    }
+
     const index = activeDedications.findIndex(item => item.id === id);
     if (index === -1) return;
 
@@ -7653,9 +9331,22 @@ function extinguishDedication(id) {
         }, 700);
     }
 
-    extinguishCandleInAccount(dedication);
     activeDedications.splice(index, 1);
     saveAllDedications();
+
+    if (removeFromDatabase && supabaseClient && currentAuthUser) {
+        supabaseClient
+            .from('user_candles')
+            .delete()
+            .eq('user_id', currentAuthUser.id)
+            .eq('dedication_id', id)
+            .then(({ error }) => {
+                if (error && error.code !== '42703') {
+                    console.error('Could not remove expired candle from Sanctuary:', error);
+                }
+                if (sanctuaryCurrentTab === 'candles') loadSanctuary();
+            });
+    }
 }
 
 function hideSelectedDedication() {
@@ -7806,6 +9497,7 @@ function restoreCandles() {
 
 document.addEventListener('DOMContentLoaded', () => {
     restoreCandles();
+    setTimeout(() => syncLocalDedicationsToSupabase(), 1200);
     updateDailyFlameStatus();
     updateHiddenFlameStatus();
 
@@ -7898,28 +9590,26 @@ document.addEventListener("keydown", function(event) {
 
 const SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH";
-const SITE_URL = "https://voiceofchaos.github.io/";
 
 let supabaseClient = null;
 let currentAuthUser = null;
-let accountMode = 'login';
+let accountMode = 'register';
 
 function initSupabase() {
     if (!window.supabase) {
         console.error('Supabase library failed to load.');
         return false;
     }
-    try {
+
+    if (!SUPABASE_URL.includes('PASTE_') && !SUPABASE_PUBLISHABLE_KEY.includes('PASTE_')) {
         supabaseClient = window.supabase.createClient(
             SUPABASE_URL,
-            SUPABASE_PUBLISHABLE_KEY,
-            { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } }
+            SUPABASE_PUBLISHABLE_KEY
         );
         return true;
-    } catch (error) {
-        console.error('Supabase initialization failed:', error);
-        return false;
     }
+
+    return false;
 }
 
 function setAccountMessage(message) {
@@ -7929,10 +9619,16 @@ function setAccountMessage(message) {
 
 function openAccountModal(event) {
     if (event) event.preventDefault();
+
     const modal = document.getElementById('accountModal');
     if (!modal) return;
-    if (currentAuthUser) showLoggedInAccount();
-    else setAccountMode('login');
+
+    if (currentAuthUser) {
+        showLoggedInAccount();
+    } else {
+        setAccountMode('login');
+    }
+
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -7941,6 +9637,7 @@ function openAccountModal(event) {
 function closeAccountModal() {
     const modal = document.getElementById('accountModal');
     if (!modal) return;
+
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
@@ -7948,6 +9645,11 @@ function closeAccountModal() {
 
 function setAccountMode(mode) {
     accountMode = mode;
+    const loggedInBox = document.getElementById('accountUserBox');
+    const switchWrap = document.querySelector('.account-switch');
+    if (loggedInBox) loggedInBox.classList.remove('active');
+    if (switchWrap) switchWrap.style.display = '';
+
     const register = document.getElementById('registerAccountForm');
     const login = document.getElementById('loginAccountForm');
     const title = document.getElementById('accountTitle');
@@ -7955,11 +9657,12 @@ function setAccountMode(mode) {
     const switchText = document.getElementById('accountSwitchText');
     const switchButton = document.getElementById('accountSwitchButton');
     const userBox = document.getElementById('accountUserBox');
-    const switchWrap = document.querySelector('.account-switch');
+
     if (userBox) userBox.classList.remove('active');
-    if (switchWrap) switchWrap.style.display = '';
-    if (register) register.style.display = mode === 'register' ? 'flex' : 'none';
-    if (login) login.style.display = mode === 'login' ? 'flex' : 'none';
+
+    if (register) register.classList.toggle('account-form-visible', mode === 'register');
+    if (login) login.classList.toggle('account-form-visible', mode === 'login');
+
     if (mode === 'register') {
         title.textContent = 'CREATE YOUR PLACE';
         subtitle.textContent = 'To kindle your own flame or leave your mark upon the Temple, first create a place within it.';
@@ -7971,8 +9674,7 @@ function setAccountMode(mode) {
         switchText.textContent = 'Do not yet have a place within the Temple?';
         switchButton.textContent = 'CREATE ACCOUNT';
     }
-    const resend = document.getElementById('resendVerificationButton');
-    if (resend) resend.style.display = 'none';
+
     setAccountMessage('');
 }
 
@@ -7982,35 +9684,82 @@ function toggleAccountMode() {
 
 async function registerAccount() {
     if (!supabaseClient) {
-        setAccountMessage('The account system could not connect to Supabase. Please refresh and try again.');
+        setAccountMessage('The account system is not connected yet. Add your Supabase URL and publishable key first.');
         return;
     }
+
     const username = document.getElementById('registerUsername').value.trim();
     const email = document.getElementById('registerEmail').value.trim();
     const password = document.getElementById('registerPassword').value;
     const button = document.getElementById('registerButton');
-    if (!username || !email || !password) return setAccountMessage('Please complete every field.');
-    if (password.length < 6) return setAccountMessage('Your password must contain at least 6 characters.');
+
+    if (!username || !email || !password) {
+        setAccountMessage('Please complete every field.');
+        return;
+    }
+
+    if (password.length < 6) {
+        setAccountMessage('Your password must contain at least 6 characters.');
+        return;
+    }
+
     button.disabled = true;
-    button.textContent = 'CREATING ACCOUNT...';
+    button.textContent = 'CHECKING THE NAME...';
+
     try {
+        /*
+         * Nicknames are case-insensitive. Do NOT read profiles directly here:
+         * RLS intentionally prevents anonymous users from selecting that table.
+         * The supplied SQL setup exposes nickname_is_taken() as a safe RPC.
+         */
+        const normalizedUsername = username.trim();
+
+        /* Support both names used by the supplied SQL revisions. */
+        let nicknameTaken = null;
+        let nicknameCheckError = null;
+
+        ({ data: nicknameTaken, error: nicknameCheckError } =
+            await supabaseClient.rpc('is_nickname_taken', {
+                requested_nickname: normalizedUsername
+            }));
+
+        if (nicknameCheckError && (nicknameCheckError.code === '42883' || nicknameCheckError.code === 'PGRST202')) {
+            ({ data: nicknameTaken, error: nicknameCheckError } =
+                await supabaseClient.rpc('nickname_is_taken', {
+                    requested_nickname: normalizedUsername
+                }));
+        }
+
+        if (nicknameCheckError) {
+            throw new Error('Could not check that nickname. Please run the supplied Supabase SQL setup, then try again.');
+        }
+
+        if (nicknameTaken === true) {
+            throw new Error('That name is already taken. Please choose another name.');
+        }
+
+        button.textContent = 'CREATING ACCOUNT...';
+
         const { data, error } = await supabaseClient.auth.signUp({
-            email, password,
-            options: { data: { username }, emailRedirectTo: SITE_URL }
+            email,
+            password,
+            options: {
+                data: { username: username.trim() },
+                emailRedirectTo: window.location.origin + window.location.pathname
+            }
         });
+
         if (error) throw error;
-        if (data.session && data.user) {
+
+        if (data.session) {
             currentAuthUser = data.user;
             updateAccountButton();
             setAccountMessage('Welcome to the Temple.');
             setTimeout(closeAccountModal, 700);
         } else {
-            setAccountMode('login');
-            document.getElementById('loginEmail').value = email;
-            setAccountMessage('Your place has been created. Check your email and tap the verification link. Then return here and enter the Temple.');
+            setAccountMessage('Account created. Check your email to verify your account, then return here to enter the Temple.');
         }
     } catch (error) {
-        console.error('Registration error:', error);
         setAccountMessage(error.message || 'Unable to create the account.');
     } finally {
         button.disabled = false;
@@ -8018,64 +9767,210 @@ async function registerAccount() {
     }
 }
 
-async function resendVerification() {
-    if (!supabaseClient) return setAccountMessage('The account system could not connect to Supabase.');
-    const email = document.getElementById('loginEmail').value.trim();
-    if (!email) return setAccountMessage('Enter your email address first.');
-    const button = document.getElementById('resendVerificationButton');
-    if (button) { button.disabled = true; button.textContent = 'SENDING...'; }
-    try {
-        const { error } = await supabaseClient.auth.resend({ type: 'signup', email, options: { emailRedirectTo: SITE_URL } });
-        if (error) throw error;
-        setAccountMessage('A new verification email has been sent. Use the newest email.');
-    } catch (error) {
-        console.error('Verification resend error:', error);
-        setAccountMessage(error.message || 'Unable to resend the verification email.');
-    } finally {
-        if (button) { button.disabled = false; button.textContent = 'RESEND VERIFICATION'; }
-    }
-}
-
 async function loginAccount() {
     if (!supabaseClient) {
-        setAccountMessage('The account system could not connect to Supabase. Please refresh and try again.');
+        setAccountMessage('The account system is not connected yet. Add your Supabase URL and publishable key first.');
         return;
     }
+
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     const button = document.getElementById('loginButton');
-    if (!email || !password) return setAccountMessage('Please enter your email and password.');
+
+    if (!email || !password) {
+        setAccountMessage('Please enter your email and password.');
+        return;
+    }
+
     button.disabled = true;
     button.textContent = 'ENTERING...';
+
     try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            const message = String(error.message || '').toLowerCase();
+            if (message.includes('email not confirmed')) {
+                throw new Error('Your email is not verified yet. Open the verification email, then return to the Temple and enter your password.');
+            }
+
+            if (message.includes('invalid login credentials')) {
+                throw new Error('The email or password is incorrect.');
+            }
+
+            throw error;
+        }
+
         currentAuthUser = data.user;
         updateAccountButton();
         setAccountMessage('Welcome back.');
         setTimeout(closeAccountModal, 500);
     } catch (error) {
-        console.error('Login error:', error);
-        const message = String(error?.message || '').toLowerCase();
-        if (message.includes('email not confirmed') || message.includes('email_not_confirmed')) {
-            setAccountMessage('Your email is not verified yet. Check your inbox or resend the verification email below.');
-            const resend = document.getElementById('resendVerificationButton');
-            if (resend) resend.style.display = 'block';
-        } else {
-            setAccountMessage(error.message || 'Unable to sign in. Please check your email and password.');
-        }
+        setAccountMessage(error.message || 'Unable to sign in.');
     } finally {
         button.disabled = false;
         button.textContent = 'ENTER THE TEMPLE';
     }
 }
 
+
+function getTempleRedirectUrl() {
+    /* Keep redirects on the exact page the visitor is using. */
+    return window.location.origin + window.location.pathname;
+}
+
+function getPasswordRedirectUrl() {
+    return getTempleRedirectUrl();
+}
+
+function openPasswordResetModal() {
+    const modal = document.getElementById('passwordResetModal');
+    if (!modal) return;
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    const email = document.getElementById('resetEmail');
+    if (email) {
+        const loginEmail = document.getElementById('loginEmail');
+        if (loginEmail && loginEmail.value) email.value = loginEmail.value;
+        setTimeout(() => email.focus(), 50);
+    }
+}
+
+function closePasswordResetModal() {
+    const modal = document.getElementById('passwordResetModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
+
+async function sendPasswordReset() {
+    if (!supabaseClient) {
+        setResetMessage('The account system is not connected yet.');
+        return;
+    }
+
+    const email = document.getElementById('resetEmail').value.trim();
+    const button = document.getElementById('resetButton');
+
+    if (!email) {
+        setResetMessage('Enter the email address belonging to your account.');
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'SENDING...';
+
+    try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: getPasswordRedirectUrl()
+        });
+        if (error) throw error;
+        setResetMessage('A password-restoration link has been sent to your email. Open it on your phone or computer to choose a new password.');
+    } catch (error) {
+        setResetMessage(error.message || 'Unable to send the password-restoration email.');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'SEND RESTORATION LINK';
+    }
+}
+
+function setResetMessage(message) {
+    const el = document.getElementById('resetMessage');
+    if (el) el.textContent = message || '';
+}
+
+function openNewPasswordModal() {
+    const modal = document.getElementById('newPasswordModal');
+    if (!modal) return;
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('newPassword')?.focus(), 50);
+}
+
+function closeNewPasswordModal() {
+    const modal = document.getElementById('newPasswordModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
+
+async function updateForgottenPassword() {
+    if (!supabaseClient) {
+        setNewPasswordMessage('The account system is not connected yet.');
+        return;
+    }
+
+    const password = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('newPasswordConfirm').value;
+    const button = document.getElementById('newPasswordButton');
+
+    if (password.length < 6) {
+        setNewPasswordMessage('Your new password must contain at least 6 characters.');
+        return;
+    }
+    if (password !== confirm) {
+        setNewPasswordMessage('The two passwords do not match.');
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'RESTORING...';
+    try {
+        const { error } = await supabaseClient.auth.updateUser({ password });
+        if (error) throw error;
+        setNewPasswordMessage('Your password has been restored. You may now enter the Temple with your new password.');
+        setTimeout(() => {
+            closeNewPasswordModal();
+            setAccountMode('login');
+            document.getElementById('accountModal')?.classList.add('active');
+            document.getElementById('accountModal')?.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }, 1200);
+    } catch (error) {
+        setNewPasswordMessage(error.message || 'Unable to restore your password.');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'SET NEW PASSWORD';
+    }
+}
+
+function setNewPasswordMessage(message) {
+    const el = document.getElementById('newPasswordMessage');
+    if (el) el.textContent = message || '';
+}
+
+async function handlePasswordRecovery() {
+    if (!supabaseClient) return;
+
+    // Supabase v2 can deliver recovery through either the auth event or the
+    // URL hash/query. The auth listener below also catches mobile browsers.
+    const url = new URL(window.location.href);
+    const hash = window.location.hash || '';
+    const hasRecoveryHash = hash.includes('type=recovery') || url.searchParams.get('type') === 'recovery';
+
+    if (hasRecoveryHash) {
+        setTimeout(openNewPasswordModal, 300);
+    }
+}
+
 async function logoutAccount() {
-    if (supabaseClient) await supabaseClient.auth.signOut();
+    if (supabaseClient) {
+        await supabaseClient.auth.signOut();
+    }
+
     currentAuthUser = null;
+    sanctuaryCache.candles = [];
     updateAccountButton();
     closeAccountModal();
 }
+
 
 function showLoggedInAccount() {
     const register = document.getElementById('registerAccountForm');
@@ -8085,46 +9980,63 @@ function showLoggedInAccount() {
     const subtitle = document.getElementById('accountSubtitle');
     const switchWrap = document.querySelector('.account-switch');
     const name = document.getElementById('accountUserName');
-    if (register) register.style.display = 'none';
-    if (login) login.style.display = 'none';
+
+    if (register) register.classList.remove('account-form-visible');
+    if (login) login.classList.remove('account-form-visible');
     if (switchWrap) switchWrap.style.display = 'none';
     if (userBox) userBox.classList.add('active');
+
     const username = currentAuthUser?.user_metadata?.username || currentAuthUser?.email || 'Temple Keeper';
     title.textContent = 'YOUR PLACE WITHIN THE TEMPLE';
     subtitle.textContent = 'You are already within the sanctuary. Your personal creations can now belong to your account.';
     name.textContent = username;
     setAccountMessage('');
+
+    /* Refresh the account's candle list without changing the existing Sanctuary flow. */
+    if (typeof loadSanctuary === 'function' && supabaseClient) {
+        loadSanctuary();
+    }
 }
 
 function updateAccountButton() {
     const button = document.getElementById('accountButton');
     if (!button) return;
-    button.textContent = currentAuthUser
-        ? (currentAuthUser.user_metadata?.username || 'MY SANCTUARY').toUpperCase()
-        : 'ENTER THE TEMPLE';
+
+    if (currentAuthUser) {
+        const username = currentAuthUser.user_metadata?.username || 'MY SANCTUARY';
+        button.textContent = username.toUpperCase();
+    } else {
+        button.textContent = 'ENTER THE TEMPLE';
+    }
 }
 
 async function initialiseAccountSystem() {
-    if (!initSupabase()) { updateAccountButton(); return; }
-    try {
-        const { data, error } = await supabaseClient.auth.getSession();
-        if (error) console.error('Could not restore session:', error);
-        currentAuthUser = data?.session?.user || null;
+    if (!initSupabase()) {
         updateAccountButton();
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            currentAuthUser = session?.user || null;
-            updateAccountButton();
-            if (event === 'SIGNED_IN') setAccountMessage('Welcome back.');
-        });
-    } catch (error) {
-        console.error('Account initialization error:', error);
+        return;
     }
+
+    const { data } = await supabaseClient.auth.getSession();
+    currentAuthUser = data.session?.user || null;
+    updateAccountButton();
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        currentAuthUser = session?.user || null;
+        updateAccountButton();
+        if (event === 'PASSWORD_RECOVERY') {
+            setTimeout(openNewPasswordModal, 100);
+        }
+    });
+
+    handlePasswordRecovery();
 }
 
 initialiseAccountSystem();
 
 document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') closeAccountModal();
+    if (event.key === 'Escape') {
+        closeAccountModal();
+    }
 });
 
 </script>
@@ -8149,7 +10061,7 @@ document.addEventListener('keydown', function(event) {
             To kindle your own flame or leave your mark upon the Temple, first create a place within it.
         </p>
 
-        <form id="registerAccountForm" class="account-form" style="display:none;" onsubmit="event.preventDefault(); registerAccount();">
+        <form id="registerAccountForm" class="account-form" onsubmit="event.preventDefault(); registerAccount();">
             <label>
                 NAME
                 <input id="registerUsername" type="text" autocomplete="username" minlength="2" required>
@@ -8168,7 +10080,7 @@ document.addEventListener('keydown', function(event) {
             <button id="registerButton" class="account-submit" type="submit">CREATE ACCOUNT</button>
         </form>
 
-        <form id="loginAccountForm" class="account-form" style="display:flex;" onsubmit="event.preventDefault(); loginAccount();">
+        <form id="loginAccountForm" class="account-form" style="display:none;" onsubmit="event.preventDefault(); loginAccount();">
             <label>
                 EMAIL
                 <input id="loginEmail" type="email" autocomplete="email" required>
@@ -8180,7 +10092,7 @@ document.addEventListener('keydown', function(event) {
             </label>
 
             <button id="loginButton" class="account-submit" type="submit">ENTER THE TEMPLE</button>
-            <button id="resendVerificationButton" class="account-secondary" type="button" onclick="resendVerification()" style="display:none;">RESEND VERIFICATION</button>
+            <button class="account-forgot" type="button" onclick="openPasswordResetModal()">FORGOT PASSWORD?</button>
         </form>
 
         <div id="accountMessage" class="account-message"></div>
@@ -8192,7 +10104,10 @@ document.addEventListener('keydown', function(event) {
 
         <div id="accountUserBox" class="account-user-box">
             <div id="accountUserName" class="account-user-name"></div>
-            <button class="sanctuary-open-button" type="button" onclick="openSanctuary()">MY SANCTUARY</button>
+            <button id="sanctuaryAccountButton" class="account-submit" type="button" onclick="openSanctuary()">
+                MY SANCTUARY
+            </button>
+
             <button class="account-logout" type="button" onclick="logoutAccount()">LEAVE THE TEMPLE</button>
         </div>
 
@@ -8200,359 +10115,818 @@ document.addEventListener('keydown', function(event) {
 </div>
 
 
+<!-- =====================================================
+     PASSWORD RESTORATION
+===================================================== -->
+<div id="passwordResetModal" class="account-modal" aria-hidden="true">
+    <div class="account-backdrop" onclick="closePasswordResetModal()"></div>
+    <div class="account-card">
+        <button class="account-close" type="button" onclick="closePasswordResetModal()">×</button>
+        <div class="account-symbol">☾</div>
+        <h2>RESTORE YOUR PLACE</h2>
+        <p class="account-subtitle">Enter the email used for your Temple account. We will send a secure restoration link.</p>
+        <form class="account-form" onsubmit="event.preventDefault(); sendPasswordReset();">
+            <label>EMAIL
+                <input id="resetEmail" type="email" autocomplete="email" required>
+            </label>
+            <button id="resetButton" class="account-submit" type="submit">SEND RESTORATION LINK</button>
+        </form>
+        <div id="resetMessage" class="account-message"></div>
+    </div>
+</div>
+
+<div id="newPasswordModal" class="account-modal" aria-hidden="true">
+    <div class="account-backdrop"></div>
+    <div class="account-card">
+        <div class="account-symbol">✦</div>
+        <h2>CHOOSE A NEW PASSWORD</h2>
+        <p class="account-subtitle">Your restoration link is valid. Choose a new password for your Temple account.</p>
+        <form class="account-form" onsubmit="event.preventDefault(); updateForgottenPassword();">
+            <label>NEW PASSWORD
+                <input id="newPassword" type="password" autocomplete="new-password" minlength="6" required>
+            </label>
+            <label>CONFIRM NEW PASSWORD
+                <input id="newPasswordConfirm" type="password" autocomplete="new-password" minlength="6" required>
+            </label>
+            <button id="newPasswordButton" class="account-submit" type="submit">SET NEW PASSWORD</button>
+        </form>
+        <div id="newPasswordMessage" class="account-message"></div>
+    </div>
+</div>
 
 <!-- =====================================================
      MY SANCTUARY
 ===================================================== -->
 <div id="sanctuaryModal" class="sanctuary-modal" aria-hidden="true">
-  <div class="sanctuary-backdrop" onclick="closeSanctuary()"></div>
-  <div class="sanctuary-card">
-    <button class="sanctuary-close" type="button" onclick="closeSanctuary()">×</button>
-    <div class="sanctuary-header">
-      <div class="sanctuary-symbol">✦</div>
-      <h2>MY SANCTUARY</h2>
-      <p>A private place for what you create within the Temple.</p>
+    <div class="sanctuary-backdrop" onclick="closeSanctuary()"></div>
+
+    <div class="sanctuary-card">
+        <button class="sanctuary-close" type="button" onclick="closeSanctuary()">×</button>
+
+        <div class="sanctuary-head">
+            <div class="sanctuary-symbol">✦</div>
+            <h2>MY SANCTUARY</h2>
+            <p>A private place for what you create within the Temple.</p>
+        </div>
+
+        <div class="sanctuary-tabs">
+            <button class="sanctuary-tab active" onclick="showSanctuaryTab('prayers',this)">PRAYERS</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('devotions',this)">DEVOTIONS</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('deities',this)">DEITIES</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('saved',this)">SAVED WRITINGS</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('candles',this)">CANDLES</button>
+        </div>
+
+        <section id="sanctuaryPanelPrayers" class="sanctuary-panel active"></section>
+        <section id="sanctuaryPanelDevotions" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelDeities" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelSaved" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelCandles" class="sanctuary-panel"></section>
     </div>
-    <div class="sanctuary-tabs">
-      <button class="sanctuary-tab active" data-sanctuary-tab="prayers" onclick="switchSanctuaryTab('prayers')">PRAYERS</button>
-      <button class="sanctuary-tab" data-sanctuary-tab="devotions" onclick="switchSanctuaryTab('devotions')">DEVOTIONS</button>
-      <button class="sanctuary-tab" data-sanctuary-tab="deities" onclick="switchSanctuaryTab('deities')">DEITIES I WORK WITH</button>
-      <button class="sanctuary-tab" data-sanctuary-tab="saved" onclick="switchSanctuaryTab('saved')">SAVED WRITINGS</button>
-      <button class="sanctuary-tab" data-sanctuary-tab="candles" onclick="switchSanctuaryTab('candles')">CANDLES</button>
-    </div>
-
-    <section class="sanctuary-panel active" data-sanctuary-panel="prayers">
-      <div class="sanctuary-toolbar"><h3>PERSONAL PRAYERS</h3><button class="sanctuary-add" onclick="toggleSanctuaryForm('prayerForm')">+ NEW PRAYER</button></div>
-      <form id="prayerForm" class="sanctuary-form" onsubmit="event.preventDefault(); saveSanctuaryPrayer();">
-        <div class="sanctuary-form-grid">
-          <label>Title<input id="prayerTitle" required maxlength="150" placeholder="Name this prayer"></label>
-          <label class="sanctuary-check"><input id="prayerPublic" type="checkbox"> Make public</label>
-          <label class="full">Prayer<textarea id="prayerContent" required placeholder="Write your prayer..."></textarea></label>
-        </div>
-        <div class="sanctuary-form-actions"><button class="primary" type="submit">SAVE PRAYER</button><button type="button" onclick="toggleSanctuaryForm('prayerForm',false)">CANCEL</button></div>
-      </form>
-      <div id="prayersList" class="sanctuary-grid"><div class="sanctuary-loading">Loading...</div></div>
-    </section>
-
-    <section class="sanctuary-panel" data-sanctuary-panel="devotions">
-      <div class="sanctuary-toolbar"><h3>PERSONAL DEVOTIONS</h3><button class="sanctuary-add" onclick="toggleSanctuaryForm('devotionForm')">+ NEW DEVOTION</button></div>
-      <form id="devotionForm" class="sanctuary-form" onsubmit="event.preventDefault(); saveSanctuaryDevotion();">
-        <div class="sanctuary-form-grid">
-          <label>Title<input id="devotionTitle" required maxlength="150" placeholder="Name this devotion"></label>
-          <label class="sanctuary-check"><input id="devotionPublic" type="checkbox"> Make public</label>
-          <label class="full">Devotion<textarea id="devotionContent" required placeholder="Write your devotion..."></textarea></label>
-        </div>
-        <div class="sanctuary-form-actions"><button class="primary" type="submit">SAVE DEVOTION</button><button type="button" onclick="toggleSanctuaryForm('devotionForm',false)">CANCEL</button></div>
-      </form>
-      <div id="devotionsList" class="sanctuary-grid"><div class="sanctuary-loading">Loading...</div></div>
-    </section>
-
-    <section class="sanctuary-panel" data-sanctuary-panel="deities">
-      <div class="sanctuary-toolbar"><h3>DEITIES I WORK WITH</h3><button class="sanctuary-add" onclick="toggleSanctuaryForm('deityForm')">+ ADD DEITY</button></div>
-      <form id="deityForm" class="sanctuary-form" onsubmit="event.preventDefault(); saveSanctuaryDeity();">
-        <div class="sanctuary-form-grid">
-          <label>Name<input id="deityName" required maxlength="150" placeholder="Deity / being"></label>
-          <label>Relationship<input id="deityRelationship" maxlength="150" placeholder="How do you work with them?"></label>
-          <label class="full">Description<textarea id="deityDescription" placeholder="Your personal notes..."></textarea></label>
-          <label class="full">Symbolism<textarea id="deitySymbolism" placeholder="Symbols, offerings, associations..."></textarea></label>
-          <label class="sanctuary-check full"><input id="deityPublic" type="checkbox"> Make public</label>
-        </div>
-        <div class="sanctuary-form-actions"><button class="primary" type="submit">SAVE DEITY</button><button type="button" onclick="toggleSanctuaryForm('deityForm',false)">CANCEL</button></div>
-      </form>
-      <div id="deitiesList" class="sanctuary-grid"><div class="sanctuary-loading">Loading...</div></div>
-    </section>
-
-    <section class="sanctuary-panel" data-sanctuary-panel="saved">
-      <div class="sanctuary-toolbar"><h3>SAVED WRITINGS</h3></div>
-      <div id="savedList" class="sanctuary-grid"><div class="sanctuary-loading">Loading...</div></div>
-    </section>
-
-    <section class="sanctuary-panel" data-sanctuary-panel="candles">
-      <div class="sanctuary-toolbar"><h3>MY CANDLES</h3></div>
-      <div id="sanctuaryCandlesList" class="sanctuary-grid"></div>
-    </section>
-  </div>
 </div>
-
 
 <script>
 /* =====================================================
-   MY SANCTUARY — SUPABASE CRUD
+   SANCTUARY DATA
 ===================================================== */
 
-function requireSanctuaryUser() {
-    if (!supabaseClient || !currentAuthUser) {
-        setAccountMessage('Please enter the Temple first.');
-        return false;
-    }
-    return true;
+let sanctuaryCache = {
+    prayers: [],
+    devotions: [],
+    deities: [],
+    saved: [],
+    candles: []
+};
+
+let sanctuaryCurrentTab = "prayers";
+
+function sanctuaryUserId() {
+    return currentAuthUser ? currentAuthUser.id : null;
 }
 
 function openSanctuary() {
-    if (!requireSanctuaryUser()) return;
-    const modal = document.getElementById('sanctuaryModal');
-    if (!modal) return;
-    modal.classList.add('active');
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
-    loadSanctuaryAll();
+    if (!currentAuthUser) {
+        setAccountMode("login");
+        return;
+    }
+
+    closeAccountModal();
+
+    const modal = document.getElementById("sanctuaryModal");
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden","false");
+    document.body.style.overflow = "hidden";
+
+    // Show locally known candles immediately. This prevents the Candles tab
+    // from looking empty while the Supabase request is still loading.
+    sanctuaryCache.candles = getLocalSanctuaryCandles();
+    renderSanctuaryTab(sanctuaryCurrentTab);
+    loadSanctuary();
 }
+
 function closeSanctuary() {
-    const modal=document.getElementById('sanctuaryModal');
+    const modal = document.getElementById("sanctuaryModal");
     if (!modal) return;
-    modal.classList.remove('active');
-    modal.setAttribute('aria-hidden','true');
-    document.body.style.overflow='';
-}
-function switchSanctuaryTab(tab) {
-    document.querySelectorAll('[data-sanctuary-tab]').forEach(b=>b.classList.toggle('active',b.dataset.sanctuaryTab===tab));
-    document.querySelectorAll('[data-sanctuary-panel]').forEach(p=>p.classList.toggle('active',p.dataset.sanctuaryPanel===tab));
-}
-function toggleSanctuaryForm(id, force) {
-    const el=document.getElementById(id); if(!el) return;
-    const show = force === undefined ? !el.classList.contains('active') : force;
-    el.classList.toggle('active',show);
-}
-function escSanctuary(value) {
-    return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-}
-function sanctuaryBadge(publicValue) { return `<span class="sanctuary-badge">${publicValue?'PUBLIC':'PRIVATE'}</span>`; }
-function sanctuaryError(id, msg) { const el=document.getElementById(id); if(el) el.innerHTML=`<div class="sanctuary-empty">${escSanctuary(msg)}</div>`; }
-function emptySanctuary(id, msg) { const el=document.getElementById(id); if(el) el.innerHTML=`<div class="sanctuary-empty">${escSanctuary(msg)}</div>`; }
-
-async function loadSanctuaryAll() {
-    await Promise.all([loadPrayers(),loadDevotions(),loadDeities(),loadSavedWritings(),loadSanctuaryCandles()]);
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
 }
 
-async function saveSanctuaryPrayer() {
-    if(!requireSanctuaryUser()) return;
-    const title=document.getElementById('prayerTitle').value.trim();
-    const content=document.getElementById('prayerContent').value.trim();
-    const is_public=document.getElementById('prayerPublic').checked;
-    const {error}=await supabaseClient.from('user_prayers').insert({user_id:currentAuthUser.id,title,content,is_public});
-    if(error){alert(error.message);return;}
-    document.getElementById('prayerForm').reset(); toggleSanctuaryForm('prayerForm',false); await loadPrayers();
-}
-async function loadPrayers() {
-    if(!currentAuthUser) return;
-    const {data,error}=await supabaseClient.from('user_prayers').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('prayersList',error.message);return;}
-    if(!data?.length){emptySanctuary('prayersList','No personal prayers yet. What you write here belongs to you.');return;}
-    document.getElementById('prayersList').innerHTML=data.map(x=>`<article class="sanctuary-item">${sanctuaryBadge(x.is_public)}<h4>${escSanctuary(x.title)}</h4><div class="body">${escSanctuary(x.content)}</div><div class="sanctuary-item-actions"><button onclick="togglePrayerPublic('${x.id}',${!x.is_public})">${x.is_public?'MAKE PRIVATE':'MAKE PUBLIC'}</button><button onclick="deleteSanctuaryItem('user_prayers','${x.id}',loadPrayers)">DELETE</button></div></article>`).join('');
-}
-async function togglePrayerPublic(id,value){await updatePublicFlag('user_prayers',id,value,loadPrayers);}
+function showSanctuaryTab(tab, button) {
+    sanctuaryCurrentTab = tab;
 
-async function saveSanctuaryDevotion() {
-    if(!requireSanctuaryUser()) return;
-    const title=document.getElementById('devotionTitle').value.trim();
-    const content=document.getElementById('devotionContent').value.trim();
-    const is_public=document.getElementById('devotionPublic').checked;
-    const {error}=await supabaseClient.from('user_devotions').insert({user_id:currentAuthUser.id,title,content,is_public});
-    if(error){alert(error.message);return;}
-    document.getElementById('devotionForm').reset(); toggleSanctuaryForm('devotionForm',false); await loadDevotions();
-}
-async function loadDevotions() {
-    if(!currentAuthUser) return;
-    const {data,error}=await supabaseClient.from('user_devotions').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('devotionsList',error.message);return;}
-    if(!data?.length){emptySanctuary('devotionsList','No personal devotions yet.');return;}
-    document.getElementById('devotionsList').innerHTML=data.map(x=>`<article class="sanctuary-item">${sanctuaryBadge(x.is_public)}<h4>${escSanctuary(x.title)}</h4><div class="body">${escSanctuary(x.content)}</div><div class="sanctuary-item-actions"><button onclick="toggleDevotionPublic('${x.id}',${!x.is_public})">${x.is_public?'MAKE PRIVATE':'MAKE PUBLIC'}</button><button onclick="deleteSanctuaryItem('user_devotions','${x.id}',loadDevotions)">DELETE</button></div></article>`).join('');
-}
-async function toggleDevotionPublic(id,value){await updatePublicFlag('user_devotions',id,value,loadDevotions);}
+    document.querySelectorAll(".sanctuary-tab").forEach(b => b.classList.remove("active"));
+    if (button) button.classList.add("active");
 
-async function saveSanctuaryDeity() {
-    if(!requireSanctuaryUser()) return;
-    const payload={user_id:currentAuthUser.id,name:document.getElementById('deityName').value.trim(),relationship:document.getElementById('deityRelationship').value.trim(),description:document.getElementById('deityDescription').value.trim(),symbolism:document.getElementById('deitySymbolism').value.trim(),is_public:document.getElementById('deityPublic').checked};
-    const {error}=await supabaseClient.from('user_deities').insert(payload);
-    if(error){alert(error.message);return;}
-    document.getElementById('deityForm').reset(); toggleSanctuaryForm('deityForm',false); await loadDeities();
-}
-async function loadDeities() {
-    if(!currentAuthUser) return;
-    const {data,error}=await supabaseClient.from('user_deities').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('deitiesList',error.message);return;}
-    if(!data?.length){emptySanctuary('deitiesList','No deities have been added to your personal path yet.');return;}
-    document.getElementById('deitiesList').innerHTML=data.map(x=>`<article class="sanctuary-item">${sanctuaryBadge(x.is_public)}<h4>${escSanctuary(x.name)}</h4><div class="meta">${escSanctuary(x.relationship||'Deity / being')}</div>${x.description?`<div class="body">${escSanctuary(x.description)}</div>`:''}${x.symbolism?`<div class="body" style="margin-top:9px"><strong>Symbolism:</strong> ${escSanctuary(x.symbolism)}</div>`:''}<div class="sanctuary-item-actions"><button onclick="toggleDeityPublic('${x.id}',${!x.is_public})">${x.is_public?'MAKE PRIVATE':'MAKE PUBLIC'}</button><button onclick="deleteSanctuaryItem('user_deities','${x.id}',loadDeities)">DELETE</button></div></article>`).join('');
-}
-async function toggleDeityPublic(id,value){await updatePublicFlag('user_deities',id,value,loadDeities);}
+    document.querySelectorAll(".sanctuary-panel").forEach(p => p.classList.remove("active"));
+    const panel = document.getElementById("sanctuaryPanel" + tab.charAt(0).toUpperCase() + tab.slice(1));
+    if (panel) panel.classList.add("active");
 
-async function updatePublicFlag(table,id,value,reload){
-    const {error}=await supabaseClient.from(table).update({is_public:value,updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',currentAuthUser.id);
-    if(error) alert(error.message); else await reload();
-}
-async function deleteSanctuaryItem(table,id,reload){
-    if(!confirm('Delete this from your sanctuary?')) return;
-    const {error}=await supabaseClient.from(table).delete().eq('id',id).eq('user_id',currentAuthUser.id);
-    if(error) alert(error.message); else await reload();
+    renderSanctuaryTab(tab);
 }
 
-async function loadSavedWritings() {
-    if(!currentAuthUser) return;
-    const {data,error}=await supabaseClient.from('saved_writings').select('*').order('created_at',{ascending:false});
-    if(error){sanctuaryError('savedList',error.message);return;}
-    if(!data?.length){emptySanctuary('savedList','Nothing bookmarked yet. When the Temple gains bookmark buttons, saved writings will appear here.');return;}
-    document.getElementById('savedList').innerHTML=data.map(x=>`<article class="sanctuary-item"><span class="sanctuary-badge">${escSanctuary(x.writing_type)}</span><h4>${escSanctuary(x.title)}</h4>${x.content?`<div class="body">${escSanctuary(x.content)}</div>`:''}${x.source_url?`<div class="sanctuary-item-actions"><button onclick="window.location.href='${escSanctuary(x.source_url)}'">OPEN</button></div>`:''}<div class="sanctuary-item-actions"><button onclick="deleteSanctuaryItem('saved_writings','${x.id}',loadSavedWritings)">REMOVE BOOKMARK</button></div></article>`).join('');
-}
+async function loadSanctuary() {
+    if (!supabaseClient || !currentAuthUser) return;
 
-/* Call this from any future Temple writing's SAVE/BOOKMARK button.
-   Example:
-   saveTempleWriting('prayer','The title','The text','#ritual');
-*/
-async function saveTempleWriting(writingType,title,content='',sourceUrl=window.location.href){
-    if(!requireSanctuaryUser()) return false;
-    const {error}=await supabaseClient.from('saved_writings').upsert({user_id:currentAuthUser.id,writing_type:writingType,title,content,source_url:sourceUrl},{onConflict:'user_id,writing_type,title,source_url'});
-    if(error){alert(error.message);return false;}
-    return true;
-}
+    const uid = sanctuaryUserId();
 
-async function deleteCandleFromAccount(id) {
-    if (!supabaseClient || !currentAuthUser || !id) {
-        return { ok: false, missingTable: false, error: 'Not signed in.' };
+    // Never let one missing/broken Sanctuary table prevent the candle tab
+    // from loading. Candles are important enough to have their own request.
+    try {
+        const [p,d,de,s] = await Promise.all([
+            supabaseClient.from("user_prayers").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+            supabaseClient.from("user_devotions").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+            supabaseClient.from("user_deities").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+            supabaseClient.from("saved_writings").select("*").eq("user_id",uid).order("created_at",{ascending:false})
+        ]);
+
+        sanctuaryCache.prayers = (!p.error || p.error.code === "42P01") ? (p.data || []) : [];
+        sanctuaryCache.devotions = (!d.error || d.error.code === "42P01") ? (d.data || []) : [];
+        sanctuaryCache.deities = (!de.error || de.error.code === "42P01") ? (de.data || []) : [];
+        sanctuaryCache.saved = (!s.error || s.error.code === "42P01") ? (s.data || []) : [];
+    } catch (error) {
+        console.error("Could not load Sanctuary entries:", error);
     }
 
-    const { error } = await supabaseClient
-        .from('user_candles')
-        .delete()
-        .eq('id', id)
-        .eq('user_id', currentAuthUser.id);
+    // Load candles separately so a problem with another Sanctuary table can
+    // never hide the user's dedicated flames.
+    const localCandles = getLocalSanctuaryCandles();
+    let databaseCandles = [];
 
-    if (error) {
-        const missingTable =
-            error.code === 'PGRST205' ||
-            error.code === '42P01' ||
-            /user_candles.*schema cache|relation.*user_candles.*does not exist/i.test(error.message || '');
+    try {
+        const result = await supabaseClient
+            .from("user_candles")
+            .select("*")
+            .eq("status", "active")
+            .order("created_at", {ascending:false});
 
-        return { ok: false, missingTable, error: error.message || 'Delete failed.' };
+        if (result.error) {
+            // Keep the local flames visible if the database/table/policy is
+            // unavailable. The console message makes the real cause visible
+            // for debugging without breaking the Sanctuary UI.
+            console.error("Could not load dedicated candles from Supabase:", result.error);
+        } else {
+            databaseCandles = result.data || [];
+        }
+    } catch (error) {
+        console.error("Could not load dedicated candles from Supabase:", error);
     }
 
-    return { ok: true, missingTable: false, error: null };
-}
+    const byKey = new Map();
 
-async function deleteSanctuaryCandle(id) {
-        try {
-            await assertCandleOwner(id);
-        } catch (ownershipError) {
-            alert(ownershipError.message || 'You can only manage your own candles.');
+    databaseCandles.forEach(item => {
+        const key = item.dedication_id || item.id;
+        if (!key) return;
+
+        if (isCandleCurrentlyBurning(item)) {
+            byKey.set(key, item);
+        } else {
+            removeExpiredCandleFromLocalStorage(key);
+        }
+    });
+
+    // Local candles are used as an immediate/offline fallback and also cover
+    // the short period before a newly created candle reaches Supabase.
+    localCandles.forEach(item => {
+        const key = item.dedication_id || item.id;
+        if (!key || !isCandleCurrentlyBurning(item)) {
+            if (key) removeExpiredCandleFromLocalStorage(key);
             return;
         }
 
-        
-    if (!currentAuthUser || !id) return;
-    if (!confirm('Delete this candle from your sanctuary?')) return;
+        if (!byKey.has(key)) byKey.set(key, item);
+    });
 
-    const result = await deleteCandleFromAccount(id);
+    sanctuaryCache.candles = Array.from(byKey.values())
+        .filter(isCandleCurrentlyBurning)
+        .sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
-    if (!result.ok) {
-        if (result.missingTable) {
-            alert('The candle table is not available in Supabase yet. Run the supplied user_candles SQL setup once, then try again.');
-        } else {
-            alert(result.error || 'Could not delete this candle.');
-        }
-        return;
-    }
-
-    /* Remove the matching live flame from this browser too. */
-    const localIndex = activeDedications.findIndex(item => item.supabase_id === id);
-    if (localIndex !== -1) {
-        const dedication = activeDedications[localIndex];
-
-        if (dedicationTimers.has(dedication.id)) {
-            clearTimeout(dedicationTimers.get(dedication.id));
-            dedicationTimers.delete(dedication.id);
-        }
-
-        const node = dedicationNodes.get(dedication.id);
-        if (node) {
-            node.remove();
-            dedicationNodes.delete(dedication.id);
-        }
-
-        activeDedications.splice(localIndex, 1);
-        saveAllDedications();
-        updateHiddenFlameStatus();
-        updateDailyFlameStatus();
-    }
-
-    await loadSanctuaryCandles();
+    renderSanctuaryTab(sanctuaryCurrentTab);
 }
 
-async function loadSanctuaryCandles(){
-    const el = document.getElementById('sanctuaryCandlesList');
-    if(!el) return;
+function isCandleCurrentlyBurning(item) {
+    if (!item) return false;
 
-    if(!currentAuthUser || !currentAuthUser.id){
-        emptySanctuary('sanctuaryCandlesList','Log in to view your account candles.');
-        return;
+    const until = item.burn_until ?? item.burnUntil;
+
+    if (until === 'forever' || until === 'indefinite' || until === Infinity) {
+        return true;
     }
 
-    const {data,error} = await supabaseClient
-        .from('user_candles')
-        .select('*')
-        .eq('user_id', currentAuthUser.id)
-        .order('created_at',{ascending:false});
+    const timestamp = Number(until);
+    return Number.isFinite(timestamp) && timestamp > Date.now();
+}
 
-    if(error){
-        sanctuaryError('sanctuaryCandlesList', error.message);
-        return;
+function removeExpiredCandleFromLocalStorage(candleId) {
+    if (!candleId) return;
+
+    try {
+        for (let i = 0; i < 50; i++) {
+            const key = 'templeChaosDedications-' + i;
+            const raw = localStorage.getItem(key);
+            if (!raw) continue;
+
+            const list = JSON.parse(raw);
+            if (!Array.isArray(list)) continue;
+
+            const filtered = list.filter(item => {
+                if (!item) return false;
+                return String(item.id) !== String(candleId) &&
+                       String(item.dedication_id || '') !== String(candleId);
+            });
+
+            if (filtered.length !== list.length) {
+                if (filtered.length) {
+                    localStorage.setItem(key, JSON.stringify(filtered));
+                } else {
+                    localStorage.removeItem(key);
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Could not clean expired candle:', error);
+    }
+}
+
+function getLocalSanctuaryCandles() {
+    const byKey = new Map();
+
+    // Prefer the live in-memory list.
+    if (Array.isArray(activeDedications)) {
+        activeDedications.forEach(item => {
+            if (!item || !item.id) return;
+            byKey.set(item.id, {
+                id: item.id,
+                user_id: currentAuthUser?.id || null,
+                dedication_id: item.id,
+                deity: item.deity || null,
+                intention: item.intention || null,
+                status: item.burnUntil === "forever" ? "BURNING INDEFINITELY" : "ACTIVE",
+                duration: String(item.duration || "3600"),
+                burn_until: item.burnUntil || "forever",
+                candle_color: item.color || "#eee6d6",
+                flame_color: item.flameColor || "#f5d58a",
+                hidden: !!item.hidden,
+                created_at: new Date(item.createdAt || Date.now()).toISOString(),
+                _localOnly: true
+            });
+        });
     }
 
-    if(!data?.length){
-        emptySanctuary(
-            'sanctuaryCandlesList',
-            'Your account candles will appear here once you dedicate a candle while logged in.'
-        );
-        return;
+    // Also recover candles directly from localStorage. This matters on mobile
+    // after a page reload, before restoreCandles has necessarily finished.
+    for (let i = 0; i < document.querySelectorAll('.ritual-candle-wrap').length; i++) {
+        const raw = localStorage.getItem('templeChaosDedications-' + i);
+        if (!raw) continue;
+
+        try {
+            const list = JSON.parse(raw);
+            if (!Array.isArray(list)) continue;
+
+            list.forEach(item => {
+                if (!item || !item.id) return;
+                if (item.burnUntil !== 'forever' && Number(item.burnUntil) <= Date.now()) return;
+
+                if (!byKey.has(item.id)) {
+                    byKey.set(item.id, {
+                        id: item.id,
+                        user_id: currentAuthUser?.id || null,
+                        dedication_id: item.id,
+                        deity: item.deity || null,
+                        intention: item.intention || null,
+                        status: item.burnUntil === 'forever' ? 'BURNING INDEFINITELY' : 'ACTIVE',
+                        duration: String(item.duration || '3600'),
+                        burn_until: item.burnUntil || 'forever',
+                        candle_color: item.color || '#eee6d6',
+                        flame_color: item.flameColor || '#f5d58a',
+                        hidden: !!item.hidden,
+                        created_at: new Date(item.createdAt || Date.now()).toISOString(),
+                        _localOnly: true
+                    });
+                }
+            });
+        } catch (error) {
+            console.warn('Could not read local dedicated candles:', error);
+        }
     }
 
-    el.innerHTML = data.map(x => {
-        const active = !x.extinguished_at &&
-            (new Date(x.started_at).getTime() + Number(x.duration_seconds || 0) * 1000) > Date.now();
+    return Array.from(byKey.values());
+}
 
-        return `<article class="sanctuary-item">
-            <span class="sanctuary-badge">${active ? 'ACTIVE' : 'EXTINGUISHED'}</span>
-            <h4>${escSanctuary(x.deity || 'Undedicated flame')}</h4>
-            <div class="body">${escSanctuary(x.intention || 'No intention recorded.')}</div>
-            <div class="meta" style="margin-top:9px">
-                ${escSanctuary(x.color || 'Ivory')} · ${active ? 'Burning' : 'Ended'}
+function escapeSanctuary(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[c]));
+}
+
+function renderSanctuaryTab(tab) {
+    const panel = document.getElementById("sanctuaryPanel" + tab.charAt(0).toUpperCase() + tab.slice(1));
+    if (!panel) return;
+
+    if (tab === "prayers") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>PERSONAL PRAYERS</h3>
+                <button class="sanctuary-action" onclick="newSanctuaryEntry('prayer')">+ NEW PRAYER</button>
             </div>
+            <div id="sanctuaryPrayerForm"></div>
+            ${renderWritingList(sanctuaryCache.prayers,"prayer")}
+        `;
+    } else if (tab === "devotions") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>PERSONAL DEVOTIONS</h3>
+                <button class="sanctuary-action" onclick="newSanctuaryEntry('devotion')">+ NEW DEVOTION</button>
+            </div>
+            <div id="sanctuaryDevotionForm"></div>
+            ${renderWritingList(sanctuaryCache.devotions,"devotion")}
+        `;
+    } else if (tab === "deities") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>DEITIES I WORK WITH</h3>
+                <button class="sanctuary-action" onclick="newSanctuaryEntry('deity')">+ NEW DEITY</button>
+            </div>
+            <div id="sanctuaryDeityForm"></div>
+            ${renderDeityList()}
+        `;
+    } else if (tab === "saved") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>SAVED WRITINGS</h3>
+            </div>
+            ${renderSavedList()}
+        `;
+    } else if (tab === "candles") {
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>ALL BURNING CANDLES</h3>
+            </div>
+            ${renderCandleList()}
+        `;
+
+        /* Direct listener on the freshly-rendered Sanctuary panel.
+           This does not depend on inline onclick handlers. */
+        panel.querySelectorAll(".sanctuary-delete-candle").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                const key = this.dataset.candleKey;
+                if (key && typeof window.deleteDedicatedCandle === "function") {
+                    window.deleteDedicatedCandle(key);
+                }
+            });
+        });
+    }
+}
+
+function renderWritingList(items,type) {
+    if (!items.length) return '<div class="sanctuary-empty">Nothing has been written here yet.</div>';
+
+    return `<div class="sanctuary-list">${items.map(item => `
+        <article class="sanctuary-item">
+            <div class="sanctuary-item-title">${escapeSanctuary(item.title)}</div>
+            <div class="sanctuary-item-meta">${item.is_public ? "PUBLIC" : "PRIVATE"}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.content)}</div>
             <div class="sanctuary-item-actions">
-                <button type="button"
-                    onclick="deleteSanctuaryCandle('${escSanctuary(x.id)}')">
-                    DELETE CANDLE
-                </button>
+                <button class="sanctuary-small" onclick="togglePublic('${type}','${item.id}',${!item.is_public})">${item.is_public ? "MAKE PRIVATE" : "MAKE PUBLIC"}</button>
+                <button class="sanctuary-small" onclick="deleteSanctuaryEntry('${type}','${item.id}')">DELETE</button>
             </div>
-        </article>`;
-    }).join('');
+        </article>
+    `).join("")}</div>`;
 }
 
+function renderDeityList() {
+    if (!sanctuaryCache.deities.length) return '<div class="sanctuary-empty">No personal deities have been added yet.</div>';
+
+    return `<div class="sanctuary-list">${sanctuaryCache.deities.map(item => `
+        <article class="sanctuary-item">
+            <div class="sanctuary-item-title">${escapeSanctuary(item.name)}</div>
+            <div class="sanctuary-item-meta">${item.is_public ? "PUBLIC" : "PRIVATE"}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.description || "")}</div>
+            <div class="sanctuary-item-actions">
+                <button class="sanctuary-small" onclick="togglePublic('deity','${item.id}',${!item.is_public})">${item.is_public ? "MAKE PRIVATE" : "MAKE PUBLIC"}</button>
+                <button class="sanctuary-small" onclick="deleteSanctuaryEntry('deity','${item.id}')">DELETE</button>
+            </div>
+        </article>
+    `).join("")}</div>`;
+}
+
+function renderSavedList() {
+    if (!sanctuaryCache.saved.length) return '<div class="sanctuary-empty">Your bookmarked writings will appear here.</div>';
+
+    return `<div class="sanctuary-list">${sanctuaryCache.saved.map(item => `
+        <article class="sanctuary-item">
+            <div class="sanctuary-item-title">${escapeSanctuary(item.title)}</div>
+            <div class="sanctuary-item-meta">${escapeSanctuary(item.category || "WRITING")}</div>
+            <div class="sanctuary-item-text">${escapeSanctuary(item.content || "")}</div>
+            <div class="sanctuary-item-actions">
+                ${item.url ? `<a class="sanctuary-small" href="${escapeSanctuary(item.url)}">OPEN</a>` : ""}
+                <button class="sanctuary-small" onclick="deleteSavedWriting('${item.id}')">REMOVE BOOKMARK</button>
+            </div>
+        </article>
+    `).join("")}</div>`;
+}
+
+function renderCandleList() {
+    const candles = (sanctuaryCache.candles || []).filter(isCandleCurrentlyBurning);
+
+    if (!candles.length) {
+        return '<div class="sanctuary-empty">No candles are burning at this moment.</div>';
+    }
+
+    return `<div class="public-candle-list">
+        ${candles.map(candle => {
+            const candleKey = candle.dedication_id || candle.id;
+            const ownerId = candle.user_id || candle.owner_id || '';
+            const isOwner = !!currentAuthUser &&
+                !!ownerId &&
+                String(currentAuthUser.id) === String(ownerId);
+
+            const burner = candle.burner_name ||
+                candle.display_name ||
+                candle.username ||
+                candle.user_name ||
+                'Anonymous';
+
+            const deity = candle.deity || 'Undedicated';
+            const intention = candle.intention || 'A quiet flame of devotion';
+            const remaining = candle.burnUntil || candle.burn_until;
+
+            let remainingText = 'ETERNAL FLAME';
+            if (remaining !== 'forever') {
+                const seconds = Math.max(0, Math.floor((Number(remaining) - Date.now()) / 1000));
+                const days = Math.floor(seconds / 86400);
+                const hours = Math.floor((seconds % 86400) / 3600);
+                const mins = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+
+                if (days) remainingText = `${days}d ${hours}h ${mins}m`;
+                else if (hours) remainingText = `${hours}h ${mins}m ${secs}s`;
+                else if (mins) remainingText = `${mins}m ${secs}s`;
+                else remainingText = `${secs}s`;
+            }
+
+            return `
+                <article class="sanctuary-candle-item public-candle"
+                    data-candle-key="${escapeSanctuary(candleKey)}">
+                    <div class="sanctuary-candle-symbol">🕯️</div>
+                    <div class="sanctuary-candle-details">
+                        <div class="sanctuary-candle-deity">${escapeSanctuary(deity)}</div>
+                        <div class="sanctuary-candle-intention">${escapeSanctuary(intention)}</div>
+                        <div class="sanctuary-candle-burner">BURNED BY: ${escapeSanctuary(burner)}</div>
+                        <div class="sanctuary-candle-time">TIME LEFT: ${escapeSanctuary(remainingText)}</div>
+                        ${isOwner ? `
+                        <div class="public-candle-owner-controls">
+                            <button type="button"
+                                class="sanctuary-small sanctuary-edit-own-candle"
+                                data-candle-key="${escapeSanctuary(candleKey)}">EDIT</button>
+                            <button type="button"
+                                class="sanctuary-small sanctuary-extinguish-own-candle"
+                                data-candle-key="${escapeSanctuary(candleKey)}">EXTINGUISH</button>
+                        </div>` : ''}
+                    </div>
+                </article>`;
+        }).join('')}
+    </div>`;
+}
+
+function newSanctuaryEntry(type) {
+    const id = type === "prayer" ? "sanctuaryPrayerForm" :
+               type === "devotion" ? "sanctuaryDevotionForm" :
+               "sanctuaryDeityForm";
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if (type === "deity") {
+        el.innerHTML = `
+            <form class="sanctuary-form" onsubmit="event.preventDefault();saveDeity();">
+                <label>DEITY / BEING<input id="newDeityName" required placeholder="Name"></label>
+                <label>ABOUT THIS RELATIONSHIP<textarea id="newDeityDescription" placeholder="How do you work with this deity?"></textarea></label>
+                <label class="sanctuary-public"><input id="newDeityPublic" type="checkbox"> MAKE PUBLIC</label>
+                <div class="sanctuary-form-actions"><button class="sanctuary-action">SAVE DEITY</button></div>
+            </form>`;
+    } else {
+        const title = type === "prayer" ? "PRAYER" : "DEVOTION";
+        el.innerHTML = `
+            <form class="sanctuary-form" onsubmit="event.preventDefault();saveWriting('${type}');">
+                <label>TITLE<input id="newWritingTitle" required placeholder="${title} title"></label>
+                <label>TEXT<textarea id="newWritingContent" required placeholder="Write here..."></textarea></label>
+                <label class="sanctuary-public"><input id="newWritingPublic" type="checkbox"> MAKE PUBLIC</label>
+                <div class="sanctuary-form-actions"><button class="sanctuary-action">SAVE ${title}</button></div>
+            </form>`;
+    }
+}
+
+async function saveWriting(type) {
+    const table = type === "prayer" ? "user_prayers" : "user_devotions";
+    const title = document.getElementById("newWritingTitle").value.trim();
+    const content = document.getElementById("newWritingContent").value.trim();
+    const is_public = document.getElementById("newWritingPublic").checked;
+
+    const {error} = await supabaseClient.from(table).insert({
+        user_id:sanctuaryUserId(), title, content, is_public
+    });
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+
+async function saveDeity() {
+    const name = document.getElementById("newDeityName").value.trim();
+    const description = document.getElementById("newDeityDescription").value.trim();
+    const is_public = document.getElementById("newDeityPublic").checked;
+
+    const {error} = await supabaseClient.from("user_deities").insert({
+        user_id:sanctuaryUserId(), name, description, is_public
+    });
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+
+async function togglePublic(type,id,value) {
+    const table = type === "prayer" ? "user_prayers" :
+                  type === "devotion" ? "user_devotions" : "user_deities";
+
+    const {error} = await supabaseClient.from(table).update({is_public:value})
+        .eq("id",id).eq("user_id",sanctuaryUserId());
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+
+async function deleteSanctuaryEntry(type,id) {
+    if (!confirm("Delete this from your Sanctuary?")) return;
+
+    const table = type === "prayer" ? "user_prayers" :
+                  type === "devotion" ? "user_devotions" : "user_deities";
+
+    const {error} = await supabaseClient.from(table).delete()
+        .eq("id",id).eq("user_id",sanctuaryUserId());
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
+
+async function deleteSavedWriting(id) {
+    const {error} = await supabaseClient.from("saved_writings").delete()
+        .eq("id",id).eq("user_id",sanctuaryUserId());
+
+    if (error) { alert(error.message); return; }
+    await loadSanctuary();
+}
 </script>
 
 
-<script id="strict-candle-ui-guard">
-document.addEventListener('click', function(event) {
-    const candleEl = event.target.closest('[data-candle-id], [data-dedication-id], .dedication-candle');
-    if (!candleEl) return;
-
-    const candleId = candleEl.dataset.candleId || candleEl.dataset.dedicationId;
-    if (!candleId || !currentAuthUser) return;
-
-    const candle = (typeof sanctuaryCache !== 'undefined' &&
-                    sanctuaryCache.candles || []).find(c =>
-        String(c.id || c.dedication_id || '') === String(candleId)
-    );
-
-    if (candle && !candleBelongsToCurrentUser(candle)) {
-        /* Viewing is allowed; editing controls are not. */
-        const editControl = event.target.closest(
-            'button, input, select, textarea, [contenteditable="true"]'
-        );
-        if (editControl) {
+<script>
+/* Final account-button safety layer: one button, one handler. */
+document.addEventListener("DOMContentLoaded", function () {
+    const accountButton = document.getElementById("accountButton");
+    if (accountButton) {
+        accountButton.onclick = function(event) {
             event.preventDefault();
-            event.stopImmediatePropagation();
+            openAccountModal(event);
+        };
+    }
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script id="account-final-deduplicator">
+(function () {
+    function dedupeAccountUI() {
+        const buttons = document.querySelectorAll('.account-button');
+        buttons.forEach((button, index) => {
+            if (index > 0) button.remove();
+        });
+
+        const modals = document.querySelectorAll('#accountModal');
+        modals.forEach((modal, index) => {
+            if (index > 0) modal.remove();
+        });
+
+        const accountSanctuaryButtons = document.querySelectorAll('#accountUserBox #sanctuaryAccountButton');
+        accountSanctuaryButtons.forEach((button, index) => {
+            if (index > 0) button.remove();
+        });
+
+        const logoutButtons = document.querySelectorAll('#accountUserBox .account-logout');
+        logoutButtons.forEach((button, index) => {
+            if (index > 0) button.remove();
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', dedupeAccountUI, { once: true });
+    } else {
+        dedupeAccountUI();
+    }
+
+    // If an older script inserts another copy later, remove it immediately.
+    const observer = new MutationObserver(dedupeAccountUI);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script id="temple-final-account-repair">
+(function () {
+    function repairAccountButton() {
+        const buttons = document.querySelectorAll('#accountButton.account-button');
+        buttons.forEach((button, index) => {
+            if (index > 0) button.remove();
+        });
+        const button = document.getElementById('accountButton');
+        if (!button) return;
+        button.type = 'button';
+        button.onclick = function (event) {
+            event.preventDefault();
+            if (typeof openAccountModal === 'function') openAccountModal(event);
+        };
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', repairAccountButton, { once: true });
+    } else {
+        repairAccountButton();
+    }
+})();
+</script>
+
+
+<script id="candle-delete-final-fix">
+/*
+ * FINAL DIRECT DELETE HANDLER
+ * The Sanctuary renderer attaches the click listener directly to every
+ * DELETE CANDLE button. This function only handles the actual deletion.
+ */
+window.deleteDedicatedCandle = async function (key) {
+    if (!key) return;
+
+    const candleKey = String(key);
+
+    if (!confirm("Extinguish and delete this candle?")) return;
+
+    /* Remove it from the Sanctuary list FIRST. */
+    sanctuaryCache.candles = (sanctuaryCache.candles || []).filter(item => {
+        const itemKey = item && (item.dedication_id || item.id);
+        return String(itemKey || "") !== candleKey;
+    });
+
+    /* Extinguish every matching live flame. */
+    const matches = activeDedications.filter(item => {
+        const itemKey = item && (item.dedication_id || item.id);
+        return String(itemKey || "") === candleKey ||
+               String(item?.id || "") === candleKey ||
+               String(item?.dedication_id || "") === candleKey;
+    });
+
+    matches.forEach(item => {
+        if (dedicationTimers.has(item.id)) {
+            clearTimeout(dedicationTimers.get(item.id));
+            dedicationTimers.delete(item.id);
+        }
+
+        const node = dedicationNodes.get(item.id);
+        if (node) {
+            node.remove();
+            dedicationNodes.delete(item.id);
+        }
+    });
+
+    activeDedications = activeDedications.filter(item => {
+        const itemKey = item && (item.dedication_id || item.id);
+        return String(itemKey || "") !== candleKey &&
+               String(item?.id || "") !== candleKey &&
+               String(item?.dedication_id || "") !== candleKey;
+    });
+
+    /* Remove local persistence. */
+    try {
+        for (let i = 0; i < 50; i++) {
+            const storageKey = "templeChaosDedications-" + i;
+            const raw = localStorage.getItem(storageKey);
+            if (!raw) continue;
+
+            const list = JSON.parse(raw);
+            if (!Array.isArray(list)) continue;
+
+            const filtered = list.filter(item => {
+                const itemKey = item && (item.dedication_id || item.id);
+                return String(itemKey || "") !== candleKey &&
+                       String(item?.id || "") !== candleKey &&
+                       String(item?.dedication_id || "") !== candleKey;
+            });
+
+            if (filtered.length !== list.length) {
+                localStorage.setItem(storageKey, JSON.stringify(filtered));
+            }
+        }
+    } catch (error) {
+        console.warn("Candle local-storage cleanup failed:", error);
+    }
+
+    saveAllDedications();
+    updateDailyFlameStatus();
+
+    /* Re-render: the card is now definitely gone. */
+    renderSanctuaryTab("candles");
+
+    /* Delete the database row using BOTH possible identifiers. */
+    if (currentAuthUser && supabaseClient) {
+        let result = await supabaseClient
+            .from("user_candles")
+            .delete()
+            .eq("user_id", currentAuthUser.id)
+            .eq("dedication_id", candleKey);
+
+        if (result.error) {
+            console.warn("dedication_id delete attempt:", result.error);
+        }
+
+        const resultById = await supabaseClient
+            .from("user_candles")
+            .delete()
+            .eq("user_id", currentAuthUser.id)
+            .eq("id", candleKey);
+
+        if (resultById.error && resultById.error.code !== "42703") {
+            console.warn("id delete attempt:", resultById.error);
         }
     }
-}, true);
+};
+</script>
+
+
+
+
+
+<script id="candle-owner-protection">
+(function () {
+    const originalDeleteDedicatedCandle = window.deleteDedicatedCandle;
+
+    window.deleteDedicatedCandle = async function (candleId) {
+        if (!currentAuthUser) {
+            alert("You must be logged in to delete a candle.");
+            return;
+        }
+
+        const candle = (sanctuaryCache.candles || []).find(function (item) {
+            return String(item.dedication_id || item.id || "") === String(candleId);
+        });
+
+        if (!candle) {
+            alert("Candle not found.");
+            return;
+        }
+
+        const ownerId = candle.owner_id || candle.user_id;
+
+        if (!ownerId || String(ownerId) !== String(currentAuthUser.id)) {
+            alert("You can only delete candles created by your account.");
+            return;
+        }
+
+        return originalDeleteDedicatedCandle(candleId);
+    };
+})();
 </script>
 
 </body>
 </html>
+<style id="legacy-public-candle-controls-hidden">
+.legacy-hidden { display: none !important; }
+</style>
