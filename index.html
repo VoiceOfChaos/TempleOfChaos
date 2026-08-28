@@ -7331,6 +7331,18 @@ setInterval(() => {
 }, 1000);
 </script>
 
+
+<style id="candle-owner-controls-final">
+.public-candle-owner-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+.public-candle-owner-controls button {
+    flex: 1;
+}
+</style>
+
 </head>
 <body>
 <button
@@ -10536,8 +10548,7 @@ function renderSavedList() {
 }
 
 function renderCandleList() {
-    const candles = (sanctuaryCache.candles || [])
-        .filter(isCandleCurrentlyBurning);
+    const candles = (sanctuaryCache.candles || []).filter(isCandleCurrentlyBurning);
 
     if (!candles.length) {
         return '<div class="sanctuary-empty">No candles are burning at this moment.</div>';
@@ -10546,12 +10557,17 @@ function renderCandleList() {
     return `<div class="public-candle-list">
         ${candles.map(candle => {
             const candleKey = candle.dedication_id || candle.id;
+            const ownerId = candle.user_id || candle.owner_id || '';
+            const isOwner = !!currentAuthUser &&
+                !!ownerId &&
+                String(currentAuthUser.id) === String(ownerId);
+
             const burner = candle.burner_name ||
-                           candle.display_name ||
-                           candle.username ||
-                           candle.user_name ||
-                           candle.email ||
-                           'Anonymous';
+                candle.display_name ||
+                candle.username ||
+                candle.user_name ||
+                'Anonymous';
+
             const deity = candle.deity || 'Undedicated';
             const intention = candle.intention || 'A quiet flame of devotion';
             const remaining = candle.burnUntil || candle.burn_until;
@@ -10571,16 +10587,25 @@ function renderCandleList() {
             }
 
             return `
-                <article class="sanctuary-candle-item public-candle" data-candle-key="${escapeSanctuary(candleKey)}">
+                <article class="sanctuary-candle-item public-candle"
+                    data-candle-key="${escapeSanctuary(candleKey)}">
                     <div class="sanctuary-candle-symbol">🕯️</div>
                     <div class="sanctuary-candle-details">
                         <div class="sanctuary-candle-deity">${escapeSanctuary(deity)}</div>
                         <div class="sanctuary-candle-intention">${escapeSanctuary(intention)}</div>
                         <div class="sanctuary-candle-burner">BURNED BY: ${escapeSanctuary(burner)}</div>
                         <div class="sanctuary-candle-time">TIME LEFT: ${escapeSanctuary(remainingText)}</div>
+                        ${isOwner ? `
+                        <div class="public-candle-owner-controls">
+                            <button type="button"
+                                class="sanctuary-small sanctuary-edit-own-candle"
+                                data-candle-key="${escapeSanctuary(candleKey)}">EDIT</button>
+                            <button type="button"
+                                class="sanctuary-small sanctuary-extinguish-own-candle"
+                                data-candle-key="${escapeSanctuary(candleKey)}">EXTINGUISH</button>
+                        </div>` : ''}
                     </div>
-                </article>
-            `;
+                </article>`;
         }).join('')}
     </div>`;
 }
@@ -10864,5 +10889,60 @@ window.deleteDedicatedCandle = async function (key) {
 };
 </script>
 
+
+<script id="candle-owner-permissions-final">
+(function () {
+    document.addEventListener('click', async function (event) {
+        const button = event.target.closest(
+            '.sanctuary-edit-own-candle, .sanctuary-extinguish-own-candle'
+        );
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!currentAuthUser) {
+            alert('Please log in to manage your own candles.');
+            return;
+        }
+
+        const key = button.getAttribute('data-candle-key');
+        const candle = (sanctuaryCache.candles || []).find(item =>
+            String(item.dedication_id || item.id || '') === String(key)
+        );
+
+        const ownerId = candle && (candle.user_id || candle.owner_id);
+
+        if (!candle || !ownerId ||
+            String(ownerId) !== String(currentAuthUser.id)) {
+            alert('You can only edit or extinguish your own candles.');
+            return;
+        }
+
+        if (button.classList.contains('sanctuary-extinguish-own-candle')) {
+            if (typeof deleteDedicatedCandle === 'function') {
+                await deleteDedicatedCandle(key);
+            }
+            return;
+        }
+
+        /* Reuse the existing candle editor if this file exposes one. */
+        if (typeof openCandleEditor === 'function') {
+            openCandleEditor(candle);
+        } else if (typeof openCandleModal === 'function') {
+            openCandleModal(candle);
+        } else {
+            /* Existing floating-candle editing is opened by clicking the
+               owner's live candle, so trigger that behavior if available. */
+            const liveNode = dedicationNodes.get(candleKey);
+            if (liveNode) liveNode.click();
+        }
+    }, true);
+})();
+</script>
+
 </body>
 </html>
+<style id="legacy-public-candle-controls-hidden">
+.legacy-hidden { display: none !important; }
+</style>
