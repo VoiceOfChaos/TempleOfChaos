@@ -12902,26 +12902,129 @@ document.addEventListener('click', function(event) {
 }, true);
 </script>
 
+
+
+<!-- FINAL MOBILE DEDICATION + UNIVERSAL MODAL X FIX -->
+<style id="final-mobile-dedication-fix">
+@media (max-width: 800px) {
+    /* Mobile only: keep the dedication editor clean and naturally scrollable. */
+    #candleModal .candle-design-window {
+        width: 94vw !important;
+        height: min(92dvh, 760px) !important;
+        max-height: 92dvh !important;
+        min-height: 0 !important;
+        grid-template-columns: 1fr !important;
+        grid-template-rows: 180px minmax(0, 1fr) !important;
+        overflow: hidden !important;
+    }
+
+    #candleModal .candle-preview-area {
+        height: 180px !important;
+        min-height: 180px !important;
+        overflow: hidden !important;
+    }
+
+    #candleModal .candle-control-card {
+        min-height: 0 !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+        padding: 18px 16px 24px !important;
+    }
+
+    /* Let every field/button stay in normal document flow on phones. */
+    #candleModal #dailyFlameStatus,
+    #candleModal #candleSaveButton,
+    #candleModal #extinguish-candle-button {
+        position: static !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+    }
+
+    #candleModal #dailyFlameStatus {
+        margin: 8px 0 8px !important;
+        min-height: 15px !important;
+    }
+
+    #candleModal #candleSaveButton {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 42px !important;
+        margin-top: 10px !important;
+    }
+
+    #candleModal #extinguish-candle-button {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 40px !important;
+        margin-top: 8px !important;
+    }
+
+    #candleModal .candle-modal-close {
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+        width: 38px !important;
+        height: 38px !important;
+        z-index: 999999 !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+    }
+}
+</style>
+
+<script id="final-modal-x-fix">
+(function () {
+    function handleModalClose(event) {
+        const button = event.target.closest(
+            '#candleModal .candle-modal-close,' +
+            '#dedicationInfo .dedication-info-close,' +
+            '#ritualPathPopup .ritual-path-popup-close,' +
+            '#accountModal .account-close,' +
+            '#passwordResetModal .account-close,' +
+            '#newPasswordModal .account-close,' +
+            '#sanctuaryModal .sanctuary-close'
+        );
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const id = button.closest('[id]')?.id;
+        try {
+            if (id === 'candleModal' && typeof closeCandleModal === 'function') {
+                closeCandleModal();
+            } else if (id === 'dedicationInfo' && typeof closeDedicationInfo === 'function') {
+                closeDedicationInfo();
+            } else if (id === 'ritualPathPopup' && typeof closeRitualPathPopup === 'function') {
+                closeRitualPathPopup();
+            } else if (id === 'accountModal' && typeof closeAccountModal === 'function') {
+                closeAccountModal();
+            } else if (id === 'passwordResetModal' && typeof closePasswordResetModal === 'function') {
+                closePasswordResetModal();
+            } else if (id === 'newPasswordModal' && typeof closeNewPasswordModal === 'function') {
+                closeNewPasswordModal();
+            } else if (id === 'sanctuaryModal' && typeof closeSanctuary === 'function') {
+                closeSanctuary();
+            }
+        } catch (error) {
+            console.error('Modal close failed:', error);
+        }
+    }
+
+    /* Capture phase makes the X reliable on both desktop and touch devices. */
+    document.addEventListener('click', handleModalClose, true);
+    document.addEventListener('pointerup', function (event) {
+        if (event.pointerType === 'touch') handleModalClose(event);
+    }, true);
+})();
+</script>
+
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
 .legacy-hidden { display: none !important; }
-</style>
-
-<style id="candle-boxes-only-final">
-/* ONLY CHANGE: enlarge the three candle form boxes. Everything else stays untouched. */
-#candleModal #candleDeity {
-    height: 52px !important;
-    min-height: 52px !important;
-}
-
-#candleModal #candleIntention {
-    height: 100px !important;
-    min-height: 100px !important;
-}
-
-#candleModal #candleDuration {
-    height: 52px !important;
-    min-height: 52px !important;
-}
 </style>
