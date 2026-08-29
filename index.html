@@ -13023,6 +13023,71 @@ document.addEventListener('click', function(event) {
 })();
 </script>
 
+
+
+<!-- FINAL: move candle editor X outside the control card and isolate it from the altar click -->
+<style id="candle-editor-x-position-final">
+#candleModal .candle-design-window {
+    position: relative !important;
+}
+#candleModal .candle-design-window > .candle-modal-close {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    z-index: 1000000 !important;
+    pointer-events: auto !important;
+    touch-action: none !important;
+}
+@media (max-width: 800px) {
+    #candleModal .candle-design-window > .candle-modal-close {
+        top: 14px !important;
+        right: 14px !important;
+        width: 42px !important;
+        height: 42px !important;
+        z-index: 1000000 !important;
+    }
+}
+</style>
+<script id="candle-editor-x-position-final-script">
+(function () {
+    function moveCandleCloseButton() {
+        const modal = document.getElementById('candleModal');
+        const windowEl = modal && modal.querySelector('.candle-design-window');
+        const button = modal && modal.querySelector('.candle-modal-close');
+        if (!windowEl || !button) return;
+
+        /* Put the X on the modal itself, not inside the control card. */
+        if (button.parentElement !== windowEl) {
+            windowEl.appendChild(button);
+        }
+
+        const close = function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            if (typeof closeCandleModal === 'function') {
+                closeCandleModal();
+            } else {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+                modal.style.display = 'none';
+            }
+        };
+
+        /* Capture pointer/touch events too, so the candle underneath never receives them. */
+        ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'mousedown', 'mouseup', 'click'].forEach(type => {
+            button.addEventListener(type, close, true);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', moveCandleCloseButton, { once: true });
+    } else {
+        moveCandleCloseButton();
+    }
+})();
+</script>
+
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
