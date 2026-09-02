@@ -4226,14 +4226,14 @@
 ----------------------------------------------------- */
 
 .ritual-paths {
-    width: min(900px, 92%);
+    width: min(720px, 92%);
 
     margin: 0 auto 35px;
 
     display: grid;
 
     grid-template-columns:
-        repeat(4, 1fr);
+        repeat(3, 1fr);
 
     gap: 15px;
 }
@@ -5399,6 +5399,199 @@
     inset: 0;
     background: rgba(0,0,0,.82);
     backdrop-filter: blur(7px);
+}
+
+.prayers-disclaimer {
+    width: 100%;
+    margin-bottom: 26px;
+    padding: 18px 20px;
+    box-sizing: border-box;
+    border: 1px solid rgba(210,190,150,.16);
+    background: rgba(0,0,0,.18);
+    text-align: left;
+}
+
+.prayers-disclaimer strong {
+    display: block;
+    margin-bottom: 9px;
+    color: #d8c9b6;
+    font-size: 11px;
+    letter-spacing: .18em;
+}
+
+.prayers-disclaimer p {
+    margin: 0;
+    color: rgba(215,205,194,.68);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.prayers-search-wrap {
+    width: 100%;
+    margin-bottom: 28px;
+    text-align: left;
+}
+
+.prayers-search-wrap label {
+    display: block;
+    margin-bottom: 9px;
+    color: rgba(220,205,185,.7);
+    font-size: 10px;
+    letter-spacing: .16em;
+}
+
+#prayersSearch {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 15px;
+    border: 1px solid rgba(210,190,150,.22);
+    background: rgba(0,0,0,.25);
+    color: #e8dfd2;
+    outline: none;
+    font: inherit;
+}
+
+#prayersSearch::placeholder {
+    color: rgba(215,205,194,.38);
+}
+
+#prayersSearch:focus {
+    border-color: rgba(210,190,150,.48);
+}
+
+.prayers-content {
+    width: 100%;
+    max-height: 52vh;
+    overflow-y: auto;
+    padding-right: 8px;
+    text-align: left;
+}
+
+.prayer-entry {
+    width: min(680px, 92%);
+    margin: 0 auto 16px;
+    border: 1px solid rgba(210,190,150,.18);
+    background: rgba(0,0,0,.16);
+    overflow: hidden;
+}
+
+.prayer-card-toggle {
+    width: 100%;
+    padding: 20px 22px;
+    border: 0;
+    background: transparent;
+    color: #e6dccf;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: .18em;
+    text-align: left;
+    cursor: pointer;
+    transition: background .25s ease, color .25s ease;
+}
+
+.prayer-card-toggle:hover {
+    background: rgba(210,190,150,.06);
+    color: #fff5df;
+}
+
+.prayer-card-toggle::after {
+    content: '+';
+    float: right;
+    color: rgba(215,200,180,.65);
+    font-size: 18px;
+    line-height: 1;
+}
+
+.prayer-entry.open .prayer-card-toggle::after {
+    content: '−';
+}
+
+.prayer-card-body {
+    display: none;
+    padding: 0 22px 24px;
+}
+
+.prayer-entry.open .prayer-card-body {
+    display: block;
+}
+
+.invocation-text {
+    color: rgba(225,215,203,.78);
+    font-size: 13px;
+    line-height: 1.85;
+}
+
+.prayer-entry .prayer-disclaimer {
+    margin: 0 0 24px;
+    padding: 14px 16px;
+    border: 1px solid rgba(210,190,150,.13);
+    background: rgba(0,0,0,.16);
+}
+
+.prayer-entry .prayer-disclaimer strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #d8c9b6;
+    font-size: 10px;
+    letter-spacing: .16em;
+}
+
+.prayer-entry .prayer-disclaimer p {
+    margin: 0;
+    color: rgba(215,205,194,.62);
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+
+.prayer-entry:last-of-type {
+    margin-bottom: 0;
+}
+
+.prayer-entry h4 {
+    margin: 0 0 20px;
+    color: #e6dccf;
+    font-size: 14px;
+    letter-spacing: .18em;
+    font-weight: normal;
+}
+
+.prayer-entry p {
+    margin: 0 0 18px;
+    color: rgba(225,215,203,.78);
+    font-size: 13px;
+    line-height: 1.85;
+}
+
+.prayer-entry p:last-child {
+    margin-bottom: 0;
+}
+
+.prayer-epithet {
+    margin-bottom: 20px;
+}
+
+.prayer-epithet:last-child {
+    margin-bottom: 0;
+}
+
+.prayer-epithet strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #d8c9b6;
+    font-size: 13px;
+    letter-spacing: .06em;
+}
+
+.prayer-epithet p {
+    margin: 0;
+}
+
+.prayers-no-results {
+    padding: 30px 0;
+    text-align: center;
+    color: rgba(215,205,194,.55);
+    font-style: italic;
 }
 
 .ritual-path-popup-card {
@@ -9871,7 +10064,7 @@ button[onclick="showHiddenDedications()"] {
 
     <div
         class="candle-modal-backdrop"
-        onclick="closeCandleModal()"
+        onclick="closeRitualPathPopup()"
     ></div>
 
     <div class="candle-design-window">
@@ -10041,34 +10234,23 @@ button[onclick="showHiddenDedications()"] {
             </button>
 
 
+            <button class="ritual-path" type="button" onclick="openRitualPathPopup('prayers')">
+
+                <span>✦</span>
+
+                <h3>
+                    PRAYERS
+                </h3>
+
+            </button>
+
+
             <button class="ritual-path" type="button" onclick="openRitualPathPopup('devotion')">
 
                 <span>✧</span>
 
                 <h3>
                     DEVOTION
-                </h3>
-
-            </button>
-
-
-            <button class="ritual-path" type="button" onclick="openRitualPathPopup('meditation')">
-
-                <span>◐</span>
-
-                <h3>
-                    MEDITATION
-                </h3>
-
-            </button>
-
-
-            <button class="ritual-path" type="button" onclick="openRitualPathPopup('transformation')">
-
-                <span>✦</span>
-
-                <h3>
-                    TRANSFORMATION
                 </h3>
 
             </button>
@@ -10096,7 +10278,7 @@ button[onclick="showHiddenDedications()"] {
                 <button
                     type="button"
                     class="ritual-path-popup-close"
-                    onclick="closeCandleModal()"
+                    onclick="closeRitualPathPopup()"
                     aria-label="Close popup"
                 >
                     ×
@@ -11621,17 +11803,13 @@ const ritualPathData = {
         title: "INVOCATION",
         symbol: "◇"
     },
+    prayers: {
+        title: "PRAYERS",
+        symbol: "✦"
+    },
     devotion: {
         title: "DEVOTION",
         symbol: "✧"
-    },
-    meditation: {
-        title: "MEDITATION",
-        symbol: "◐"
-    },
-    transformation: {
-        title: "TRANSFORMATION",
-        symbol: "✦"
     }
 };
 
@@ -11642,8 +11820,302 @@ function openRitualPathPopup(path) {
     document.getElementById("ritualPathPopupSymbol").textContent = data.symbol;
     document.getElementById("ritualPathPopupTitle").textContent = data.title;
 
-    /* Intentionally empty for now — text will be added later. */
-    document.getElementById("ritualPathPopupBody").innerHTML = "";
+    const body = document.getElementById("ritualPathPopupBody");
+
+    if (path === "invocation") {
+        body.innerHTML = `
+            <div class="prayers-content invocation-content">
+
+                <article class="prayer-entry" data-search="chaos primordial source divinity spark gods wisdom illusions truth darkness gnosis power">
+                    <button type="button" class="prayer-card-toggle" aria-expanded="false">INVOCATION OF CHAOS</button>
+                    <div class="prayer-card-body">
+                        <div class="prayer-disclaimer">
+                            <strong>PERSONAL CREATIVE INVOCATION</strong>
+                            <p>These are personal creative invocations. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional invocations.</p>
+                        </div>
+                        <div class="invocation-text">
+                            Primordial Chaos, encompassing all that is, was, and will be. From you emerged all that is. You are the primordial spark of divinity in each of us — the spark that gave the gods their power. Remind us of this spark. We are not just flesh and blood. We are divinity itself, creators and destroyers in this world of illusions.<br><br>
+                            I summon you, O Source. I summon you, O Divinity, the servant and protector of the universe. Fill me with your wisdom. Break all the illusions within me, for you are the truth itself — the source before anything existed.<br><br>
+                            I call you to be one with me and with all who are not afraid of the chaos inside them.<br><br>
+                            I summon you through Nyx’s night, through the darkness of our mind and soul. We proclaim: we are not afraid of darkness. We embrace it as our birthright. We claim the knowledge that sleeps in the night.<br><br>
+                            I summon you through Erebus’s darkness, through the darkness of self-realization, through our personal shadow. We accept ourselves. We are not afraid anymore. Lead us deeper into our personal Tartarus, to face the demons and the primordial darkness so we would emerge as conquerors.<br><br>
+                            We dedicate ourselves to personal gnosis, through you as a conduit, through you as a primordial teacher, through you as the source of all knowledge and gnosis.<br><br>
+                            I summon you. Rise through me, become one with me. Let me feel your presence, your power, your ancient wisdom. Fill me with gnosis. Fill me with that divine spark once again.<br><br>
+                            We are one.<br><br>
+                            So be it.
+                        </div>
+                    </div>
+                </article>
+
+                <article class="prayer-entry" data-search="nyx night thanatos death moirai destiny eris strife darkness wisdom">
+                    <button type="button" class="prayer-card-toggle" aria-expanded="false">INVOCATION OF NYX</button>
+                    <div class="prayer-card-body">
+                        <div class="prayer-disclaimer">
+                            <strong>PERSONAL CREATIVE INVOCATION</strong>
+                            <p>These are personal creative invocations. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional invocations.</p>
+                        </div>
+                        <div class="invocation-text">
+                            O beautiful night,<br>
+                            O beloved Nyx,<br>
+                            we, the children of the night, call you back into this world —<br>
+                            a world that has forgotten that it came from darkness<br>
+                            and will one day return to it.<br><br>
+                            We summon you, O Lady of the Night,<br>
+                            illuminate our hearts with your wisdom.<br><br>
+                            We call upon you through Thanatos,<br>
+                            the embodiment of death.<br>
+                            For death is our liberation.<br>
+                            Those who fear the night<br>
+                            fear the touch of its truth.<br><br>
+                            Teach us not to fear death,<br>
+                            nor to be consumed by it,<br>
+                            but to wait for it with understanding.<br><br>
+                            We call upon you through the Moirai,<br>
+                            the weavers of destiny.<br>
+                            Remind us of our place within the path,<br>
+                            and grant us the strength to walk it with awareness.<br><br>
+                            We call upon you through Eris,<br>
+                            through strife that moves us to act.<br>
+                            Fill us with the fire that drives change,<br>
+                            that we may shape our lives with courage.<br><br>
+                            Come with your beloved Erebus,<br>
+                            for together you lead us through darkness<br>
+                            and return us renewed.<br><br>
+                            So be it.
+                        </div>
+                    </div>
+                </article>
+
+                <article class="prayer-entry" data-search="erebus darkness shadows war battlefield soul demons ascension general chaos primordial darkness">
+                    <button type="button" class="prayer-card-toggle" aria-expanded="false">INVOCATION OF EREBUS</button>
+                    <div class="prayer-card-body">
+                        <div class="prayer-disclaimer">
+                            <strong>PERSONAL CREATIVE INVOCATION</strong>
+                            <p>These are personal creative invocations. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional invocations.</p>
+                        </div>
+                        <div class="invocation-text">
+                            O Erebus, embodiment of darkness, your essence lives within each of us as our personal shadows. You are a guide and teacher in this world of illusions and battle, and war must also take place within us.<br><br>
+                            O Erebus, create a war inside me, so that all my weakness and flaws may be defeated. Let me come face to face with my demons on the eternal battlefield of my soul.<br><br>
+                            Help me destroy those parts of myself that do not serve my ascension, and help me use and befriend those that are necessary for it, even if society deems them evil or worthless.<br><br>
+                            May I see the worth of my darkness not through the eyes of a society blinded by the light, but through your eyes. For you are the darkness that existed before light emerged, before time itself began.<br><br>
+                            I call upon you, O General of Chaos. Lead me. Make me stumble, let me bleed, and yet ignite within me the divine wrath not to remain as I am, but to rise above myself. My former self will fall in battle, and a new self will emerge.<br><br>
+                            I call your darkness, your power, and your fearlessness into my soul, for I accept Chaos—the mother of all powers and all beings. Let us become one, and we shall endure every war of eternity.<br><br>
+                            We are one.<br><br>
+                            So be it.
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        `;
+
+        const entries = Array.from(document.querySelectorAll("#ritualPathPopupBody .prayer-entry"));
+        entries.forEach(entry => {
+            const toggle = entry.querySelector(".prayer-card-toggle");
+            if (!toggle) return;
+            toggle.addEventListener("click", () => {
+                const isOpen = entry.classList.toggle("open");
+                toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            });
+        });
+    } else if (path === "prayers") {
+        body.innerHTML = `
+            <div class="prayers-search-wrap">
+                <label for="prayersSearch">SEARCH THE PRAYERS</label>
+                <input
+                    type="search"
+                    id="prayersSearch"
+                    placeholder=""
+                    aria-label="Search prayers and epithets"
+                    value=""
+                >
+            </div>
+
+            <div id="prayersContent" class="prayers-content">
+
+                <article class="prayer-entry" data-search="nyx primordial goddess night darkness light hemera dark flame night souls">
+                    <button type="button" class="prayer-card-toggle" aria-expanded="false">PRAYER TO NYX</button>
+                    <div class="prayer-card-body">
+                        <div class="prayer-disclaimer">
+                            <strong>PERSONAL CREATIVE PRAYER</strong>
+                            <p>These are personal creative prayers. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional prayers.</p>
+                        </div>
+                        <p>
+                            Nyx, primordial goddess of the night, you show us that even in our darkest night there is light — as you once brought forth your daughter, Hemera. Darkness and light are not enemies, but two sides of the same whole.
+                        </p>
+                        <p>
+                            Be with us in the darkest nights of our souls. Guide us with your dark flame. Let us understand that the night exists not against us, but for our good. Help us to transform it — to create something meaningful from it, to find the light within it. For the night will always give way to day.
+                        </p>
+                        <p>
+                            We honour you as a primordial goddess, as our teacher and guide, as the embodiment of the deepest night within us. We do not fear you. We accept you, as we learn to accept ourselves. For you live within each of us,
+                            together with your consort, darkness.
+                        </p>
+                        <p>
+                            Ave Nyx.
+                            Ave Erebus.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="prayer-entry" data-search="chaos great destroyer universe destruction renewal serpent gnosis power transformation vessel">
+                    <button type="button" class="prayer-card-toggle" aria-expanded="false">PRAYER TO CHAOS</button>
+                    <div class="prayer-card-body">
+                        <div class="prayer-disclaimer">
+                            <strong>PERSONAL CREATIVE PRAYER</strong>
+                            <p>These are personal creative prayers. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional prayers.</p>
+                        </div>
+                        <p>
+                            Chaos, the great force of destruction. The one who destroys the universe and renews it again.
+                        </p>
+                        <p>
+                            Destroy the fake self from inside of me. Destroy my fears and illusions. Delete all the blocks to my divinity.
+                        </p>
+                        <p>
+                            We are one.
+                        </p>
+                        <p>
+                            Rise inside me as an ancient serpent. Wrap yourself around me so I would always feel your primordial wisdom.
+                        </p>
+                        <p>
+                            To shed what doesn’t serve me anymore.
+                        </p>
+                        <p>
+                            To drown in your primordial waters, which are self-knowledge and gnosis.
+                        </p>
+                        <p>
+                            I dedicate my life to seeking this sacred gnosis. To the destruction of the universe. To the eternal dance of life and death.
+                        </p>
+                        <p>
+                            In your darkness I am immortal. In your ocean I drink the waters of power and greatness.
+                        </p>
+                        <p>
+                            We are one.
+                        </p>
+                        <p>
+                            Let me always remain your vessel. The vessel of destruction, of transformation, of endlessness.
+                        </p>
+                        <p>
+                            You are nothing. The emptiness of the cosmos.
+                        </p>
+                        <p>
+                            You are everything. Every living thing is alive in you and through you. And so all life is in me.
+                        </p>
+                        <p>
+                            Let me become a master of my life. Give me the power to change my life and control it.
+                        </p>
+                        <p>
+                            We are one.
+                        </p>
+                        <p>
+                            Your power is flowing through my veins and through my soul.
+                        </p>
+                        <p>
+                            I call you into me. Be one with me, eternally. May we both become rulers of our world.
+                        </p>
+                        <p>
+                            I call you into my life, my body, mind, soul, and heart. Empower me to become my truest self.
+                        </p>
+                        <p>
+                            So be it.
+                        </p>
+                        <p>
+                            We are one.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="prayer-entry" data-search="epithets chaos great destroyer true mother source essence godhood giver power absolute nothingness absolute everything liberator">
+                    <button type="button" class="prayer-card-toggle" aria-expanded="false">EPITHETS OF CHAOS</button>
+                    <div class="prayer-card-body">
+                        <div class="prayer-epithet">
+                            <strong>The Great Destroyer</strong>
+                            <p>Its most important epithet. It destroys all the barriers opposing your ascension.</p>
+                        </div>
+
+                        <div class="prayer-epithet">
+                            <strong>The True Mother</strong>
+                            <p>Even if Chaos is a neutral and genderless force, everything came from it and was created through it. For this reason, it is the true mother, while the light is only a false imitation.</p>
+                        </div>
+
+                        <div class="prayer-epithet">
+                            <strong>The Source</strong>
+                            <p>The origin from which all things emerge.</p>
+                        </div>
+
+                        <div class="prayer-epithet">
+                            <strong>The Essence of Godhood</strong>
+                            <p>Without it, nothing would exist—not even the gods themselves.</p>
+                        </div>
+
+                        <div class="prayer-epithet">
+                            <strong>The Giver of Power</strong>
+                            <p>Chaos is the source of all power, and its devotees draw from it.</p>
+                        </div>
+
+                        <div class="prayer-epithet">
+                            <strong>Absolute Nothingness</strong>
+                            <p>The total abyss, the black mirror that reflects our truest selves.</p>
+                        </div>
+
+                        <div class="prayer-epithet">
+                            <strong>Absolute Everything</strong>
+                            <p>At the same time, it is the creator of all things. All life exists within it and through it, and therefore all life also exists within us.</p>
+                        </div>
+
+                        <div class="prayer-epithet">
+                            <strong>The Liberator</strong>
+                            <p>By destroying our fears and illusions and guiding us upon this path, Chaos liberates us.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <div id="prayersNoResults" class="prayers-no-results" hidden>
+                    No prayers or epithets found.
+                </div>
+
+            </div>
+        `;
+
+        const search = document.getElementById("prayersSearch");
+        const entries = Array.from(document.querySelectorAll("#prayersContent .prayer-entry"));
+        const noResults = document.getElementById("prayersNoResults");
+
+        function filterPrayers() {
+            const query = search.value.trim().toLowerCase();
+
+            let visibleCount = 0;
+
+            entries.forEach(entry => {
+                const haystack = (
+                    entry.textContent + " " + (entry.dataset.search || "")
+                ).toLowerCase();
+
+                const matches = !query || haystack.includes(query);
+                entry.style.display = matches ? "" : "none";
+
+                if (matches) visibleCount++;
+            });
+
+            noResults.hidden = visibleCount !== 0;
+        }
+
+        search.addEventListener("input", filterPrayers);
+
+        entries.forEach(entry => {
+            const toggle = entry.querySelector(".prayer-card-toggle");
+            if (!toggle) return;
+
+            toggle.addEventListener("click", () => {
+                const isOpen = entry.classList.toggle("open");
+                toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            });
+        });
+
+        filterPrayers();
+    } else {
+        /* Other ritual paths remain unchanged. */
+        body.innerHTML = "";
+    }
 
     const popup = document.getElementById("ritualPathPopup");
     popup.classList.add("active");
