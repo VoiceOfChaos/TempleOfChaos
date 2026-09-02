@@ -8952,7 +8952,10 @@ button[onclick="showHiddenDedications()"] {
     <!-- GINNUNGAGAP -->
 
     <article
-        class="primordial-force primordial-ginnungagap"
+        class="primordial-force primordial-ginnungagap ginnungagap-lore-card"
+        role="button"
+        tabindex="0"
+        aria-label="Read about Ginnungagap"
     >
 
         <div class="primordial-force-symbol">
@@ -9142,6 +9145,93 @@ button[onclick="showHiddenDedications()"] {
                     </div>
                 </div>
             </section>
+        </article>
+    </div>
+
+    <!-- =====================================================
+         GINNUNGAGAP LORE POPUP
+    ====================================================== -->
+    <div id="ginnungagapLorePopup" class="chaos-lore-popup" aria-hidden="true">
+        <div class="chaos-lore-popup-backdrop" data-ginnungagap-close="true"></div>
+        <article class="chaos-lore-popup-card" role="dialog" aria-modal="true" aria-labelledby="ginnungagapLoreTitle">
+            <button type="button" class="chaos-lore-popup-close" id="ginnungagapLoreClose" aria-label="Close Ginnungagap">×</button>
+            <div class="chaos-lore-popup-symbol">∞</div>
+            <h2 id="ginnungagapLoreTitle" class="chaos-lore-popup-title">Ginnungagap</h2>
+            <div class="chaos-lore-popup-subtitle">The Primordial Void</div>
+
+            <section class="chaos-lore-section open">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="true">The Yawning Abyss</button>
+                <div class="chaos-lore-text">
+                    <p>In Norse mythology, <strong>Ginnungagap</strong> is the primordial void that existed before the cosmos began. It is not simply emptiness, but a vast open expanse — a yawning abyss between what had not yet become.</p>
+                    <p>It represents the beginning before form, and the possibility of existence before the world had taken shape. In this sense, Ginnungagap can also be understood as part of a greater cosmic rhythm: beginning, existence, destruction, and return.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">Where Fire Meets Ice</button>
+                <div class="chaos-lore-text">
+                    <p>Ginnungagap lay between <strong>Niflheim</strong>, the cold realm of ice and mist, and <strong>Muspelheim</strong>, the realm of fire and heat. When these opposing forces met within the void, creation began.</p>
+                    <p>The heat of Muspelheim melted the frost of Niflheim, and from this primal interaction life emerged. <strong>Ymir</strong>, the first primordial giant, came forth from the melting frost, while <strong>Audhumla</strong>, the cosmic cow, also emerged and nourished the early cosmos.</p>
+                    <p>Ginnungagap therefore becomes more than a void. It is the space where raw, untamed potential becomes capable of taking form.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Duality of Creation</button>
+                <div class="chaos-lore-text">
+                    <p>Ginnungagap can be viewed through the tension between opposing forces: creation and destruction, order and chaos, fire and ice.</p>
+                    <p>These forces are not necessarily enemies. Their interaction is what makes creation possible. The Norse creation story begins not with one force acting alone, but with opposing elements meeting within the primordial void.</p>
+                    <p>This gives Ginnungagap a cyclical symbolism: <strong>Creation. Existence. Destruction. Return.</strong></p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">Fire and Ice</button>
+                <div class="chaos-lore-text">
+                    <p>Fire and ice are not forces that need to be conquered. They are part of the fabric of the cosmos itself.</p>
+                    <p>The tension between fire and ice, order and disorder, creation and destruction is precisely what allows something new to emerge. Without opposition, there is no meeting point — and without a meeting point, there is no transformation.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Cosmic Womb</button>
+                <div class="chaos-lore-text">
+                    <p>Ginnungagap can be imagined as a <strong>field of potential</strong>: a space where nothing has yet been separated into distinct forms, yet everything remains possible.</p>
+                    <p>It is not the absence of creation, but the condition from which creation can emerge. The void becomes a kind of cosmic womb — a sacred space of possibility before distinction, identity, and form.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Void Within</button>
+                <div class="chaos-lore-text">
+                    <p>Ginnungagap can also be reflected within the human experience. We carry our own opposing forces: stillness and intensity, clarity and confusion, creation and destruction, order and disorder.</p>
+                    <p>Transformation often happens within that tension. We are, in a sense, spaces where opposites meet — places where something unknown can become something new.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">Return to the Void</button>
+                <div class="chaos-lore-text">
+                    <p>The void can also represent return. When an established form collapses, it does not necessarily mean that possibility has ended. It can mean that what existed is being reabsorbed into something greater, leaving space for transformation and renewal.</p>
+                    <p>This is not a claim that Norse mythology teaches Eastern reincarnation, but the imagery can evoke a similar rhythm of return, transformation, and continuation.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Primordial Void</button>
+                <div class="chaos-lore-text">
+                    <p>Ginnungagap is not simply a place that existed once, before everything else. Symbolically, it can be understood as the primordial space beneath existence — the place where opposites meet, where creation begins, and where transformation remains possible.</p>
+                    <p>It is the silence before creation. The space between opposing forces. The womb of possibility.</p>
+                    <p><strong>Ginnungagap is not simply emptiness.<br>It is the silence before creation.<br>The space between opposing forces.<br>The womb of possibility.<br>The primordial void from which existence emerges — and to which existence may one day return.</strong></p>
+                </div>
+            </section>
+
+            <div class="chaos-lore-sources">
+                <span>Sources</span>
+                <a href="https://mythus.fandom.com/wiki/Ginnungagap" target="_blank" rel="noopener noreferrer">Mythus Fandom — Ginnungagap</a>
+                <a href="https://vikingr.org/norse-cosmology/ginnungagap" target="_blank" rel="noopener noreferrer">Vikingr — Ginnungagap</a>
+                <a href="https://pantheon.org/articles/g/ginnungagap.html" target="_blank" rel="noopener noreferrer">Pantheon.org — Ginnungagap</a>
+            </div>
         </article>
     </div>
 
@@ -13534,6 +13624,53 @@ document.addEventListener('click', function(event) {
 })();
 </script>
 
+
+<script>
+(function () {
+    const card = document.querySelector('.ginnungagap-lore-card');
+    const popup = document.getElementById('ginnungagapLorePopup');
+    const closeBtn = document.getElementById('ginnungagapLoreClose');
+    if (!card || !popup || !closeBtn) return;
+
+    const open = () => {
+        popup.classList.add('active');
+        popup.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('lore-popup-open');
+        closeBtn.focus();
+    };
+    const close = () => {
+        popup.classList.remove('active');
+        popup.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('lore-popup-open');
+    };
+
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+    closeBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); close(); });
+    popup.querySelector('[data-ginnungagap-close]')?.addEventListener('click', close);
+
+    popup.querySelectorAll('.chaos-lore-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const section = toggle.closest('.chaos-lore-section');
+            const isOpen = section.classList.contains('open');
+            popup.querySelectorAll('.chaos-lore-section').forEach(s => {
+                s.classList.remove('open');
+                s.querySelector('.chaos-lore-toggle').setAttribute('aria-expanded', 'false');
+            });
+            if (!isOpen) {
+                section.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && popup.classList.contains('active')) close();
+    });
+})();
+</script>
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
