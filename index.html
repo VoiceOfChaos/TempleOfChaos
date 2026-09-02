@@ -5911,6 +5911,31 @@
     .sanctuary-tabs{grid-template-columns:repeat(2,1fr)}
 }
 
+    /* =====================================================
+       LORE DISCLAIMER
+    ====================================================== */
+    .chaos-lore-disclaimer {
+        margin: 22px 0 28px;
+        padding: 18px 20px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.025);
+    }
+
+    .chaos-lore-disclaimer-title {
+        margin: 0 0 9px;
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.78);
+    }
+
+    .chaos-lore-disclaimer-text {
+        margin: 0;
+        font-size: 0.88rem;
+        line-height: 1.7;
+        color: rgba(255,255,255,0.58);
+    }
+
 </style>
 
 <!-- =====================================================
@@ -9066,6 +9091,11 @@ button[onclick="showHiddenDedications()"] {
             <div class="chaos-lore-popup-symbol">◇</div>
             <h2 id="chaosLoreTitle" class="chaos-lore-popup-title">Primordial Chaos</h2>
             <div class="chaos-lore-popup-subtitle">The Formless Beginning</div>
+            <div class="chaos-lore-disclaimer">
+                <div class="chaos-lore-disclaimer-title">A Note on This Lore</div>
+                <p class="chaos-lore-disclaimer-text">This page is a combination of historical and mythological material drawn from surviving sources, together with my own personal interpretations, reflections, and spiritual or philosophical ideas. My interpretations are not presented as historical facts or as authoritative reconstructions of ancient beliefs. Where traditions differ or the historical evidence is uncertain, this page may reflect my own understanding.</p>
+            </div>
+
 
             <section class="chaos-lore-section open">
                 <button type="button" class="chaos-lore-toggle" aria-expanded="true">
@@ -9165,13 +9195,21 @@ button[onclick="showHiddenDedications()"] {
                     <p>In this way, Chaos becomes more than a mythological concept. It becomes a reflection of something deeper:</p>
 
                     <p><strong>Within the void lies potential.<br>Within silence lies creation.<br>Within the unformed lies the possibility of becoming anything.</strong></p>
+                </div>
+            </section>
 
             <div class="chaos-lore-sources-block">
                 <div class="chaos-lore-sources-title">Sources</div>
-                <div class="chaos-lore-sources"></div>
-            </div>
+                <div class="chaos-lore-sources">
+                    <p><a href="https://www.theoi.com/Protogenos/Khaos.html" target="_blank" rel="noopener noreferrer">Theoi — Khaos</a></p>
+                    <p><a href="https://mythopedia.com/topics/chaos" target="_blank" rel="noopener noreferrer">Mythopedia — Chaos</a></p>
+                    <p><a href="https://www.ebsco.com/research-starters/mythology/chaos" target="_blank" rel="noopener noreferrer">EBSCO — Chaos in Mythology</a></p>
+                    <p><a href="https://www.ancient-origins.net/myths-legends-europe/chaos-greek-god-0010340" target="_blank" rel="noopener noreferrer">Ancient Origins — Greek God Chaos</a></p>
+                    <p><a href="https://historycooperative.org/chaos-in-greek-mythology/" target="_blank" rel="noopener noreferrer">History Cooperative — Chaos in Greek Mythology</a></p>
+                    <p><a href="https://greekgodsandgoddesses.net/gods/chaos/" target="_blank" rel="noopener noreferrer">Greek Gods and Goddesses — Chaos</a></p>
+                    <p><a href="https://www.thegreekgod.com/chaos/" target="_blank" rel="noopener noreferrer">TheGreekGods.org — Chaos</a></p>
                 </div>
-            </section>
+            </div>
         </article>
     </div>
 
@@ -9185,6 +9223,11 @@ button[onclick="showHiddenDedications()"] {
             <div class="chaos-lore-popup-symbol">∞</div>
             <h2 id="ginnungagapLoreTitle" class="chaos-lore-popup-title">Ginnungagap</h2>
             <div class="chaos-lore-popup-subtitle">The Primordial Void</div>
+            <div class="chaos-lore-disclaimer">
+                <div class="chaos-lore-disclaimer-title">A Note on This Lore</div>
+                <p class="chaos-lore-disclaimer-text">This page is a combination of historical and mythological material drawn from surviving sources, together with my own personal interpretations, reflections, and spiritual or philosophical ideas. My interpretations are not presented as historical facts or as authoritative reconstructions of ancient beliefs. Where traditions differ or the historical evidence is uncertain, this page may reflect my own understanding.</p>
+            </div>
+
 
             <section class="chaos-lore-section open">
                 <button type="button" class="chaos-lore-toggle" aria-expanded="true">The Yawning Abyss</button>
@@ -9255,7 +9298,11 @@ button[onclick="showHiddenDedications()"] {
 
             <div class="chaos-lore-sources-block">
                 <div class="chaos-lore-sources-title">Sources</div>
-                <div class="chaos-lore-sources"></div>
+                <div class="chaos-lore-sources">
+                    <p><a href="https://mythus.fandom.com/wiki/Ginnungagap" target="_blank" rel="noopener noreferrer">Mythus Fandom — Ginnungagap</a></p>
+                    <p><a href="https://vikingr.org/norse-cosmology/ginnungagap" target="_blank" rel="noopener noreferrer">Vikingr — Ginnungagap</a></p>
+                    <p><a href="https://pantheon.org/articles/g/ginnungagap.html" target="_blank" rel="noopener noreferrer">Pantheon.org — Ginnungagap</a></p>
+                </div>
             </div>
         </article>
     </div>
@@ -9296,7 +9343,7 @@ button[onclick="showHiddenDedications()"] {
          NYX
     ========================== -->
 
-    <article class="god-card god-nyx">
+    <article class="god-card god-nyx nyx-lore-card" role="button" tabindex="0" aria-label="Read about Nyx">
 
         <div class="god-card-content">
 
@@ -9346,7 +9393,7 @@ button[onclick="showHiddenDedications()"] {
          TIAMAT
     ========================== -->
 
-    <article class="god-card god-tiamat">
+    <article class="god-card god-tiamat tiamat-lore-card" role="button" tabindex="0" aria-label="Open Tiamat lore">
 
         <div class="god-card-content">
 
@@ -13573,6 +13620,110 @@ document.addEventListener('click', function(event) {
 
 
     <!-- =====================================================
+         NYX LORE POPUP
+    ====================================================== -->
+    <div id="nyxLorePopup" class="chaos-lore-popup" aria-hidden="true">
+        <div class="chaos-lore-popup-backdrop" data-nyx-close="true"></div>
+
+        <article class="chaos-lore-popup-card" role="dialog" aria-modal="true" aria-labelledby="nyxLoreTitle">
+            <button type="button" class="chaos-lore-popup-close" id="nyxLoreClose" aria-label="Close Nyx lore">×</button>
+
+            <div class="chaos-lore-popup-symbol">☾</div>
+            <h2 id="nyxLoreTitle" class="chaos-lore-popup-title">Nyx — The Primordial Night</h2>
+            <div class="chaos-lore-popup-subtitle">The Primordial Night</div>
+            <div class="chaos-lore-disclaimer">
+                <div class="chaos-lore-disclaimer-title">A Note on This Lore</div>
+                <p class="chaos-lore-disclaimer-text">This page is a combination of historical and mythological material drawn from surviving sources, together with my own personal interpretations, reflections, and spiritual or philosophical ideas. My interpretations are not presented as historical facts or as authoritative reconstructions of ancient beliefs. Where traditions differ or the historical evidence is uncertain, this page may reflect my own understanding.</p>
+            </div>
+
+
+            <section class="chaos-lore-section open">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="true">The Primordial</button>
+                <div class="chaos-lore-text">
+                    <p>In Greek mythology, <strong>Nyx is the primordial goddess and embodiment of Night</strong>, one of the ancient beings born from Chaos. She is not merely a deity who governs the coming of darkness, but the very substance of night itself—a presence that envelops the world, concealing light beneath a veil of shadow.</p>
+                    <p>According to Hesiod's <em>Theogony</em>, Nyx emerged directly from Chaos. In union with Erebus, the primordial Darkness, she gave birth to <strong>Aether, the upper Light, and Hemera, the Day</strong>. From darkness came light, and from night emerged day.</p>
+                    <p>Creation therefore does not unfold by destroying darkness, but by differentiating what already exists. Night and day become opposing yet inseparable parts of the cosmic order.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Veil of Night</button>
+                <div class="chaos-lore-text">
+                    <p>Night arrives as a veil, covering the world in darkness before dawn eventually disperses it. Yet Nyx is not simply the absence of light.</p>
+                    <p>Night has its own domain: <strong>rest, dreams, silence, mystery, and introspection.</strong></p>
+                    <p>In darkness, the world becomes quieter. What is hidden during the day becomes visible to the inward gaze.</p>
+                    <p>Nyx therefore represents darkness not as emptiness, but as a presence that surrounds and conceals.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Power of Nyx</button>
+                <div class="chaos-lore-text">
+                    <p>Nyx is one of the most ancient and powerful beings in Greek mythology. In Homer's <em>Iliad</em>, even Zeus is portrayed as unwilling to provoke her.</p>
+                    <p>Her power does not come from armies or weapons. It comes from something older and more fundamental: <strong>the inevitability of Night.</strong></p>
+                    <p>Darkness does not need to conquer the world. Eventually, the light simply fades, and Night arrives.</p>
+                    <p>Hesiod also places Nyx in Tartarus with Hypnos and Thanatos, emphasizing her connection to the deeper and more mysterious forces of existence.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Darkness Within</button>
+                <div class="chaos-lore-text">
+                    <p>Nyx can also be understood as a reflection of the darkness within the human soul.</p>
+                    <p>There are parts of ourselves that remain hidden: fears, desires, memories, dreams, and thoughts that we may prefer not to face.</p>
+                    <p>Darkness is not something that must always be denied.</p>
+                    <p><strong>We are not only light. We are also darkness.</strong></p>
+                    <p>To understand the darkness within is to understand a part of ourselves that cannot be separated from our existence.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Night That Welcomes</button>
+                <div class="chaos-lore-text">
+                    <p><strong>Beloved Goddess Nyx,</strong> the world often worships only what it calls light.</p>
+                    <p>Darkness is feared because it is uncontrolled, unfamiliar, and unknown.</p>
+                    <p>But Night does not demand that we destroy what frightens us.</p>
+                    <p><strong>She invites us to enter it.</strong></p>
+                    <p>It does not conquer.</p>
+                    <p><strong>It envelops.</strong></p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">What Already Lies Within</button>
+                <div class="chaos-lore-text">
+                    <p>Nyx does not need to grant us darkness. It is already within us.</p>
+                    <p>What she offers is the courage to look into what we normally avoid.</p>
+                    <p>Fear loses some of its power when it is understood. What society fears is often what it refuses to understand.</p>
+                    <p>Even Zeus did not treat Nyx lightly. She never needed weapons to command reverence.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Primordial Night</button>
+                <div class="chaos-lore-text">
+                    <p>Nyx reminds us that primordial power can be quiet.</p>
+                    <p>It can surround everything without announcing itself. It can exist in silence, in dreams, in shadow, and in the spaces where certainty disappears.</p>
+                    <p>Night was here before us.</p>
+                    <p><strong>And Night will remain when the light fades.</strong></p>
+                    <p>She is the primordial darkness that does not need to destroy the light in order to exist.</p>
+                </div>
+            </section>
+
+            <div class="chaos-lore-sources-block">
+                <div class="chaos-lore-sources-title">Sources</div>
+                <div class="chaos-lore-sources">
+                    <p><a href="https://www.greekmythology.com/Other_Gods/Nyx/nyx.html" target="_blank" rel="noopener noreferrer">Greek Mythology — Nyx</a></p>
+                    <p><a href="https://www.theoi.com/Protogenos/Nyx.html" target="_blank" rel="noopener noreferrer">Theoi — Nyx</a></p>
+                    <p><a href="https://www.centreofexcellence.com/nyx-in-greek-mythology/" target="_blank" rel="noopener noreferrer">Centre of Excellence — Nyx in Greek Mythology</a></p>
+                    <p><a href="https://greekgodsandgoddesses.net/goddesses/nyx/" target="_blank" rel="noopener noreferrer">Greek Gods and Goddesses — Nyx</a></p>
+                    <p><a href="https://orphichymns.org/nyx/" target="_blank" rel="noopener noreferrer">Orphic Hymns — Nyx</a></p>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- =====================================================
          EREBUS LORE POPUP
     ====================================================== -->
     <div id="erebusLorePopup" class="chaos-lore-popup" aria-hidden="true">
@@ -13584,6 +13735,11 @@ document.addEventListener('click', function(event) {
             <div class="chaos-lore-popup-symbol">◐</div>
             <h2 id="erebusLoreTitle" class="chaos-lore-popup-title">Erebus — The Primordial Darkness</h2>
             <div class="chaos-lore-popup-subtitle">The Primordial Darkness</div>
+            <div class="chaos-lore-disclaimer">
+                <div class="chaos-lore-disclaimer-title">A Note on This Lore</div>
+                <p class="chaos-lore-disclaimer-text">This page is a combination of historical and mythological material drawn from surviving sources, together with my own personal interpretations, reflections, and spiritual or philosophical ideas. My interpretations are not presented as historical facts or as authoritative reconstructions of ancient beliefs. Where traditions differ or the historical evidence is uncertain, this page may reflect my own understanding.</p>
+            </div>
+
 
             <section class="chaos-lore-section open">
                 <button type="button" class="chaos-lore-toggle" aria-expanded="true">The Primordial Darkness</button>
@@ -13804,7 +13960,9 @@ document.addEventListener('click', function(event) {
         initLore('.chaos-lore-card', 'chaosLorePopup', 'chaosLoreClose', '[data-chaos-close="true"]');
         initLore('.ginnungagap-lore-card', 'ginnungagapLorePopup', 'ginnungagapLoreClose', '[data-ginnungagap-close]');
         initLore('.nun-lore-card', 'nunLorePopup', 'nunLoreClose', '[data-nun-close]');
+        initLore('.nyx-lore-card', 'nyxLorePopup', 'nyxLoreClose', '[data-nyx-close]');
         initLore('.erebus-lore-card', 'erebusLorePopup', 'erebusLoreClose', '[data-erebus-close]');
+        initLore('.tiamat-lore-card', 'tiamatLorePopup', 'tiamatLoreClose', '[data-tiamat-close]');
     }
 
     if (document.readyState === 'loading') {
@@ -13814,6 +13972,144 @@ document.addEventListener('click', function(event) {
     }
 })();
 </script>
+
+
+
+    <!-- =====================================================
+         TIAMAT LORE POPUP
+    ====================================================== -->
+    <div id="tiamatLorePopup" class="chaos-lore-popup" aria-hidden="true">
+        <div class="chaos-lore-popup-backdrop" data-tiamat-close="true"></div>
+
+        <article class="chaos-lore-popup-card" role="dialog" aria-modal="true" aria-labelledby="tiamatLoreTitle">
+            <button type="button" class="chaos-lore-popup-close" id="tiamatLoreClose" aria-label="Close Tiamat lore">×</button>
+
+            <div class="chaos-lore-popup-symbol">≋</div>
+            <h2 id="tiamatLoreTitle" class="chaos-lore-popup-title">Tiamat — The Living Chaos</h2>
+            <div class="chaos-lore-popup-subtitle">The Primordial Sea</div>
+            <div class="chaos-lore-disclaimer">
+                <div class="chaos-lore-disclaimer-title">A Note on This Lore</div>
+                <p class="chaos-lore-disclaimer-text">This page is a combination of historical and mythological material drawn from surviving sources, together with my own personal interpretations, reflections, and spiritual or philosophical ideas. My interpretations are not presented as historical facts or as authoritative reconstructions of ancient beliefs. Where traditions differ or the historical evidence is uncertain, this page may reflect my own understanding.</p>
+            </div>
+
+
+            <section class="chaos-lore-section open">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="true">The Primordial Mother</button>
+                <div class="chaos-lore-text">
+                    <p>In Mesopotamian mythology, <strong>Tiamat is the primordial goddess of the salt sea</strong>, the ancient waters from which the younger gods emerge. She is more than an abstract representation of chaos. She is <strong>living chaos</strong>—creative, maternal, immense, and capable of becoming destructive.</p>
+                    <p>Unlike the empty vastness of Greek Chaos or the tension between fire and ice within Ginnungagap, Tiamat is conscious and alive. She possesses will, emotion, and the capacity to create.</p>
+                    <p>At the beginning of creation, Tiamat exists alongside Apsu, the freshwater abyss. Their union gives rise to the younger gods. At first, there is no war between creation and chaos. There is only the primordial state from which existence begins.</p>
+                    <p>Chaos is not yet violence.</p>
+                    <p><strong>It is potential.</strong></p>
+                    <p>But the younger gods bring movement, noise, and change into this ancient stillness. What was once unity becomes division. What was once silence becomes noise.</p>
+                    <p>When Apsu decides that the younger gods must be destroyed, Tiamat initially resists. Even after his death, she does not immediately turn against her children. Her transformation into a warrior comes only after loss, betrayal, and the growing conflict between the old and new generations.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Mother Who Became a Warrior</button>
+                <div class="chaos-lore-text">
+                    <p>Tiamat's transformation is one of the most important parts of her story.</p>
+                    <p>She was not simply born as a monster waiting to destroy creation. In the <em>Enuma Elish</em>, she initially wishes to spare the younger gods even when their behavior disturbs her. It is only after Apsu is killed and she is persuaded to wage war that she creates her monstrous army.</p>
+                    <p>Under Kingu, her chosen champion, Tiamat's forces rise against the younger gods.</p>
+                    <p>Chaos has changed.</p>
+                    <p>The force that once gave birth to the gods now threatens the order they have created.</p>
+                    <p>This creates a powerful duality within Tiamat. She is simultaneously <strong>mother and destroyer, creator and adversary, origin and threat</strong>.</p>
+                    <p>Her story suggests that creation and destruction are not always opposing forces. Sometimes they emerge from the same source.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The War Against Order</button>
+                <div class="chaos-lore-text">
+                    <p>Marduk, champion of the younger gods, eventually agrees to face Tiamat—but not without a price.</p>
+                    <p>He demands supreme authority over the gods if he succeeds.</p>
+                    <p>The gods agree.</p>
+                    <p>Marduk confronts Tiamat, defeats her, and kills her. He then divides her body in two, forming the heavens from one half and the earth from the other. Her remains become the structure of the cosmos itself.</p>
+                    <p>And here lies the deeper symbolism:</p>
+                    <p><strong>The world of Order is built from the body of Chaos.</strong></p>
+                    <p>Order does not create itself from nothing. It takes the primordial force that existed before it, defeats it, divides it, and constructs a structured universe from its remains.</p>
+                    <p>Even after Chaos has supposedly been conquered, <strong>Chaos remains beneath everything.</strong></p>
+                    <p>The heavens are made from her. The earth is made from her. The world itself carries the body of the force that Order claimed to destroy.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Blood of Chaos</button>
+                <div class="chaos-lore-text">
+                    <p>After Tiamat's defeat, Marduk turns toward the creation of humanity.</p>
+                    <p>Kingu, Tiamat's champion and consort, is executed, and humanity is created from his blood. In the <em>Enuma Elish</em>, humanity is therefore literally fashioned from the blood of one of Tiamat's followers.</p>
+                    <p>Even humanity, then, carries something of Chaos within itself.</p>
+                    <p>The very beings created to serve the ordered cosmos are made from the essence of its defeated enemy.</p>
+                    <p><strong>Chaos flows through our veins.</strong></p>
+                    <p>No matter how strongly civilization attempts to suppress instinct, imagination, rebellion, emotion, uncertainty, or the unknown, these forces cannot simply be erased.</p>
+                    <p>They existed before the structures built to contain them.</p>
+                    <p>And they remain beneath those structures.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Chaos Within</button>
+                <div class="chaos-lore-text">
+                    <p>Tiamat can therefore be understood psychologically as the vast unconscious—the depths of instinct, emotion, imagination, creativity, and impulses that exist beyond conscious control.</p>
+                    <p>In its natural state, this inner chaos does not have to be destructive.</p>
+                    <p>It can create. It can transform. It can give birth to something that did not previously exist.</p>
+                    <p>But when it is rejected, suppressed, or denied, it does not disappear.</p>
+                    <p>It gathers beneath the surface.</p>
+                    <p>Like the primordial sea, it remains deep.</p>
+                    <p>And eventually, what has been forced into silence may rise again.</p>
+                    <p>Tiamat therefore represents the part of ourselves that civilization and conscious identity attempt to organize: the emotional, instinctive, irrational, creative, and uncontrollable depths that cannot be completely mastered.</p>
+                    <p>The self is built from what it attempts to control.</p>
+                    <p><strong>Just as the world is built from Tiamat.</strong></p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Price of Order</button>
+                <div class="chaos-lore-text">
+                    <p>There is another detail in the story that makes Marduk's victory especially significant.</p>
+                    <p>He does not merely defeat Tiamat.</p>
+                    <p><strong>He gains kingship.</strong></p>
+                    <p>After defeating her and taking the Tablets of Destiny from Kingu, Marduk is established as supreme ruler of the gods. The creation of the ordered cosmos therefore coincides with the establishment of authority.</p>
+                    <p>Order demands a price.</p>
+                    <p>The new world is not simply born. It is conquered, divided, organized, and ruled.</p>
+                    <p>And perhaps that is what makes Tiamat's story so compelling.</p>
+                    <p>The Order worshipped as law presents itself as the foundation of civilization, yet its authority is established through the destruction and subjugation of the primordial force that came before it.</p>
+                    <p>Chaos is declared the enemy.</p>
+                    <p>Chaos is supposedly destroyed.</p>
+                    <p>And yet the world of Order is literally made from its corpse.</p>
+                    <p>Humanity itself is made from the blood of its champion.</p>
+                    <p><strong>How successfully Order has taught us to forget where we came from.</strong></p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Living Chaos</button>
+                <div class="chaos-lore-text">
+                    <p>Tiamat is not merely the chaos that existed before the world.</p>
+                    <p>She is the reminder that <strong>the world itself came from chaos.</strong></p>
+                    <p>She represents the deep waters beneath consciousness, the creative force beneath structure, the instinct beneath reason, and the wild potential that exists before anything has been given a name.</p>
+                    <p>Her story does not simply ask whether Chaos or Order is stronger.</p>
+                    <p>It asks something more uncomfortable:</p>
+                    <p><strong>What happens when Order forgets that it was born from Chaos?</strong></p>
+                    <p>Perhaps Chaos was never truly destroyed.</p>
+                    <p>Perhaps it was only divided. Contained. Named. Buried beneath the heavens and earth.</p>
+                    <p>But the primordial sea remains.</p>
+                    <p>And so does the force within us that refuses to be completely subdued.</p>
+                    <p><strong>Tiamat is the living chaos from which creation emerged—the mother beneath the world, the darkness beneath order, and the primordial force that can never be completely erased.</strong></p>
+                </div>
+            </section>
+
+            <div class="chaos-lore-sources-block">
+                <div class="chaos-lore-sources-title">Sources</div>
+                <div class="chaos-lore-sources">
+                    <p><a href="https://www.worldhistory.org/Tiamat/" target="_blank" rel="noopener noreferrer">World History Encyclopedia — Tiamat</a></p>
+                    <p><a href="https://mythlok.com/tiamat/" target="_blank" rel="noopener noreferrer">Mythlok — Tiamat</a></p>
+                    <p><a href="https://www.britannica.com/topic/Tiamat" target="_blank" rel="noopener noreferrer">Encyclopaedia Britannica — Tiamat</a></p>
+                </div>
+            </div>
+        </article>
+    </div>
 
     <!-- =====================================================
          NUN LORE POPUP
@@ -13825,6 +14121,11 @@ document.addEventListener('click', function(event) {
             <div class="chaos-lore-popup-symbol">≋</div>
             <h2 id="nunLoreTitle" class="chaos-lore-popup-title">Nun — The Infinite Waters</h2>
             <div class="chaos-lore-popup-subtitle">The Primordial Waters</div>
+            <div class="chaos-lore-disclaimer">
+                <div class="chaos-lore-disclaimer-title">A Note on This Lore</div>
+                <p class="chaos-lore-disclaimer-text">This page is a combination of historical and mythological material drawn from surviving sources, together with my own personal interpretations, reflections, and spiritual or philosophical ideas. My interpretations are not presented as historical facts or as authoritative reconstructions of ancient beliefs. Where traditions differ or the historical evidence is uncertain, this page may reflect my own understanding.</p>
+            </div>
+
 
             <section class="chaos-lore-section open">
                 <button type="button" class="chaos-lore-toggle" aria-expanded="true">The Primordial Waters</button>
@@ -13883,7 +14184,12 @@ document.addEventListener('click', function(event) {
 
             <div class="chaos-lore-sources-block">
                 <div class="chaos-lore-sources-title">Sources</div>
-                <div class="chaos-lore-sources"></div>
+                <div class="chaos-lore-sources">
+                    <p><a href="https://www.britannica.com/topic/ancient-Egyptian-religion" target="_blank" rel="noopener noreferrer">Britannica — Ancient Egyptian Religion</a></p>
+                    <p><a href="https://ancientegyptonline.co.uk/nun/" target="_blank" rel="noopener noreferrer">Ancient Egypt Online — Nun</a></p>
+                    <p><a href="https://henadology.wordpress.com/theology/netjeru/nun/" target="_blank" rel="noopener noreferrer">Henadology — Nun</a></p>
+                    <p><a href="http://www.egyptianmyths.net/nun.htm" target="_blank" rel="noopener noreferrer">Egyptian Myths — Nun</a></p>
+                </div>
             </div>
         </article>
     </div>
