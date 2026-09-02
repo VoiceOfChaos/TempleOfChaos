@@ -8585,18 +8585,42 @@ button[onclick="showHiddenDedications()"] {
     font-weight: normal;
 }
 
-.chaos-lore-sources {
+.chaos-lore-sources-block {
     margin-top: 30px;
-    padding-top: 22px;
-    border-top: 1px solid rgba(232,227,216,.10);
+    border-top: 1px solid rgba(232,227,216,.14);
+    border-bottom: 1px solid rgba(232,227,216,.14);
+    padding: 21px 8px 24px;
+}
+
+.chaos-lore-sources-title {
+    color: #ded5c8;
+    font-size: .78rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+
+.chaos-lore-sources {
     color: #777168;
     font-size: .65rem;
     line-height: 1.7;
     letter-spacing: .08em;
 }
 
+.chaos-lore-sources p {
+    margin: 0 0 10px;
+}
+
+.chaos-lore-sources p:last-child {
+    margin-bottom: 0;
+}
+
 .chaos-lore-sources a {
     color: #8e8478;
+}
+
+.chaos-lore-sources a:hover {
+    color: #d6bd91;
 }
 
 @media (max-width: 700px) {
@@ -8976,7 +9000,10 @@ button[onclick="showHiddenDedications()"] {
     <!-- NUN -->
 
     <article
-        class="primordial-force primordial-nun"
+        class="primordial-force primordial-nun nun-lore-card"
+        role="button"
+        tabindex="0"
+        aria-label="Read about Nun"
     >
 
         <div class="primordial-force-symbol">
@@ -9139,10 +9166,10 @@ button[onclick="showHiddenDedications()"] {
 
                     <p><strong>Within the void lies potential.<br>Within silence lies creation.<br>Within the unformed lies the possibility of becoming anything.</strong></p>
 
-                    <div class="chaos-lore-sources">
-                        SOURCES<br>
-                        Theoi — Khaos · Greek Mythology Wiki — Chaos · EBSCO — Chaos in Mythology · Ancient Origins — Greek God Chaos · History Cooperative — Chaos in Greek Mythology · Greek Gods and Goddesses — Chaos · TheGreekGods.org — Chaos
-                    </div>
+            <div class="chaos-lore-sources-block">
+                <div class="chaos-lore-sources-title">Sources</div>
+                <div class="chaos-lore-sources"></div>
+            </div>
                 </div>
             </section>
         </article>
@@ -9226,11 +9253,9 @@ button[onclick="showHiddenDedications()"] {
                 </div>
             </section>
 
-            <div class="chaos-lore-sources">
-                <span>Sources</span>
-                <a href="https://mythus.fandom.com/wiki/Ginnungagap" target="_blank" rel="noopener noreferrer">Mythus Fandom — Ginnungagap</a>
-                <a href="https://vikingr.org/norse-cosmology/ginnungagap" target="_blank" rel="noopener noreferrer">Vikingr — Ginnungagap</a>
-                <a href="https://pantheon.org/articles/g/ginnungagap.html" target="_blank" rel="noopener noreferrer">Pantheon.org — Ginnungagap</a>
+            <div class="chaos-lore-sources-block">
+                <div class="chaos-lore-sources-title">Sources</div>
+                <div class="chaos-lore-sources"></div>
             </div>
         </article>
     </div>
@@ -13546,131 +13571,157 @@ document.addEventListener('click', function(event) {
 </script>
 
 
-<script id="chaos-lore-popup-script">
+<script id="primordial-lore-popup-script">
 (function () {
-    const card = document.querySelector('.chaos-lore-card');
-    const popup = document.getElementById('chaosLorePopup');
-    const closeButton = document.getElementById('chaosLoreClose');
-    if (!card || !popup || !closeButton) return;
+    function initLore(cardSelector, popupId, closeId, backdropSelector) {
+        const card = document.querySelector(cardSelector);
+        const popup = document.getElementById(popupId);
+        const closeButton = document.getElementById(closeId);
+        if (!card || !popup || !closeButton) return;
 
-    const toggles = popup.querySelectorAll('.chaos-lore-toggle');
-    let previousOverflow = '';
+        const open = function (event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
+            popup.classList.add('active');
+            popup.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('lore-popup-open');
+            document.body.style.overflow = 'hidden';
+            closeButton.focus({ preventScroll: true });
+        };
 
-    function openChaosLore() {
-        previousOverflow = document.body.style.overflow;
-        popup.classList.add('active');
-        popup.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        closeButton.focus({ preventScroll: true });
-    }
+        const close = function (event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
+            popup.classList.remove('active');
+            popup.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('lore-popup-open');
+            document.body.style.overflow = '';
+        };
 
-    function closeChaosLore() {
-        popup.classList.remove('active');
-        popup.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = previousOverflow;
-        card.focus({ preventScroll: true });
-    }
-
-    card.addEventListener('click', function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        openChaosLore();
-    });
-
-    card.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            openChaosLore();
-        }
-    });
-
-    closeButton.addEventListener('click', function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        closeChaosLore();
-    });
-
-    popup.querySelector('[data-chaos-close="true"]').addEventListener('click', function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        closeChaosLore();
-    });
-
-    toggles.forEach(function (toggle) {
-        toggle.addEventListener('click', function () {
-            const section = toggle.closest('.chaos-lore-section');
-            const isOpen = section.classList.contains('open');
-
-            /* One readable block at a time. */
-            popup.querySelectorAll('.chaos-lore-section').forEach(function (other) {
-                other.classList.remove('open');
-                const otherToggle = other.querySelector('.chaos-lore-toggle');
-                if (otherToggle) otherToggle.setAttribute('aria-expanded', 'false');
-            });
-
-            if (!isOpen) {
-                section.classList.add('open');
-                toggle.setAttribute('aria-expanded', 'true');
-            }
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') open(event);
         });
-    });
+        closeButton.addEventListener('click', close);
 
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && popup.classList.contains('active')) {
-            event.preventDefault();
-            closeChaosLore();
-        }
-    }, true);
+        const backdrop = popup.querySelector(backdropSelector);
+        if (backdrop) backdrop.addEventListener('click', close);
+
+        popup.querySelectorAll('.chaos-lore-toggle').forEach(function (toggle) {
+            toggle.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                const section = toggle.closest('.chaos-lore-section');
+                if (!section) return;
+                const wasOpen = section.classList.contains('open');
+                popup.querySelectorAll('.chaos-lore-section').forEach(function (other) {
+                    other.classList.remove('open');
+                    const btn = other.querySelector('.chaos-lore-toggle');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                });
+                if (!wasOpen) {
+                    section.classList.add('open');
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        popup.addEventListener('click', function (event) {
+            if (event.target.closest('a')) return;
+            if (event.target === popup) close(event);
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && popup.classList.contains('active')) close(event);
+        });
+    }
+
+    function initAll() {
+        initLore('.chaos-lore-card', 'chaosLorePopup', 'chaosLoreClose', '[data-chaos-close="true"]');
+        initLore('.ginnungagap-lore-card', 'ginnungagapLorePopup', 'ginnungagapLoreClose', '[data-ginnungagap-close]');
+        initLore('.nun-lore-card', 'nunLorePopup', 'nunLoreClose', '[data-nun-close]');
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAll, { once: true });
+    } else {
+        initAll();
+    }
 })();
 </script>
 
+    <!-- =====================================================
+         NUN LORE POPUP
+    ====================================================== -->
+    <div id="nunLorePopup" class="chaos-lore-popup" aria-hidden="true">
+        <div class="chaos-lore-popup-backdrop" data-nun-close="true"></div>
+        <article class="chaos-lore-popup-card" role="dialog" aria-modal="true" aria-labelledby="nunLoreTitle">
+            <button type="button" class="chaos-lore-popup-close" id="nunLoreClose" aria-label="Close Nun lore">×</button>
+            <div class="chaos-lore-popup-symbol">≋</div>
+            <h2 id="nunLoreTitle" class="chaos-lore-popup-title">Nun — The Infinite Waters</h2>
+            <div class="chaos-lore-popup-subtitle">The Primordial Waters</div>
 
-<script>
-(function () {
-    const card = document.querySelector('.ginnungagap-lore-card');
-    const popup = document.getElementById('ginnungagapLorePopup');
-    const closeBtn = document.getElementById('ginnungagapLoreClose');
-    if (!card || !popup || !closeBtn) return;
+            <section class="chaos-lore-section open">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="true">The Primordial Waters</button>
+                <div class="chaos-lore-text">
+                    <p>Ancient Egyptian mythology describes <strong>Nun</strong> as the primordial state before all creation — endless, dark, silent waters from which the cosmos emerged.</p>
+                    <p>Nun existed before the sky, earth, gods, humanity, and even death. It is not empty, nor is it structured. It is <strong>limitless unity</strong>, where everything exists as possibility but nothing has yet taken form.</p>
+                    <p>Unlike chaotic forces associated with conflict or destruction, Nun is defined by <strong>stillness, depth, and infinite potential</strong>. It does not act. It simply <em>is</em>.</p>
+                </div>
+            </section>
 
-    const open = () => {
-        popup.classList.add('active');
-        popup.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('lore-popup-open');
-        closeBtn.focus();
-    };
-    const close = () => {
-        popup.classList.remove('active');
-        popup.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('lore-popup-open');
-    };
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Emergence of Creation</button>
+                <div class="chaos-lore-text">
+                    <p>From the infinite waters of Nun, the first act of creation occurs. <strong>Atum, or Ra-Atum, rises from the waters</strong>, bringing light, order, and differentiation.</p>
+                    <p>Creation does not happen through violence or struggle. It emerges naturally from within the primordial waters.</p>
+                    <p>And this creation is never truly finished. Each day, the rising sun can be understood as emerging once more from Nun. The primordial waters therefore remain beneath existence, continually sustaining its renewal.</p>
+                    <p>Order does not replace Nun.</p>
+                    <p><strong>Order emerges from it.</strong></p>
+                </div>
+            </section>
 
-    card.addEventListener('click', open);
-    card.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-    });
-    closeBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); close(); });
-    popup.querySelector('[data-ginnungagap-close]')?.addEventListener('click', close);
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Return to the Waters</button>
+                <div class="chaos-lore-text">
+                    <p>Nun is not only the source of creation, but also the state to which creation may return.</p>
+                    <p>At the end of time, the structured world is envisioned as dissolving back into the primordial waters. Creation and destruction are therefore not absolute opposites, but parts of the same eternal cycle.</p>
+                    <p><strong>From the waters, form emerges.<br>Through existence, form takes shape.<br>And eventually, form returns to the waters.</strong></p>
+                    <p>Even within the ordered cosmos, Nun remains beyond its boundaries — surrounding existence with something greater, formless, and impossible to completely contain.</p>
+                </div>
+            </section>
 
-    popup.querySelectorAll('.chaos-lore-toggle').forEach(toggle => {
-        toggle.addEventListener('click', () => {
-            const section = toggle.closest('.chaos-lore-section');
-            const isOpen = section.classList.contains('open');
-            popup.querySelectorAll('.chaos-lore-section').forEach(s => {
-                s.classList.remove('open');
-                s.querySelector('.chaos-lore-toggle').setAttribute('aria-expanded', 'false');
-            });
-            if (!isOpen) {
-                section.classList.add('open');
-                toggle.setAttribute('aria-expanded', 'true');
-            }
-        });
-    });
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Silent Chaos Within</button>
+                <div class="chaos-lore-text">
+                    <p>Nun represents a form of chaos that is <strong>calm rather than violent</strong>.</p>
+                    <p>There is no separation between light and darkness, life and death, self and other. These distinctions only appear once creation begins.</p>
+                    <p>Psychologically, Nun can be understood as a deep layer of the unconscious, beneath thought, identity, and perception. It is the stillness where the boundaries of the self loosen and possibilities remain open.</p>
+                    <p>Sleep, dreamless rest, silence, and moments where individuality seems to fade can symbolically resemble a brief return toward this primordial state.</p>
+                    <p>Unlike destructive chaos, Nun does not seek to destroy order.</p>
+                    <p><strong>It exists beyond it.</strong></p>
+                </div>
+            </section>
 
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && popup.classList.contains('active')) close();
-    });
-})();
-</script>
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">The Infinite Foundation</button>
+                <div class="chaos-lore-text">
+                    <p>Nun reveals that chaos does not always mean destruction.</p>
+                    <p>Sometimes chaos is simply <strong>the absence of form — the space in which every form remains possible.</strong></p>
+                    <p>It is the silent depth from which creation emerges, the unseen reality surrounding existence, and the state into which all things may eventually dissolve.</p>
+                    <p>Beneath all form, identity, and structure lies something that cannot be completely defined.</p>
+                    <p>It is not empty.</p>
+                    <p><strong>It is full beyond comprehension.</strong></p>
+                    <p><strong>Nun is the waters beneath creation.<br>The silence before form.<br>The unity before division.<br>The origin — and the return.</strong></p>
+                </div>
+            </section>
+
+            <div class="chaos-lore-sources-block">
+                <div class="chaos-lore-sources-title">Sources</div>
+                <div class="chaos-lore-sources"></div>
+            </div>
+        </article>
+    </div>
+
+
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
