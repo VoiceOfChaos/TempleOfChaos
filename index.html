@@ -8412,6 +8412,230 @@ button[onclick="showHiddenDedications()"] {
 }
 </style>
 
+
+<style id="chaos-lore-popup-css">
+/* =====================================================
+   CHAOS LORE POPUP — ONLY FOR THE PRIMORDIAL CHAOS CARD
+===================================================== */
+.chaos-lore-card {
+    cursor: pointer;
+}
+
+.chaos-lore-card:focus-visible {
+    outline: 1px solid rgba(214,189,145,.7);
+    outline-offset: 5px;
+}
+
+.chaos-lore-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 100010;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.chaos-lore-popup.active {
+    display: flex;
+}
+
+.chaos-lore-popup-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.86);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.chaos-lore-popup-card {
+    position: relative;
+    z-index: 2;
+    width: min(820px, 94vw);
+    max-height: min(86vh, 900px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 64px 54px 50px;
+    background:
+        radial-gradient(circle at 50% 12%, rgba(180,150,110,.10), transparent 52%),
+        linear-gradient(145deg, #16120f, #080707 78%);
+    border: 1px solid rgba(205,180,140,.24);
+    box-shadow: 0 30px 100px rgba(0,0,0,.92), 0 0 45px rgba(180,140,90,.08);
+    color: #aaa399;
+    text-align: left;
+    animation: chaosLorePopupIn .35s ease;
+    -webkit-overflow-scrolling: touch;
+}
+
+@keyframes chaosLorePopupIn {
+    from { opacity: 0; transform: translateY(16px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.chaos-lore-popup-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(210,190,150,.28);
+    background: transparent;
+    color: #ded3c2;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 5;
+    touch-action: manipulation;
+}
+
+.chaos-lore-popup-close:hover {
+    border-color: rgba(210,190,150,.65);
+    color: #fff5df;
+}
+
+.chaos-lore-popup-symbol {
+    text-align: center;
+    color: #d6bd91;
+    font-size: 36px;
+    margin-bottom: 16px;
+    text-shadow: 0 0 20px rgba(210,175,110,.3);
+}
+
+.chaos-lore-popup-title {
+    margin: 0;
+    text-align: center;
+    color: #eee5d7;
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: normal;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.chaos-lore-popup-subtitle {
+    margin: 10px auto 34px;
+    text-align: center;
+    color: #777168;
+    font-size: .72rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.chaos-lore-section {
+    border-top: 1px solid rgba(232,227,216,.14);
+}
+
+.chaos-lore-section:last-of-type {
+    border-bottom: 1px solid rgba(232,227,216,.14);
+}
+
+.chaos-lore-toggle {
+    width: 100%;
+    padding: 21px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    border: 0;
+    background: transparent;
+    color: #ded5c8;
+    font-family: inherit;
+    font-size: .78rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    text-align: left;
+    cursor: pointer;
+}
+
+.chaos-lore-toggle::after {
+    content: '＋';
+    flex: 0 0 auto;
+    color: #a9987d;
+    font-size: 18px;
+    transition: transform .25s ease;
+}
+
+.chaos-lore-section.open .chaos-lore-toggle::after {
+    content: '−';
+}
+
+.chaos-lore-text {
+    display: none;
+    padding: 0 8px 28px;
+    color: #aaa399;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: .98rem;
+    line-height: 1.9;
+}
+
+.chaos-lore-section.open .chaos-lore-text {
+    display: block;
+}
+
+.chaos-lore-text p {
+    margin: 0 0 20px;
+}
+
+.chaos-lore-text p:last-child {
+    margin-bottom: 0;
+}
+
+.chaos-lore-text strong {
+    color: #ddd3c4;
+    font-weight: normal;
+}
+
+.chaos-lore-sources {
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(232,227,216,.10);
+    color: #777168;
+    font-size: .65rem;
+    line-height: 1.7;
+    letter-spacing: .08em;
+}
+
+.chaos-lore-sources a {
+    color: #8e8478;
+}
+
+@media (max-width: 700px) {
+    .chaos-lore-popup {
+        padding: 10px;
+    }
+
+    .chaos-lore-popup-card {
+        width: 96vw;
+        max-height: 91vh;
+        padding: 58px 20px 30px;
+    }
+
+    .chaos-lore-popup-close {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .chaos-lore-popup-title {
+        font-size: 22px;
+        letter-spacing: .13em;
+    }
+
+    .chaos-lore-toggle {
+        padding: 19px 4px;
+        font-size: .7rem;
+        letter-spacing: .13em;
+    }
+
+    .chaos-lore-text {
+        padding: 0 4px 24px;
+        font-size: .92rem;
+        line-height: 1.8;
+    }
+}
+</style>
+
 </head>
 <body>
 <button
@@ -8704,7 +8928,10 @@ button[onclick="showHiddenDedications()"] {
     <!-- CHAOS -->
 
     <article
-        class="primordial-force primordial-chaos"
+        class="primordial-force primordial-chaos chaos-lore-card"
+        role="button"
+        tabindex="0"
+        aria-label="Read about Primordial Chaos"
     >
 
         <div class="primordial-force-symbol">
@@ -8777,6 +9004,146 @@ button[onclick="showHiddenDedications()"] {
     </section>
 
 
+
+
+
+    <!-- =====================================================
+         PRIMORDIAL CHAOS LORE POPUP
+    ====================================================== -->
+    <div
+        id="chaosLorePopup"
+        class="chaos-lore-popup"
+        aria-hidden="true"
+    >
+        <div
+            class="chaos-lore-popup-backdrop"
+            data-chaos-close="true"
+        ></div>
+
+        <article
+            class="chaos-lore-popup-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="chaosLoreTitle"
+        >
+            <button
+                type="button"
+                class="chaos-lore-popup-close"
+                id="chaosLoreClose"
+                aria-label="Close Primordial Chaos"
+            >×</button>
+
+            <div class="chaos-lore-popup-symbol">◇</div>
+            <h2 id="chaosLoreTitle" class="chaos-lore-popup-title">Primordial Chaos</h2>
+            <div class="chaos-lore-popup-subtitle">The Formless Beginning</div>
+
+            <section class="chaos-lore-section open">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="true">
+                    The Primordial
+                </button>
+                <div class="chaos-lore-text">
+                    <p>In Greek mythology, <strong>Chaos — Khaos —</strong> is the primordial state that existed before the creation of the world. It is not merely disorder, as the modern meaning of the word suggests, but the origin of existence itself: a condition from which everything may emerge.</p>
+
+                    <p>In early Greek thought, particularly in Hesiod's <em>Theogony</em>, Chaos is described as a vast void or chasm, a gap between what would later become heaven and earth. Much like the Mesopotamian idea of heaven and earth being separated from the body of Tiamat, creation emerges through the division of what was once undifferentiated.</p>
+
+                    <p>Chaos is not a structured being. It is something more abstract — formless, undefined, and without a clear identity. The ancient Greeks counted Chaos among the deathless beings, yet it exists less as a conventional god and more as a primordial state of being.</p>
+
+                    <p>From Chaos came its first offspring: <strong>Erebus, Darkness, and Nyx, Night.</strong></p>
+
+                    <p>That the first forms to emerge are darkness and night is significant. Creation does not begin with clarity, but with obscurity — from a depth where nothing has yet been revealed, understood, or given form.</p>
+
+                    <p>In some later interpretations, Chaos became associated with air and with the origin of birds, reflecting attempts to give shape to something that is inherently without form.</p>
+
+                    <p>For me, this carries another meaning.</p>
+
+                    <p><strong>Chaos represents the freedom of the soul.</strong></p>
+
+                    <p>The forces of Chaos seek to liberate us from our chains, allowing us to rise beyond the forms imposed upon us — to become like birds, no longer bound to the ground.</p>
+
+                    <p>Ancient and later sources offer different visions of Chaos. To some, it is a place: the empty space between realms. To others, particularly in later Roman and philosophical traditions such as those of Ovid, Chaos becomes a formless mixture — a state in which all elements exist, but have not yet been separated.</p>
+
+                    <p>Earth, air, fire, and water are present, yet indistinguishable.</p>
+
+                    <p><strong>Everything exists. Nothing has yet become separate.</strong></p>
+
+                    <p>For me, Chaos is both a force and a goddess. It is the primordial force from which the gods themselves emerged. This is why I like to think of Chaos as <strong>the essence of godhood — the blood of the gods.</strong></p>
+
+                    <p>Thus, Chaos is both <strong>nothing and everything.</strong></p>
+
+                    <p>It is <em>no-thing</em>, yet from it arise all things.</p>
+
+                    <p>It is silent and without light, a space of shadow and depth — yet within it lies the source of life, creation, and even love. The emergence of order, harmony, and structure is not separate from Chaos. It is born from it.</p>
+
+                    <p>The presence of forces such as <strong>Eros</strong> within early cosmogony reflects this movement: from formlessness into connection, from potential into being.</p>
+
+                    <p>Chaos is the nothingness of the cosmos, yet all life exists within it and through it.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">
+                    The Chaos Within Us
+                </button>
+                <div class="chaos-lore-text">
+                    <p>Chaos represents <strong>unformed potential.</strong></p>
+
+                    <p>It is the state in which anything may emerge: creation or destruction, light or darkness, harmony or collapse.</p>
+
+                    <p>This duality makes Chaos both generative and dangerous. It contains limitless possibility, but also the possibility of instability.</p>
+
+                    <p>In a psychological sense, Chaos can be understood as a reflection of the human mind.</p>
+
+                    <p>Like the primordial void, the mind can become silent, empty, and without form. Yet from that same emptiness can emerge meaning, creation, and transformation.</p>
+
+                    <p>Within it exists the potential for both life and destruction, for clarity and confusion, for growth and collapse.</p>
+
+                    <p>In this sense, Chaos is not distant or abstract.</p>
+
+                    <p><strong>It exists within human experience itself.</strong></p>
+
+                    <p>We are not separate from Chaos.</p>
+
+                    <p><strong>To fear Chaos is, in part, to fear ourselves.</strong></p>
+
+                    <p>We must not simply fear it. We must learn to enter it, understand it, and use its potential to our advantage.</p>
+
+                    <p>Human beings, like the cosmos, carry within themselves a form of Chaos. We are shaped by contradictions. We are capable of becoming many things. Within us exist both darkness and light, destruction and creation, order and disorder.</p>
+
+                    <p>The emergence of order — whether within the world or within the self — does not require the destruction of Chaos.</p>
+
+                    <p><strong>It requires engagement with it.</strong></p>
+
+                    <p>Yet this potential demands balance.</p>
+
+                    <p>The same inner force that allows creation can, when left without direction, lead to fragmentation and instability. Chaos therefore represents not only power, but responsibility: the necessity of shaping what is formless without allowing ourselves to be consumed by it.</p>
+                </div>
+            </section>
+
+            <section class="chaos-lore-section">
+                <button type="button" class="chaos-lore-toggle" aria-expanded="false">
+                    The Primordial
+                </button>
+                <div class="chaos-lore-text">
+                    <p>Symbolically, Chaos can be understood as the primordial source of existence and transformation.</p>
+
+                    <p>It is the beginning of all things, yet also an ever-present foundation beneath them.</p>
+
+                    <p>It is contradictory and all-encompassing.</p>
+
+                    <p><strong>Beyond form, yet giving rise to form.</strong></p>
+
+                    <p>In this way, Chaos becomes more than a mythological concept. It becomes a reflection of something deeper:</p>
+
+                    <p><strong>Within the void lies potential.<br>Within silence lies creation.<br>Within the unformed lies the possibility of becoming anything.</strong></p>
+
+                    <div class="chaos-lore-sources">
+                        SOURCES<br>
+                        Theoi — Khaos · Greek Mythology Wiki — Chaos · EBSCO — Chaos in Mythology · Ancient Origins — Greek God Chaos · History Cooperative — Chaos in Greek Mythology · Greek Gods and Goddesses — Chaos · TheGreekGods.org — Chaos
+                    </div>
+                </div>
+            </section>
+        </article>
+    </div>
 
     <!-- =====================================================
          CHAMBER II — THE GODS
@@ -13085,6 +13452,85 @@ document.addEventListener('click', function(event) {
     } else {
         moveCandleCloseButton();
     }
+})();
+</script>
+
+
+<script id="chaos-lore-popup-script">
+(function () {
+    const card = document.querySelector('.chaos-lore-card');
+    const popup = document.getElementById('chaosLorePopup');
+    const closeButton = document.getElementById('chaosLoreClose');
+    if (!card || !popup || !closeButton) return;
+
+    const toggles = popup.querySelectorAll('.chaos-lore-toggle');
+    let previousOverflow = '';
+
+    function openChaosLore() {
+        previousOverflow = document.body.style.overflow;
+        popup.classList.add('active');
+        popup.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        closeButton.focus({ preventScroll: true });
+    }
+
+    function closeChaosLore() {
+        popup.classList.remove('active');
+        popup.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = previousOverflow;
+        card.focus({ preventScroll: true });
+    }
+
+    card.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        openChaosLore();
+    });
+
+    card.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openChaosLore();
+        }
+    });
+
+    closeButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeChaosLore();
+    });
+
+    popup.querySelector('[data-chaos-close="true"]').addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeChaosLore();
+    });
+
+    toggles.forEach(function (toggle) {
+        toggle.addEventListener('click', function () {
+            const section = toggle.closest('.chaos-lore-section');
+            const isOpen = section.classList.contains('open');
+
+            /* One readable block at a time. */
+            popup.querySelectorAll('.chaos-lore-section').forEach(function (other) {
+                other.classList.remove('open');
+                const otherToggle = other.querySelector('.chaos-lore-toggle');
+                if (otherToggle) otherToggle.setAttribute('aria-expanded', 'false');
+            });
+
+            if (!isOpen) {
+                section.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && popup.classList.contains('active')) {
+            event.preventDefault();
+            closeChaosLore();
+        }
+    }, true);
 })();
 </script>
 
