@@ -8899,6 +8899,10 @@ button[onclick="showHiddenDedications()"] {
 .chat-message-name{color:#d8c39c;font-size:11px;letter-spacing:.08em}
 .chat-message-time{color:#71695f;font-size:9px}
 .chat-message-body{color:#c8c0b6;font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.chat-message-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+.chat-message-actions button{background:transparent;border:1px solid rgba(210,190,150,.18);color:#8f8579;padding:5px 8px;font-family:Georgia,"Times New Roman",serif;font-size:9px;letter-spacing:.08em;cursor:pointer}
+.chat-message-actions button:hover{border-color:rgba(213,187,140,.5);color:#d8c39c}
+.chat-delete-button:hover{border-color:rgba(180,80,80,.6)!important;color:#d08080!important}
 .chat-empty{margin:auto;color:#766e65;font-style:italic;text-align:center}
 .chat-composer{padding:16px 28px 22px;border-top:1px solid rgba(210,190,150,.14);display:flex;gap:10px}
 .chat-composer textarea{flex:1;min-height:46px;max-height:110px;resize:vertical;background:#0d0b0a;border:1px solid rgba(210,190,150,.25);color:#ded6cb;padding:12px;font-family:Georgia,"Times New Roman",serif}
@@ -15165,19 +15169,24 @@ let chatCurrentRoom = 'general';
 let chatMessages = [];
 let chatChannel = null;
 let chatIsAdmin = false;
+let chatEditingMessageId = null;
 
 const CHAT_TABLE = 'temple_chat_messages';
 const CHAT_ADMIN_TABLE = 'temple_chat_admins';
 
 function escapeChatText(value) {
     return String(value == null ? '' : value)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
 }
 
 function chatDisplayName() {
-    return currentAuthUser && currentAuthUser.user_metadata && currentAuthUser.user_metadata.username
+    return currentAuthUser &&
+        currentAuthUser.user_metadata &&
+        currentAuthUser.user_metadata.username
         ? currentAuthUser.user_metadata.username
         : 'Temple Member';
 }
@@ -15185,34 +15194,43 @@ function chatDisplayName() {
 async function checkChatAdmin() {
     chatIsAdmin = false;
     if (!supabaseClient || !currentAuthUser) return false;
+
     try {
         const { data, error } = await supabaseClient
             .from(CHAT_ADMIN_TABLE)
             .select('user_id')
             .eq('user_id', currentAuthUser.id)
             .maybeSingle();
+
         if (!error && data) chatIsAdmin = true;
     } catch (error) {
         console.warn('Chat admin check failed:', error);
     }
+
     return chatIsAdmin;
 }
 
 function openChatRooms() {
     const modal = document.getElementById('chatRoomsModal');
     if (!modal) return;
+
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+
     switchChatRoom(chatCurrentRoom);
 }
 
 function closeChatRooms() {
     const modal = document.getElementById('chatRoomsModal');
     if (!modal) return;
+
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+
+    cancelChatEdit();
+
     if (chatChannel && supabaseClient) {
         supabaseClient.removeChannel(chatChannel);
         chatChannel = null;
@@ -15220,13 +15238,17 @@ function closeChatRooms() {
 }
 
 async function switchChatRoom(room) {
+    cancelChatEdit();
+
     chatCurrentRoom = room === 'news' ? 'news' : 'general';
+
     document.querySelectorAll('.chat-room-button').forEach(button => {
         button.classList.toggle('active', button.dataset.room === chatCurrentRoom);
     });
 
     document.getElementById('chatRoomTitle').textContent =
         chatCurrentRoom === 'general' ? 'GENERAL' : 'NEWS';
+
     document.getElementById('chatRoomDescription').textContent =
         chatCurrentRoom === 'general'
             ? 'A shared room for registered members of the Temple.'
@@ -15242,16 +15264,18 @@ function updateChatComposer() {
     const composer = document.getElementById('chatComposer');
     const notice = document.getElementById('chatLoginNotice');
     const note = document.getElementById('chatAdminNote');
+
     const canWrite = !!currentAuthUser &&
-        (chatCurrentRoom === 'general' || (chatCurrentRoom === 'news' && chatIsAdmin));
+        (chatCurrentRoom === 'general' ||
+        (chatCurrentRoom === 'news' && chatIsAdmin));
 
     if (composer) composer.hidden = !canWrite;
+
     if (notice) {
         notice.hidden = !!currentAuthUser || chatCurrentRoom !== 'general';
-        if (chatCurrentRoom === 'news') {
-            notice.hidden = true;
-        }
+        if (chatCurrentRoom === 'news') notice.hidden = true;
     }
+
     if (note) {
         note.hidden = chatCurrentRoom !== 'news';
         note.textContent = chatCurrentRoom === 'news'
@@ -15262,10 +15286,18 @@ function updateChatComposer() {
     }
 
     const input = document.getElementById('chatMessageInput');
+    const sendButton = document.querySelector('#chatComposer button');
+
     if (input) {
-        input.placeholder = chatCurrentRoom === 'news'
-            ? 'Publish a message as VoiceOfChaos...'
-            : 'Write a message...';
+        input.placeholder = chatEditingMessageId
+            ? 'Edit your message...'
+            : (chatCurrentRoom === 'news'
+                ? 'Publish a message as VoiceOfChaos...'
+                : 'Write a message...');
+    }
+
+    if (sendButton) {
+        sendButton.textContent = chatEditingMessageId ? 'SAVE' : 'SEND';
     }
 }
 
@@ -15282,22 +15314,41 @@ function renderChatMessages() {
         const mine = currentAuthUser && message.user_id === currentAuthUser.id;
         const date = new Date(message.created_at);
         const time = isNaN(date) ? '' : date.toLocaleString([], {
-            month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         });
-        return `<article class="chat-message${mine ? ' mine' : ''}">
+
+        const edited =
+            message.updated_at &&
+            message.created_at &&
+            new Date(message.updated_at).getTime() >
+            new Date(message.created_at).getTime() + 1000;
+
+        return `<article class="chat-message${mine ? ' mine' : ''}" data-message-id="${escapeChatText(message.id)}">
             <div class="chat-message-meta">
                 <span class="chat-message-name">${escapeChatText(message.username || 'Temple Member')}</span>
-                <span class="chat-message-time">${escapeChatText(time)}</span>
+                <span class="chat-message-time">${escapeChatText(time)}${edited ? ' · edited' : ''}</span>
             </div>
             <div class="chat-message-body">${escapeChatText(message.body || '')}</div>
+            ${mine ? `
+                <div class="chat-message-actions">
+                    <button type="button" class="chat-edit-button" onclick="editChatMessage('${escapeChatText(message.id)}')">EDIT</button>
+                    <button type="button" class="chat-delete-button" onclick="deleteChatMessage('${escapeChatText(message.id)}')">DELETE</button>
+                </div>
+            ` : ''}
         </article>`;
     }).join('');
 
-    requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
+    requestAnimationFrame(() => {
+        box.scrollTop = box.scrollHeight;
+    });
 }
 
 async function loadChatMessages() {
     const status = document.getElementById('chatStatus');
+
     if (!supabaseClient) {
         chatMessages = [];
         renderChatMessages();
@@ -15306,29 +15357,37 @@ async function loadChatMessages() {
     }
 
     if (status) status.textContent = 'OPENING THE CHAMBER...';
+
     try {
         const { data, error } = await supabaseClient
             .from(CHAT_TABLE)
-            .select('id, room, user_id, username, body, created_at')
+            .select('id, room, user_id, username, body, created_at, updated_at')
             .eq('room', chatCurrentRoom)
             .order('created_at', { ascending: true })
             .limit(200);
 
         if (error) throw error;
+
         chatMessages = data || [];
         renderChatMessages();
+
         if (status) status.textContent = '';
     } catch (error) {
         console.error('Could not load chat messages:', error);
         chatMessages = [];
         renderChatMessages();
-        if (status) status.textContent = 'Chat setup is missing. Run the Temple chat SQL setup.';
+
+        if (status) {
+            status.textContent =
+                'Chat setup is missing or the database needs the updated SQL setup.';
+        }
     }
 }
 
 async function sendChatMessage() {
     const input = document.getElementById('chatMessageInput');
     const status = document.getElementById('chatStatus');
+
     if (!input) return;
 
     const body = input.value.trim();
@@ -15339,7 +15398,13 @@ async function sendChatMessage() {
         return;
     }
 
+    if (chatEditingMessageId) {
+        await saveEditedChatMessage(chatEditingMessageId, body);
+        return;
+    }
+
     await checkChatAdmin();
+
     if (chatCurrentRoom === 'news' && !chatIsAdmin) {
         if (status) status.textContent = 'Only VoiceOfChaos can publish in News.';
         updateChatComposer();
@@ -15352,22 +15417,193 @@ async function sendChatMessage() {
     }
 
     if (status) status.textContent = 'SENDING...';
+
     try {
         const { error } = await supabaseClient
             .from(CHAT_TABLE)
             .insert({
                 room: chatCurrentRoom,
                 user_id: currentAuthUser.id,
-                username: chatCurrentRoom === 'news' ? 'VoiceOfChaos' : chatDisplayName(),
+                username: chatCurrentRoom === 'news'
+                    ? 'VoiceOfChaos'
+                    : chatDisplayName(),
                 body
             });
 
         if (error) throw error;
+
         input.value = '';
         if (status) status.textContent = '';
+
     } catch (error) {
         console.error('Could not send chat message:', error);
         if (status) status.textContent = error.message || 'Could not send the message.';
+    }
+}
+
+function editChatMessage(messageId) {
+    if (!currentAuthUser) return;
+
+    const message = chatMessages.find(item => String(item.id) === String(messageId));
+
+    if (!message || String(message.user_id) !== String(currentAuthUser.id)) return;
+
+    const input = document.getElementById('chatMessageInput');
+    if (!input) return;
+
+    chatEditingMessageId = messageId;
+    input.value = message.body || '';
+
+    updateChatComposer();
+    input.focus();
+}
+
+function cancelChatEdit() {
+    const input = document.getElementById('chatMessageInput');
+
+    chatEditingMessageId = null;
+
+    if (input) input.value = '';
+
+    updateChatComposer();
+}
+
+async function saveEditedChatMessage(messageId, body) {
+    const status = document.getElementById('chatStatus');
+
+    if (!supabaseClient || !currentAuthUser) return;
+
+    if (status) status.textContent = 'SAVING...';
+
+    try {
+        const { error } = await supabaseClient
+            .from(CHAT_TABLE)
+            .update({
+                body,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', messageId)
+            .eq('user_id', currentAuthUser.id);
+
+        if (error) throw error;
+
+        chatEditingMessageId = null;
+
+        const input = document.getElementById('chatMessageInput');
+        if (input) input.value = '';
+
+        updateChatComposer();
+        await loadChatMessages();
+
+        if (status) status.textContent = '';
+
+    } catch (error) {
+        console.error('Could not edit message:', error);
+        if (status) status.textContent = error.message || 'Could not edit the message.';
+    }
+}
+
+async function deleteChatMessage(messageId) {
+
+    if (!currentAuthUser || !supabaseClient) {
+        alert('You must be logged in to delete messages.');
+        return;
+    }
+
+    const message = chatMessages.find(
+        item => String(item.id) === String(messageId)
+    );
+
+    if (!message) {
+        alert('Message not found.');
+        return;
+    }
+
+    if (
+        String(message.user_id) !==
+        String(currentAuthUser.id)
+    ) {
+        alert('You can only delete your own messages.');
+        return;
+    }
+
+    const confirmed = confirm(
+        'Delete this message permanently?'
+    );
+
+    if (!confirmed) return;
+
+    const status =
+        document.getElementById('chatStatus');
+
+    try {
+
+        if (status) {
+            status.textContent =
+                'DELETING...';
+        }
+
+        const { data, error } =
+            await supabaseClient
+                .from(CHAT_TABLE)
+                .delete()
+                .eq('id', messageId)
+                .eq(
+                    'user_id',
+                    currentAuthUser.id
+                )
+                .select();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+
+            throw new Error(
+                'Supabase blocked the deletion. Check your DELETE policy.'
+            );
+        }
+
+        chatMessages =
+            chatMessages.filter(
+                item =>
+                    String(item.id) !==
+                    String(messageId)
+            );
+
+        renderChatMessages();
+
+        if (
+            String(chatEditingMessageId) ===
+            String(messageId)
+        ) {
+
+            cancelChatEdit();
+        }
+
+        if (status) {
+            status.textContent = '';
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Could not delete message:',
+            error
+        );
+
+        if (status) {
+
+            status.textContent =
+                error.message ||
+                'Could not delete the message.';
+        }
+
+        alert(
+            error.message ||
+            'Could not delete the message.'
+        );
     }
 }
 
@@ -15382,14 +15618,31 @@ function subscribeToChatRoom() {
     chatChannel = supabaseClient
         .channel('temple-chat-' + chatCurrentRoom)
         .on('postgres_changes', {
-            event: 'INSERT',
+            event: '*',
             schema: 'public',
             table: CHAT_TABLE,
             filter: 'room=eq.' + chatCurrentRoom
         }, payload => {
-            const message = payload.new;
-            if (!chatMessages.some(item => item.id === message.id)) {
-                chatMessages.push(message);
+            if (payload.eventType === 'INSERT') {
+                const message = payload.new;
+
+                if (!chatMessages.some(item => item.id === message.id)) {
+                    chatMessages.push(message);
+                    renderChatMessages();
+                }
+            }
+
+            if (payload.eventType === 'UPDATE') {
+                const index = chatMessages.findIndex(item => item.id === payload.new.id);
+
+                if (index !== -1) {
+                    chatMessages[index] = payload.new;
+                    renderChatMessages();
+                }
+            }
+
+            if (payload.eventType === 'DELETE') {
+                chatMessages = chatMessages.filter(item => item.id !== payload.old.id);
                 renderChatMessages();
             }
         })
@@ -15403,8 +15656,14 @@ document.addEventListener('keydown', function(event) {
 document.addEventListener('keydown', function(event) {
     const modal = document.getElementById('chatRoomsModal');
     const input = document.getElementById('chatMessageInput');
+
     if (!modal || !modal.classList.contains('active') || !input) return;
-    if (event.key === 'Enter' && !event.shiftKey && document.activeElement === input) {
+
+    if (
+        event.key === 'Enter' &&
+        !event.shiftKey &&
+        document.activeElement === input
+    ) {
         event.preventDefault();
         sendChatMessage();
     }
