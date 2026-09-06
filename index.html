@@ -8904,6 +8904,14 @@ button[onclick="showHiddenDedications()"] {
 .chat-message-actions button:hover,.survey-admin-panel button:hover,.survey-option:hover{border-color:rgba(213,187,140,.5);color:#d8c39c}
 .chat-delete-button:hover,.survey-delete-button:hover{border-color:rgba(180,80,80,.6)!important;color:#d08080!important}
 .chat-empty{margin:auto;color:#766e65;font-style:italic;text-align:center}
+#chatRoomsModal [hidden],
+#chatRoomsModal .chat-composer[hidden],
+#chatRoomsModal .survey-admin-panel[hidden],
+#chatRoomsModal .chat-login-notice[hidden],
+#chatRoomsModal .chat-messages[hidden],
+#chatRoomsModal .survey-list[hidden]{
+    display:none !important;
+}
 .chat-composer{padding:16px 28px 22px;border-top:1px solid rgba(210,190,150,.14);display:flex;gap:10px}
 .chat-composer textarea{flex:1;min-height:46px;max-height:110px;resize:vertical;background:#0d0b0a;border:1px solid rgba(210,190,150,.25);color:#ded6cb;padding:12px;font-family:Georgia,"Times New Roman",serif}
 .chat-composer button{padding:0 18px;background:#181411;border:1px solid rgba(213,187,140,.42);color:#d8c39c;font-family:Georgia,"Times New Roman",serif;letter-spacing:.1em;cursor:pointer}
@@ -12884,6 +12892,11 @@ async function initialiseAccountSystem() {
         currentAuthUser = session?.user || null;
         updateAccountButton();
 
+        if (typeof checkChatAdmin === 'function') await checkChatAdmin();
+        if (typeof updateChatComposer === 'function') updateChatComposer();
+        if (typeof renderChatMessages === 'function') renderChatMessages();
+        if (typeof loadSurveys === 'function' && chatCurrentRoom === 'surveys') await loadSurveys();
+
         if (currentAuthUser && String(currentAuthUser.id) !== String(previousUserId || '')) {
             await claimGuestCandlesForUser(currentAuthUser);
             if (typeof loadSanctuary === 'function') await loadSanctuary();
@@ -15207,7 +15220,7 @@ document.addEventListener('click', function(event) {
       </div>
 
       <div id="chatLoginNotice" class="chat-login-notice" hidden>
-        You need to be registered and signed in to speak or vote.
+        <span id="chatLoginNoticeText">You need to be registered and signed in to speak or vote.</span>
         <button type="button" onclick="closeChatRooms(); openAccountModal()">ENTER THE TEMPLE</button>
       </div>
     </div>
@@ -15249,6 +15262,7 @@ function chatDisplayName() {
 
 async function checkChatAdmin() {
     chatIsAdmin = false;
+
     if (!supabaseClient || !currentAuthUser) return false;
 
     try {
@@ -15258,7 +15272,13 @@ async function checkChatAdmin() {
             .eq('user_id', currentAuthUser.id)
             .maybeSingle();
 
-        if (!error && data) chatIsAdmin = true;
+        // The account must be registered as an admin in Supabase.
+        // If its displayed username is VoiceOfChaos, that remains the intended admin account.
+        if (!error && data) {
+            chatIsAdmin = true;
+        } else if (error) {
+            console.warn('Chat admin check failed:', error);
+        }
     } catch (error) {
         console.warn('Chat admin check failed:', error);
     }
@@ -15339,6 +15359,7 @@ function updateChatComposer() {
     const composer = document.getElementById('chatComposer');
     const notice = document.getElementById('chatLoginNotice');
     const note = document.getElementById('chatAdminNote');
+    const loginNoticeText = document.getElementById('chatLoginNoticeText');
     const messages = document.getElementById('chatMessages');
     const surveys = document.getElementById('surveyList');
     const surveyAdmin = document.getElementById('surveyAdminPanel');
@@ -15356,11 +15377,19 @@ function updateChatComposer() {
     if (surveyAdmin) surveyAdmin.hidden = !(isSurveyRoom && currentAuthUser && chatIsAdmin);
 
     if (notice) {
+        // Unregistered visitors see no message/survey input boxes.
         if (isSurveyRoom) {
             notice.hidden = !!currentAuthUser;
+            if (loginNoticeText) {
+                loginNoticeText.textContent = 'You need to be registered and signed in to vote.';
+            }
         } else if (chatCurrentRoom === 'general') {
             notice.hidden = !!currentAuthUser;
+            if (loginNoticeText) {
+                loginNoticeText.textContent = 'You need to be registered and signed in to write.';
+            }
         } else {
+            // News is read-only for everyone except VoiceOfChaos.
             notice.hidden = true;
         }
     }
@@ -15758,6 +15787,8 @@ function renderSurveys() {
 }
 
 async function createSurvey() {
+    await checkChatAdmin();
+
     if (!currentAuthUser || !chatIsAdmin || !supabaseClient) {
         alert('Only VoiceOfChaos can create surveys.');
         return;
@@ -15810,8 +15841,11 @@ async function createSurvey() {
         if (questionInput) questionInput.value = '';
         optionInputs.forEach(input => input.value = '');
 
+        // Stay in the survey room and immediately show the newly created survey.
+        chatCurrentRoom = 'surveys';
+        updateChatComposer();
         await loadSurveys();
-        setChatStatus('');
+        setChatStatus('Survey created successfully.');
 
     } catch (error) {
         console.error('Could not create survey:', error);
@@ -15854,7 +15888,12 @@ async function voteInSurvey(surveyId, optionId) {
 }
 
 async function deleteSurvey(surveyId) {
-    if (!currentAuthUser || !chatIsAdmin || !supabaseClient) return;
+    await checkChatAdmin();
+
+    if (!currentAuthUser || !chatIsAdmin || !supabaseClient) {
+        alert('Only VoiceOfChaos can delete surveys.');
+        return;
+    }
 
     if (!confirm('Delete this survey and all of its votes permanently?')) return;
 
