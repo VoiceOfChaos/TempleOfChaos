@@ -5440,7 +5440,8 @@
     letter-spacing: .16em;
 }
 
-#prayersSearch {
+#prayersSearch,
+#invocationSearch {
     width: 100%;
     box-sizing: border-box;
     padding: 13px 15px;
@@ -5451,12 +5452,26 @@
     font: inherit;
 }
 
-#prayersSearch::placeholder {
+#prayersSearch::placeholder,
+#invocationSearch::placeholder {
     color: rgba(215,205,194,.38);
 }
 
-#prayersSearch:focus {
+#prayersSearch:focus,
+#invocationSearch:focus {
     border-color: rgba(210,190,150,.48);
+}
+
+.prayer-tag {
+    display: inline-block;
+    margin: 0 0 20px;
+    padding: 7px 10px;
+    border: 1px solid rgba(210,190,150,.24);
+    color: rgba(220,205,185,.78);
+    background: rgba(210,190,150,.05);
+    font-size: 9px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
 }
 
 .prayers-content {
@@ -5521,27 +5536,6 @@
     line-height: 1.85;
 }
 
-.prayer-entry .prayer-disclaimer {
-    margin: 0 0 24px;
-    padding: 14px 16px;
-    border: 1px solid rgba(210,190,150,.13);
-    background: rgba(0,0,0,.16);
-}
-
-.prayer-entry .prayer-disclaimer strong {
-    display: block;
-    margin-bottom: 7px;
-    color: #d8c9b6;
-    font-size: 10px;
-    letter-spacing: .16em;
-}
-
-.prayer-entry .prayer-disclaimer p {
-    margin: 0;
-    color: rgba(215,205,194,.62);
-    font-size: 11px;
-    line-height: 1.65;
-}
 
 
 .prayer-entry:last-of-type {
@@ -10168,18 +10162,7 @@ button[onclick="showHiddenDedications()"] {
             >
                 ✦ &nbsp; BURN THE CANDLE
             </button>
-
-            <button
-                id="extinguish-candle-button"
-                class="candle-extinguish-button"
-                type="button"
-                onclick="extinguishSelectedDedication()"
-                hidden
-            >
-                EXTINGUISH THE FLAME
-            </button>
-
-        </div>
+</div>
     </div>
 </div>
 
@@ -10208,7 +10191,6 @@ button[onclick="showHiddenDedications()"] {
                 <div id="dedicationReactionStatus" class="dedication-reaction-status"></div>
                 <button class="dedication-edit-button" type="button" onclick="editSelectedDedication()">EDIT FLAME</button>
                 <button class="dedication-hide-button" type="button" onclick="hideSelectedDedication()">HIDE FLAME</button>
-                <button class="dedication-extinguish-button" type="button" onclick="extinguishSelectedDedication(this.dataset.candleId)">EXTINGUISH CANDLE</button>
             </div>
         </div>
 
@@ -11250,6 +11232,37 @@ async function dedicateCandle() {
     closeCandleModal();
 }
 
+function canManageDedication(dedication, sanctuaryCopy = null) {
+    if (!dedication) return false;
+
+    const ownerId =
+        dedication.user_id ||
+        dedication.owner_id ||
+        (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)) ||
+        null;
+
+    /* Registered candle owner. */
+    if (currentAuthUser && ownerId &&
+        String(currentAuthUser.id) === String(ownerId)) {
+        return true;
+    }
+
+    /* Guest candle created in this browser's current guest session. */
+    const guestId = dedication.guest_session_id ||
+        (sanctuaryCopy && sanctuaryCopy.guest_session_id) ||
+        null;
+
+    if (!ownerId && guestId) {
+        try {
+            return String(guestId) === String(getGuestSessionId());
+        } catch (_) {
+            return false;
+        }
+    }
+
+    return false;
+}
+
 function openDedicationInfo(id) {
     const dedication = activeDedications.find(item => item.id === id);
     if (!dedication) return;
@@ -11274,15 +11287,7 @@ function openDedicationInfo(id) {
         return String(key || '') === String(dedication.id || '');
     });
 
-    const ownerId =
-        dedication.user_id ||
-        dedication.owner_id ||
-        (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)) ||
-        null;
-
-    const isOwner = !!currentAuthUser &&
-        !!ownerId &&
-        String(currentAuthUser.id) === String(ownerId);
+    const isOwner = canManageDedication(dedication, sanctuaryCopy);
 
     /* Exactly ONE HIDE button. Everyone can hide. */
     if (hideButton) {
@@ -11313,7 +11318,7 @@ function openDedicationInfo(id) {
             extinguishButton.style.visibility = 'visible';
             extinguishButton.style.pointerEvents = 'auto';
             extinguishButton.textContent = 'EXTINGUISH CANDLE';
-            extinguishButton.onclick = extinguishSelectedDedication;
+            extinguishButton.onclick = () => extinguishSelectedDedication(dedication.id || dedication.dedication_id);
         } else {
             extinguishButton.hidden = true;
             extinguishButton.disabled = true;
@@ -11412,15 +11417,10 @@ async function extinguishSelectedDedication(candleIdOverride = null) {
         return String(itemKey || '') === String(dedication.id || '');
     });
 
-    const ownerId =
-        dedication.user_id ||
-        dedication.owner_id ||
-        (sanctuaryCopy && (sanctuaryCopy.user_id || sanctuaryCopy.owner_id)) ||
-        null;
-
-    /* Registered owner only. Guests and other accounts are blocked. */
-    if (!currentAuthUser || !ownerId ||
-        String(currentAuthUser.id) !== String(ownerId)) {
+    /* Only the candle's account owner, or the same guest session that
+       created a local guest candle, may extinguish it. */
+    if (!canManageDedication(dedication, sanctuaryCopy)) {
+        alert('You can only extinguish a candle that belongs to you.');
         return;
     }
 
@@ -11446,13 +11446,12 @@ async function extinguishSelectedDedication(candleIdOverride = null) {
 
 function extinguishDedication(id, removeFromDatabase = true, internalExpiry = false) {
     const target = activeDedications.find(item => item && String(item.id) === String(id));
-    const targetOwnerId = target && (target.user_id || target.owner_id || null);
 
-    /* User-triggered extinguishing is owner-only. Internal expiry is allowed
-       to remove the local flame when its burn time naturally ends. */
-    if (!internalExpiry && target && (!currentAuthUser || !targetOwnerId ||
-        String(currentAuthUser.id) !== String(targetOwnerId))) {
-        console.warn('Blocked extinguish attempt for a candle owned by another account.');
+    /* User-triggered extinguishing is allowed only for the account owner or
+       for a guest candle created in this browser's current guest session.
+       Internal expiry may always remove an expired flame. */
+    if (!internalExpiry && target && !canManageDedication(target)) {
+        console.warn('Blocked extinguish attempt for a candle owned by another user or guest session.');
         return;
     }
 
@@ -11824,15 +11823,23 @@ function openRitualPathPopup(path) {
 
     if (path === "invocation") {
         body.innerHTML = `
-            <div class="prayers-content invocation-content">
+            <div class="prayers-search-wrap">
+                <label for="invocationSearch">SEARCH THE INVOCATIONS</label>
+                <input
+                    type="search"
+                    id="invocationSearch"
+                    placeholder=""
+                    aria-label="Search invocations"
+                    value=""
+                >
+            </div>
+
+            <div id="invocationContent" class="prayers-content invocation-content">
 
                 <article class="prayer-entry" data-search="chaos primordial source divinity spark gods wisdom illusions truth darkness gnosis power">
                     <button type="button" class="prayer-card-toggle" aria-expanded="false">INVOCATION OF CHAOS</button>
                     <div class="prayer-card-body">
-                        <div class="prayer-disclaimer">
-                            <strong>PERSONAL CREATIVE INVOCATION</strong>
-                            <p>These are personal creative invocations. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional invocations.</p>
-                        </div>
+                        <div class="prayer-tag" data-tag="personal creative invocation">PERSONAL CREATIVE INVOCATION</div>
                         <div class="invocation-text">
                             Primordial Chaos, encompassing all that is, was, and will be. From you emerged all that is. You are the primordial spark of divinity in each of us — the spark that gave the gods their power. Remind us of this spark. We are not just flesh and blood. We are divinity itself, creators and destroyers in this world of illusions.<br><br>
                             I summon you, O Source. I summon you, O Divinity, the servant and protector of the universe. Fill me with your wisdom. Break all the illusions within me, for you are the truth itself — the source before anything existed.<br><br>
@@ -11850,10 +11857,7 @@ function openRitualPathPopup(path) {
                 <article class="prayer-entry" data-search="nyx night thanatos death moirai destiny eris strife darkness wisdom">
                     <button type="button" class="prayer-card-toggle" aria-expanded="false">INVOCATION OF NYX</button>
                     <div class="prayer-card-body">
-                        <div class="prayer-disclaimer">
-                            <strong>PERSONAL CREATIVE INVOCATION</strong>
-                            <p>These are personal creative invocations. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional invocations.</p>
-                        </div>
+                        <div class="prayer-tag" data-tag="personal creative invocation">PERSONAL CREATIVE INVOCATION</div>
                         <div class="invocation-text">
                             O beautiful night,<br>
                             O beloved Nyx,<br>
@@ -11889,10 +11893,7 @@ function openRitualPathPopup(path) {
                 <article class="prayer-entry" data-search="erebus darkness shadows war battlefield soul demons ascension general chaos primordial darkness">
                     <button type="button" class="prayer-card-toggle" aria-expanded="false">INVOCATION OF EREBUS</button>
                     <div class="prayer-card-body">
-                        <div class="prayer-disclaimer">
-                            <strong>PERSONAL CREATIVE INVOCATION</strong>
-                            <p>These are personal creative invocations. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional invocations.</p>
-                        </div>
+                        <div class="prayer-tag" data-tag="personal creative invocation">PERSONAL CREATIVE INVOCATION</div>
                         <div class="invocation-text">
                             O Erebus, embodiment of darkness, your essence lives within each of us as our personal shadows. You are a guide and teacher in this world of illusions and battle, and war must also take place within us.<br><br>
                             O Erebus, create a war inside me, so that all my weakness and flaws may be defeated. Let me come face to face with my demons on the eternal battlefield of my soul.<br><br>
@@ -11906,10 +11907,37 @@ function openRitualPathPopup(path) {
                     </div>
                 </article>
 
+                <div id="invocationNoResults" class="prayers-no-results" hidden>
+                    No invocations found.
+                </div>
+
             </div>
         `;
 
-        const entries = Array.from(document.querySelectorAll("#ritualPathPopupBody .prayer-entry"));
+        const search = document.getElementById("invocationSearch");
+        const entries = Array.from(document.querySelectorAll("#invocationContent .prayer-entry"));
+        const noResults = document.getElementById("invocationNoResults");
+
+        function filterInvocations() {
+            const query = search.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            entries.forEach(entry => {
+                const haystack = (
+                    entry.textContent + " " + (entry.dataset.search || "")
+                ).toLowerCase();
+
+                const matches = !query || haystack.includes(query);
+                entry.style.display = matches ? "" : "none";
+
+                if (matches) visibleCount++;
+            });
+
+            noResults.hidden = visibleCount !== 0;
+        }
+
+        search.addEventListener("input", filterInvocations);
+
         entries.forEach(entry => {
             const toggle = entry.querySelector(".prayer-card-toggle");
             if (!toggle) return;
@@ -11918,6 +11946,8 @@ function openRitualPathPopup(path) {
                 toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
             });
         });
+
+        filterInvocations();
     } else if (path === "prayers") {
         body.innerHTML = `
             <div class="prayers-search-wrap">
@@ -11936,10 +11966,7 @@ function openRitualPathPopup(path) {
                 <article class="prayer-entry" data-search="nyx primordial goddess night darkness light hemera dark flame night souls">
                     <button type="button" class="prayer-card-toggle" aria-expanded="false">PRAYER TO NYX</button>
                     <div class="prayer-card-body">
-                        <div class="prayer-disclaimer">
-                            <strong>PERSONAL CREATIVE PRAYER</strong>
-                            <p>These are personal creative prayers. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional prayers.</p>
-                        </div>
+                        <div class="prayer-tag" data-tag="personal creative prayer">PERSONAL CREATIVE PRAYER</div>
                         <p>
                             Nyx, primordial goddess of the night, you show us that even in our darkest night there is light — as you once brought forth your daughter, Hemera. Darkness and light are not enemies, but two sides of the same whole.
                         </p>
@@ -11960,10 +11987,7 @@ function openRitualPathPopup(path) {
                 <article class="prayer-entry" data-search="chaos great destroyer universe destruction renewal serpent gnosis power transformation vessel">
                     <button type="button" class="prayer-card-toggle" aria-expanded="false">PRAYER TO CHAOS</button>
                     <div class="prayer-card-body">
-                        <div class="prayer-disclaimer">
-                            <strong>PERSONAL CREATIVE PRAYER</strong>
-                            <p>These are personal creative prayers. They combine historical and mythological material with personal spiritual interpretation and creative expression. They are not presented as historical or traditional prayers.</p>
-                        </div>
+                        <div class="prayer-tag" data-tag="personal creative prayer">PERSONAL CREATIVE PRAYER</div>
                         <p>
                             Chaos, the great force of destruction. The one who destroys the universe and renews it again.
                         </p>
@@ -13895,7 +13919,8 @@ document.addEventListener('click', function(event) {
     const id = button.dataset.candleId;
 
     if (typeof extinguishSelectedDedication === 'function') {
-        Promise.resolve(extinguishSelectedDedication(id)).catch(function(error) {
+        const candleId = id || currentDedication?.id || currentDedication?.dedication_id || null;
+        Promise.resolve(extinguishSelectedDedication(candleId)).catch(function(error) {
             console.error('Extinguish candle failed:', error);
             alert('The candle could not be extinguished. Please try again.');
         });
@@ -14667,6 +14692,250 @@ document.addEventListener('click', function(event) {
     </div>
 
 
+
+
+<script id="extinguish-flame-delete-candle-final">
+/* FINAL: EXTINGUISH THE FLAME permanently deletes the selected candle. */
+(function () {
+    async function permanentlyDeleteCandle(candleId) {
+        if (candleId == null || candleId === '') return;
+        const key = String(candleId);
+
+        const dedication = (activeDedications || []).find(function (item) {
+            return item && (String(item.id || '') === key || String(item.dedication_id || '') === key);
+        });
+
+        if (!dedication) {
+            alert('This candle is no longer burning.');
+            return;
+        }
+
+        const sanctuaryCopy = (sanctuaryCache.candles || []).find(function (item) {
+            return item && (String(item.dedication_id || '') === key || String(item.id || '') === key);
+        });
+
+        if (typeof canManageDedication === 'function' && !canManageDedication(dedication, sanctuaryCopy)) {
+            alert('You can only extinguish a candle that belongs to you.');
+            return;
+        }
+
+        if (!confirm('Extinguish the flame and permanently delete this candle?')) return;
+
+        const matchingIds = new Set();
+        (activeDedications || []).forEach(function (item) {
+            if (!item) return;
+            if (String(item.id || '') === key || String(item.dedication_id || '') === key) {
+                matchingIds.add(String(item.id || item.dedication_id));
+            }
+        });
+        matchingIds.add(key);
+
+        matchingIds.forEach(function (id) {
+            if (dedicationTimers && dedicationTimers.has(id)) {
+                clearTimeout(dedicationTimers.get(id));
+                dedicationTimers.delete(id);
+            }
+            const node = dedicationNodes && dedicationNodes.get(id);
+            if (node) {
+                node.remove();
+                dedicationNodes.delete(id);
+            }
+        });
+
+        activeDedications = (activeDedications || []).filter(function (item) {
+            if (!item) return false;
+            return String(item.id || '') !== key && String(item.dedication_id || '') !== key;
+        });
+
+        sanctuaryCache.candles = (sanctuaryCache.candles || []).filter(function (item) {
+            if (!item) return false;
+            return String(item.id || '') !== key && String(item.dedication_id || '') !== key;
+        });
+
+        try {
+            if (typeof removeExpiredCandleFromLocalStorage === 'function') {
+                removeExpiredCandleFromLocalStorage(candleId);
+            }
+        } catch (e) {
+            console.warn('Local candle cleanup failed:', e);
+        }
+
+        try { if (typeof saveAllDedications === 'function') saveAllDedications(); } catch (e) {}
+        try { if (typeof updateDailyFlameStatus === 'function') updateDailyFlameStatus(); } catch (e) {}
+
+        if (typeof closeDedicationInfo === 'function') closeDedicationInfo();
+        if (typeof renderSanctuaryTab === 'function') renderSanctuaryTab('candles');
+
+        if (currentAuthUser && supabaseClient) {
+            try {
+                let result = await supabaseClient
+                    .from('user_candles')
+                    .delete()
+                    .eq('user_id', currentAuthUser.id)
+                    .eq('dedication_id', key);
+
+                if (result.error && result.error.code !== '42703') {
+                    console.warn('Could not delete candle by dedication_id:', result.error);
+                }
+
+                /* Some saved rows may use the table row id as the candle id. */
+                const byId = await supabaseClient
+                    .from('user_candles')
+                    .delete()
+                    .eq('user_id', currentAuthUser.id)
+                    .eq('id', key);
+
+                if (byId.error && byId.error.code !== '42703') {
+                    console.warn('Could not delete candle by id:', byId.error);
+                }
+            } catch (e) {
+                console.error('Database candle deletion failed:', e);
+            }
+        }
+    }
+
+    window.extinguishSelectedDedication = permanentlyDeleteCandle;
+
+    /* Make the red button always call the permanent-delete action. */
+    document.addEventListener('click', function (event) {
+        const button = event.target.closest(
+            '#dedicationInfo .dedication-extinguish-button, #extinguish-candle-button'
+        );
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const id = button.dataset.candleId ||
+            (window.currentDedication && (currentDedication.id || currentDedication.dedication_id)) ||
+            (typeof currentDedication !== 'undefined' && currentDedication && (currentDedication.id || currentDedication.dedication_id));
+
+        permanentlyDeleteCandle(id);
+    }, true);
+})();
+</script>
+
+<script id="extinguish-candle-working-fix">
+/* Reliable EXTINGUISH THE FLAME handler: permanently removes the selected candle. */
+(function () {
+    async function deleteSelectedCandle() {
+        const button = document.getElementById('extinguish-candle-button');
+        const infoButton = document.querySelector('#dedicationInfo .dedication-extinguish-button');
+        const candidate =
+            (typeof currentDedication !== 'undefined' && currentDedication) ||
+            (typeof pendingCandleDesign !== 'undefined' && pendingCandleDesign) ||
+            null;
+        const id =
+            (button && button.dataset.candleId) ||
+            (infoButton && infoButton.dataset.candleId) ||
+            (candidate && (candidate.id || candidate.dedication_id)) ||
+            null;
+
+        if (id == null || id === '') {
+            alert('No candle is selected. Please open the candle you want to extinguish and try again.');
+            return;
+        }
+
+        if (!confirm('Extinguish the flame and permanently delete this candle?')) return;
+
+        const key = String(id);
+        const matches = (typeof activeDedications !== 'undefined' ? activeDedications : []).filter(function (item) {
+            return item && (String(item.id || '') === key || String(item.dedication_id || '') === key);
+        });
+
+        /* Stop timers and remove every visible flame matching this candle. */
+        matches.forEach(function (item) {
+            const itemId = String(item.id || item.dedication_id || key);
+            try {
+                if (typeof dedicationTimers !== 'undefined' && dedicationTimers.has(item.id)) {
+                    clearTimeout(dedicationTimers.get(item.id));
+                    dedicationTimers.delete(item.id);
+                }
+                if (typeof dedicationTimers !== 'undefined' && dedicationTimers.has(itemId)) {
+                    clearTimeout(dedicationTimers.get(itemId));
+                    dedicationTimers.delete(itemId);
+                }
+            } catch (e) {}
+            try {
+                const node = typeof dedicationNodes !== 'undefined' &&
+                    (dedicationNodes.get(item.id) || dedicationNodes.get(itemId));
+                if (node) node.remove();
+                if (typeof dedicationNodes !== 'undefined') {
+                    dedicationNodes.delete(item.id);
+                    dedicationNodes.delete(itemId);
+                }
+            } catch (e) {}
+        });
+
+        /* Remove from the live array IN PLACE so other code keeps the same array reference. */
+        if (typeof activeDedications !== 'undefined') {
+            for (let i = activeDedications.length - 1; i >= 0; i--) {
+                const item = activeDedications[i];
+                if (item && (String(item.id || '') === key || String(item.dedication_id || '') === key)) {
+                    activeDedications.splice(i, 1);
+                }
+            }
+        }
+
+        if (typeof sanctuaryCache !== 'undefined' && sanctuaryCache && Array.isArray(sanctuaryCache.candles)) {
+            sanctuaryCache.candles = sanctuaryCache.candles.filter(function (item) {
+                return item && String(item.id || item.dedication_id || '') !== key &&
+                    String(item.dedication_id || item.id || '') !== key;
+            });
+        }
+
+        try { if (typeof removeExpiredCandleFromLocalStorage === 'function') removeExpiredCandleFromLocalStorage(id); } catch (e) {}
+        try { if (typeof saveAllDedications === 'function') saveAllDedications(); } catch (e) {}
+
+        /* Permanently delete the saved row too. Database errors must not undo the local deletion. */
+        try {
+            if (typeof supabaseClient !== 'undefined' && supabaseClient &&
+                typeof currentAuthUser !== 'undefined' && currentAuthUser) {
+                await supabaseClient.from('user_candles').delete()
+                    .eq('user_id', currentAuthUser.id).eq('dedication_id', id);
+                await supabaseClient.from('user_candles').delete()
+                    .eq('user_id', currentAuthUser.id).eq('id', id);
+            }
+        } catch (e) {
+            console.warn('Database candle deletion failed:', e);
+        }
+
+        try { if (typeof closeDedicationInfo === 'function') closeDedicationInfo(); } catch (e) {}
+        try { if (typeof closeCandleModal === 'function') closeCandleModal(); } catch (e) {}
+        try { if (typeof renderSanctuaryTab === 'function') renderSanctuaryTab('candles'); } catch (e) {}
+        try { if (typeof loadSanctuary === 'function' && typeof sanctuaryCurrentTab !== 'undefined' && sanctuaryCurrentTab === 'candles') loadSanctuary(); } catch (e) {}
+    }
+
+    window.extinguishSelectedDedication = deleteSelectedCandle;
+
+    function bindButton() {
+        const button = document.getElementById('extinguish-candle-button');
+        if (button) {
+            button.onclick = function (event) {
+                event.preventDefault();
+                deleteSelectedCandle();
+            };
+        }
+        const infoButton = document.querySelector('#dedicationInfo .dedication-extinguish-button');
+        if (infoButton) {
+            infoButton.onclick = function (event) {
+                event.preventDefault();
+                deleteSelectedCandle();
+            };
+        }
+    }
+
+    bindButton();
+    document.addEventListener('DOMContentLoaded', bindButton);
+    document.addEventListener('click', function (event) {
+        const target = event.target.closest('#extinguish-candle-button, #dedicationInfo .dedication-extinguish-button');
+        if (!target) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        deleteSelectedCandle();
+    }, true);
+})();
+</script>
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
