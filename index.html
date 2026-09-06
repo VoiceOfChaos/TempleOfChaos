@@ -8872,8 +8872,199 @@ button[onclick="showHiddenDedications()"] {
 }
 </style>
 
+
+<style id="temple-chat-css">
+#chatRoomsModal{position:fixed;inset:0;z-index:1000005;display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
+#chatRoomsModal.active{display:flex}
+#chatRoomsModal .chat-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(5px)}
+#chatRoomsModal .chat-card{position:relative;z-index:2;width:min(980px,96vw);height:min(760px,92vh);display:grid;grid-template-columns:230px 1fr;background:linear-gradient(145deg,#171311,#080707 72%);border:1px solid rgba(210,190,150,.24);box-shadow:0 30px 100px rgba(0,0,0,.9);overflow:hidden}
+#chatRoomsModal .chat-close{position:absolute;top:10px;right:13px;z-index:5;background:transparent;border:0;color:#b8afa3;font-size:28px;cursor:pointer}
+.chat-sidebar{padding:42px 16px 18px;border-right:1px solid rgba(210,190,150,.16);background:rgba(0,0,0,.18)}
+.chat-symbol{text-align:center;color:#d5bb8c;font-size:30px;margin-bottom:10px}
+.chat-sidebar h2{text-align:center;margin:0 0 7px;color:#e5ddd1;font-size:18px;font-weight:normal;letter-spacing:.18em}
+.chat-sidebar p{text-align:center;color:#847b70;font-size:11px;line-height:1.6;margin:0 0 24px}
+.chat-room-button{width:100%;display:block;text-align:left;padding:15px 14px;margin:0 0 8px;border:1px solid rgba(210,190,150,.14);background:rgba(255,255,255,.015);color:#cfc6ba;font-family:Georgia,"Times New Roman",serif;cursor:pointer}
+.chat-room-button strong{display:block;font-size:12px;letter-spacing:.13em}
+.chat-room-button span{display:block;margin-top:5px;color:#756d63;font-size:10px}
+.chat-room-button.active,.chat-room-button:hover{border-color:rgba(213,187,140,.5);background:rgba(213,187,140,.06)}
+.chat-main{display:flex;flex-direction:column;min-width:0;padding-top:42px}
+.chat-header{padding:0 28px 18px;border-bottom:1px solid rgba(210,190,150,.14)}
+.chat-header h3{margin:0;color:#e3dacd;font-size:20px;font-weight:normal;letter-spacing:.13em}
+.chat-header p{margin:7px 0 0;color:#827a70;font-size:11px}
+.chat-status{padding:8px 28px;color:#a99e90;font-size:10px;letter-spacing:.08em;min-height:15px}
+.chat-messages{flex:1;overflow-y:auto;padding:6px 28px 20px;display:flex;flex-direction:column;gap:10px}
+.chat-message{max-width:82%;padding:11px 13px;border:1px solid rgba(210,190,150,.14);background:rgba(255,255,255,.025)}
+.chat-message.mine{align-self:flex-end;border-color:rgba(213,187,140,.34);background:rgba(213,187,140,.07)}
+.chat-message-meta{display:flex;gap:8px;align-items:baseline;margin-bottom:6px}
+.chat-message-name{color:#d8c39c;font-size:11px;letter-spacing:.08em}
+.chat-message-time{color:#71695f;font-size:9px}
+.chat-message-body{color:#c8c0b6;font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.chat-empty{margin:auto;color:#766e65;font-style:italic;text-align:center}
+.chat-composer{padding:16px 28px 22px;border-top:1px solid rgba(210,190,150,.14);display:flex;gap:10px}
+.chat-composer textarea{flex:1;min-height:46px;max-height:110px;resize:vertical;background:#0d0b0a;border:1px solid rgba(210,190,150,.25);color:#ded6cb;padding:12px;font-family:Georgia,"Times New Roman",serif}
+.chat-composer button{padding:0 18px;background:#181411;border:1px solid rgba(213,187,140,.42);color:#d8c39c;font-family:Georgia,"Times New Roman",serif;letter-spacing:.1em;cursor:pointer}
+.chat-login-notice{padding:18px 28px 24px;border-top:1px solid rgba(210,190,150,.14);color:#b6aca0;font-size:12px}
+.chat-login-notice button{margin-left:8px;background:transparent;border:0;color:#d8c39c;text-decoration:underline;cursor:pointer}
+.chat-admin-note{color:#d5bb8c;font-size:10px;letter-spacing:.08em;margin-top:6px}
+@media(max-width:700px){
+#chatRoomsModal{padding:0}
+#chatRoomsModal .chat-card{width:100vw;height:100vh;max-height:none;grid-template-columns:1fr}
+.chat-sidebar{padding:38px 14px 10px;border-right:0;border-bottom:1px solid rgba(210,190,150,.16);display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chat-sidebar .chat-symbol,.chat-sidebar h2,.chat-sidebar p{display:none}
+.chat-room-button{margin:0}
+.chat-main{padding-top:12px}
+.chat-header,.chat-status,.chat-messages,.chat-composer,.chat-login-notice{padding-left:16px;padding-right:16px}
+}
+</style>
+
+
+<style id="temple-functions-menu-css">
+/* =====================================================
+   TEMPLE FUNCTIONS MENU
+   Add future functions by adding another .temple-function-item
+   inside #templeFunctionsMenu.
+===================================================== */
+#templeFunctionsWrap{
+    position:fixed;
+    top:22px;
+    left:22px;
+    z-index:1000008;
+    font-family:Georgia,"Times New Roman",serif;
+}
+.temple-functions-toggle{
+    width:52px;
+    height:52px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    border:1px solid rgba(213,187,140,.38);
+    background:rgba(7,7,8,.78);
+    color:#d9c7a4;
+    cursor:pointer;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+.temple-functions-toggle span{
+    display:block;
+    width:22px;
+    height:1px;
+    background:currentColor;
+    transition:transform .22s ease,opacity .22s ease;
+}
+#templeFunctionsWrap.open .temple-functions-toggle span:nth-child(1){
+    transform:translateY(7px) rotate(45deg);
+}
+#templeFunctionsWrap.open .temple-functions-toggle span:nth-child(2){
+    opacity:0;
+}
+#templeFunctionsWrap.open .temple-functions-toggle span:nth-child(3){
+    transform:translateY(-7px) rotate(-45deg);
+}
+.temple-functions-panel{
+    position:absolute;
+    top:62px;
+    left:0;
+    right:auto;
+    width:min(280px,calc(100vw - 34px));
+    padding:12px;
+    box-sizing:border-box;
+    border:1px solid rgba(213,187,140,.28);
+    background:linear-gradient(145deg,rgba(24,20,18,.98),rgba(7,7,8,.99));
+    box-shadow:0 24px 70px rgba(0,0,0,.7);
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-8px);
+    transition:opacity .2s ease,transform .2s ease,visibility .2s ease;
+}
+#templeFunctionsWrap.open .temple-functions-panel{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+.temple-functions-title{
+    padding:9px 10px 12px;
+    color:#bcae98;
+    font-size:10px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    border-bottom:1px solid rgba(213,187,140,.13);
+}
+.temple-function-item{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:13px;
+    margin-top:8px;
+    padding:14px 12px;
+    box-sizing:border-box;
+    border:1px solid transparent;
+    background:rgba(255,255,255,.015);
+    color:#d8d0c5;
+    text-align:left;
+    font-family:inherit;
+    cursor:pointer;
+}
+.temple-function-item:hover{
+    border-color:rgba(213,187,140,.35);
+    background:rgba(213,187,140,.06);
+}
+.temple-function-icon{
+    color:#d6bc89;
+    font-size:20px;
+    width:22px;
+    text-align:center;
+}
+.temple-function-copy strong{
+    display:block;
+    color:#ddd4c7;
+    font-size:12px;
+    font-weight:normal;
+    letter-spacing:.12em;
+}
+.temple-function-copy small{
+    display:block;
+    margin-top:4px;
+    color:#82796e;
+    font-size:10px;
+    line-height:1.35;
+}
+@media(max-width:700px){
+    #templeFunctionsWrap{top:14px;left:14px}
+    .temple-functions-toggle{width:48px;height:48px}
+}
+</style>
+
 </head>
 <body>
+
+<div id="templeFunctionsWrap">
+    <button
+        id="templeFunctionsToggle"
+        class="temple-functions-toggle"
+        type="button"
+        aria-label="Open Temple functions"
+        aria-expanded="false"
+        aria-controls="templeFunctionsMenu"
+        onclick="toggleTempleFunctionsMenu()"
+    >
+        <span></span><span></span><span></span>
+    </button>
+
+    <div id="templeFunctionsMenu" class="temple-functions-panel" aria-hidden="true">
+        <div class="temple-functions-title">Temple Functions</div>
+
+        <!-- Add future functions here as additional .temple-function-item buttons. -->
+        <button class="temple-function-item" type="button" onclick="openTempleVoicesFromMenu()">
+            <span class="temple-function-icon">☍</span>
+            <span class="temple-function-copy">
+                <strong>TEMPLE VOICES</strong>
+                <small>General chat and announcements.</small>
+            </span>
+        </button>
+    </div>
+</div>
+
 <button
     id="accountButton"
     class="account-button"
@@ -9093,11 +9284,8 @@ button[onclick="showHiddenDedications()"] {
                         Prayers, invocations,
                         meditation and practice.
                     </p>
-
                 </a>
-
-
-            </div>
+</div>
 
 
 
@@ -11844,7 +12032,7 @@ function openRitualPathPopup(path) {
                             Primordial Chaos, encompassing all that is, was, and will be. From you emerged all that is. You are the primordial spark of divinity in each of us — the spark that gave the gods their power. Remind us of this spark. We are not just flesh and blood. We are divinity itself, creators and destroyers in this world of illusions.<br><br>
                             I summon you, O Source. I summon you, O Divinity, the servant and protector of the universe. Fill me with your wisdom. Break all the illusions within me, for you are the truth itself — the source before anything existed.<br><br>
                             I call you to be one with me and with all who are not afraid of the chaos inside them.<br><br>
-                            I summon you through Nyx’s night, through the darkness of our mind and soul. We proclaim: we are not afraid of the darkness. We embrace it as our birthright. We claim the knowledge that sleeps in the night.<br><br>
+                            I summon you through Nyx’s night, through the darkness of our mind and soul. We proclaim: we are not afraid of darkness. We embrace it as our birthright. We claim the knowledge that sleeps in the night.<br><br>
                             I summon you through Erebus’s darkness, through the darkness of self-realization, through our personal shadow. We accept ourselves. We are not afraid anymore. Lead us deeper into our personal Tartarus, to face the demons and the primordial darkness so we would emerge as conquerors.<br><br>
                             We dedicate ourselves to personal gnosis, through you as a conduit, through you as a primordial teacher, through you as the source of all knowledge and gnosis.<br><br>
                             I summon you. Rise through me, become one with me. Let me feel your presence, your power, your ancient wisdom. Fill me with gnosis. Fill me with that divine spark once again.<br><br>
@@ -11896,7 +12084,7 @@ function openRitualPathPopup(path) {
                         <div class="prayer-tag" data-tag="personal creative invocation">PERSONAL CREATIVE INVOCATION</div>
                         <div class="invocation-text">
                             O Erebus, embodiment of darkness, your essence lives within each of us as our personal shadows. You are a guide and teacher in this world of illusions and battle, and war must also take place within us.<br><br>
-                            O Erebus, create a war inside me, so that all my weaknesses and flaws may be defeated. Let me come face to face with my demons on the eternal battlefield of my soul.<br><br>
+                            O Erebus, create a war inside me, so that all my weakness and flaws may be defeated. Let me come face to face with my demons on the eternal battlefield of my soul.<br><br>
                             Help me destroy those parts of myself that do not serve my ascension, and help me use and befriend those that are necessary for it, even if society deems them evil or worthless.<br><br>
                             May I see the worth of my darkness not through the eyes of a society blinded by the light, but through your eyes. For you are the darkness that existed before light emerged, before time itself began.<br><br>
                             I call upon you, O General of Chaos. Lead me. Make me stumble, let me bleed, and yet ignite within me the divine wrath not to remain as I am, but to rise above myself. My former self will fall in battle, and a new self will emerge.<br><br>
@@ -14936,6 +15124,327 @@ document.addEventListener('click', function(event) {
     }, true);
 })();
 </script>
+
+<div id="chatRoomsModal" aria-hidden="true">
+  <div class="chat-backdrop" onclick="closeChatRooms()"></div>
+  <section class="chat-card" role="dialog" aria-modal="true" aria-label="Temple chat rooms">
+    <button class="chat-close" type="button" onclick="closeChatRooms()">×</button>
+    <aside class="chat-sidebar">
+      <div class="chat-symbol">☍</div>
+      <h2>TEMPLE VOICES</h2>
+      <p>Two chambers. One for the community. One for the Voice of Chaos.</p>
+      <button class="chat-room-button active" type="button" data-room="general" onclick="switchChatRoom('general')">
+        <strong>GENERAL</strong><span>Registered members can speak.</span>
+      </button>
+      <button class="chat-room-button" type="button" data-room="news" onclick="switchChatRoom('news')">
+        <strong>NEWS</strong><span>Only VoiceOfChaos can publish.</span>
+      </button>
+    </aside>
+    <div class="chat-main">
+      <header class="chat-header">
+        <h3 id="chatRoomTitle">GENERAL</h3>
+        <p id="chatRoomDescription">A shared room for registered members of the Temple.</p>
+        <div id="chatAdminNote" class="chat-admin-note" hidden></div>
+      </header>
+      <div id="chatStatus" class="chat-status"></div>
+      <div id="chatMessages" class="chat-messages"></div>
+      <div id="chatComposer" class="chat-composer">
+        <textarea id="chatMessageInput" maxlength="2000" placeholder="Write a message..." aria-label="Write a message"></textarea>
+        <button type="button" onclick="sendChatMessage()">SEND</button>
+      </div>
+      <div id="chatLoginNotice" class="chat-login-notice" hidden>
+        You need to be registered and signed in to speak in the General room.
+        <button type="button" onclick="closeChatRooms(); openAccountModal()">ENTER THE TEMPLE</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script id="temple-chat-js">
+let chatCurrentRoom = 'general';
+let chatMessages = [];
+let chatChannel = null;
+let chatIsAdmin = false;
+
+const CHAT_TABLE = 'temple_chat_messages';
+const CHAT_ADMIN_TABLE = 'temple_chat_admins';
+
+function escapeChatText(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function chatDisplayName() {
+    return currentAuthUser && currentAuthUser.user_metadata && currentAuthUser.user_metadata.username
+        ? currentAuthUser.user_metadata.username
+        : 'Temple Member';
+}
+
+async function checkChatAdmin() {
+    chatIsAdmin = false;
+    if (!supabaseClient || !currentAuthUser) return false;
+    try {
+        const { data, error } = await supabaseClient
+            .from(CHAT_ADMIN_TABLE)
+            .select('user_id')
+            .eq('user_id', currentAuthUser.id)
+            .maybeSingle();
+        if (!error && data) chatIsAdmin = true;
+    } catch (error) {
+        console.warn('Chat admin check failed:', error);
+    }
+    return chatIsAdmin;
+}
+
+function openChatRooms() {
+    const modal = document.getElementById('chatRoomsModal');
+    if (!modal) return;
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    switchChatRoom(chatCurrentRoom);
+}
+
+function closeChatRooms() {
+    const modal = document.getElementById('chatRoomsModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (chatChannel && supabaseClient) {
+        supabaseClient.removeChannel(chatChannel);
+        chatChannel = null;
+    }
+}
+
+async function switchChatRoom(room) {
+    chatCurrentRoom = room === 'news' ? 'news' : 'general';
+    document.querySelectorAll('.chat-room-button').forEach(button => {
+        button.classList.toggle('active', button.dataset.room === chatCurrentRoom);
+    });
+
+    document.getElementById('chatRoomTitle').textContent =
+        chatCurrentRoom === 'general' ? 'GENERAL' : 'NEWS';
+    document.getElementById('chatRoomDescription').textContent =
+        chatCurrentRoom === 'general'
+            ? 'A shared room for registered members of the Temple.'
+            : 'Announcements and messages from the Voice of Chaos.';
+
+    await checkChatAdmin();
+    updateChatComposer();
+    await loadChatMessages();
+    subscribeToChatRoom();
+}
+
+function updateChatComposer() {
+    const composer = document.getElementById('chatComposer');
+    const notice = document.getElementById('chatLoginNotice');
+    const note = document.getElementById('chatAdminNote');
+    const canWrite = !!currentAuthUser &&
+        (chatCurrentRoom === 'general' || (chatCurrentRoom === 'news' && chatIsAdmin));
+
+    if (composer) composer.hidden = !canWrite;
+    if (notice) {
+        notice.hidden = !!currentAuthUser || chatCurrentRoom !== 'general';
+        if (chatCurrentRoom === 'news') {
+            notice.hidden = true;
+        }
+    }
+    if (note) {
+        note.hidden = chatCurrentRoom !== 'news';
+        note.textContent = chatCurrentRoom === 'news'
+            ? (chatIsAdmin
+                ? 'You are posting as VoiceOfChaos.'
+                : 'READ ONLY — ONLY VOICEOFCHAOS CAN PUBLISH HERE.')
+            : '';
+    }
+
+    const input = document.getElementById('chatMessageInput');
+    if (input) {
+        input.placeholder = chatCurrentRoom === 'news'
+            ? 'Publish a message as VoiceOfChaos...'
+            : 'Write a message...';
+    }
+}
+
+function renderChatMessages() {
+    const box = document.getElementById('chatMessages');
+    if (!box) return;
+
+    if (!chatMessages.length) {
+        box.innerHTML = '<div class="chat-empty">No messages yet.</div>';
+        return;
+    }
+
+    box.innerHTML = chatMessages.map(message => {
+        const mine = currentAuthUser && message.user_id === currentAuthUser.id;
+        const date = new Date(message.created_at);
+        const time = isNaN(date) ? '' : date.toLocaleString([], {
+            month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'
+        });
+        return `<article class="chat-message${mine ? ' mine' : ''}">
+            <div class="chat-message-meta">
+                <span class="chat-message-name">${escapeChatText(message.username || 'Temple Member')}</span>
+                <span class="chat-message-time">${escapeChatText(time)}</span>
+            </div>
+            <div class="chat-message-body">${escapeChatText(message.body || '')}</div>
+        </article>`;
+    }).join('');
+
+    requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
+}
+
+async function loadChatMessages() {
+    const status = document.getElementById('chatStatus');
+    if (!supabaseClient) {
+        chatMessages = [];
+        renderChatMessages();
+        if (status) status.textContent = 'Chat is not connected to Supabase yet.';
+        return;
+    }
+
+    if (status) status.textContent = 'OPENING THE CHAMBER...';
+    try {
+        const { data, error } = await supabaseClient
+            .from(CHAT_TABLE)
+            .select('id, room, user_id, username, body, created_at')
+            .eq('room', chatCurrentRoom)
+            .order('created_at', { ascending: true })
+            .limit(200);
+
+        if (error) throw error;
+        chatMessages = data || [];
+        renderChatMessages();
+        if (status) status.textContent = '';
+    } catch (error) {
+        console.error('Could not load chat messages:', error);
+        chatMessages = [];
+        renderChatMessages();
+        if (status) status.textContent = 'Chat setup is missing. Run the Temple chat SQL setup.';
+    }
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById('chatMessageInput');
+    const status = document.getElementById('chatStatus');
+    if (!input) return;
+
+    const body = input.value.trim();
+    if (!body) return;
+
+    if (!currentAuthUser) {
+        if (status) status.textContent = 'Only registered members can send messages.';
+        return;
+    }
+
+    await checkChatAdmin();
+    if (chatCurrentRoom === 'news' && !chatIsAdmin) {
+        if (status) status.textContent = 'Only VoiceOfChaos can publish in News.';
+        updateChatComposer();
+        return;
+    }
+
+    if (!supabaseClient) {
+        if (status) status.textContent = 'Chat is not connected.';
+        return;
+    }
+
+    if (status) status.textContent = 'SENDING...';
+    try {
+        const { error } = await supabaseClient
+            .from(CHAT_TABLE)
+            .insert({
+                room: chatCurrentRoom,
+                user_id: currentAuthUser.id,
+                username: chatCurrentRoom === 'news' ? 'VoiceOfChaos' : chatDisplayName(),
+                body
+            });
+
+        if (error) throw error;
+        input.value = '';
+        if (status) status.textContent = '';
+    } catch (error) {
+        console.error('Could not send chat message:', error);
+        if (status) status.textContent = error.message || 'Could not send the message.';
+    }
+}
+
+function subscribeToChatRoom() {
+    if (!supabaseClient) return;
+
+    if (chatChannel) {
+        supabaseClient.removeChannel(chatChannel);
+        chatChannel = null;
+    }
+
+    chatChannel = supabaseClient
+        .channel('temple-chat-' + chatCurrentRoom)
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: CHAT_TABLE,
+            filter: 'room=eq.' + chatCurrentRoom
+        }, payload => {
+            const message = payload.new;
+            if (!chatMessages.some(item => item.id === message.id)) {
+                chatMessages.push(message);
+                renderChatMessages();
+            }
+        })
+        .subscribe();
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closeChatRooms();
+});
+
+document.addEventListener('keydown', function(event) {
+    const modal = document.getElementById('chatRoomsModal');
+    const input = document.getElementById('chatMessageInput');
+    if (!modal || !modal.classList.contains('active') || !input) return;
+    if (event.key === 'Enter' && !event.shiftKey && document.activeElement === input) {
+        event.preventDefault();
+        sendChatMessage();
+    }
+});
+</script>
+
+
+<script id="temple-functions-menu-js">
+function toggleTempleFunctionsMenu(forceOpen) {
+    const wrap = document.getElementById('templeFunctionsWrap');
+    const toggle = document.getElementById('templeFunctionsToggle');
+    const panel = document.getElementById('templeFunctionsMenu');
+    if (!wrap || !toggle || !panel) return;
+
+    const shouldOpen = typeof forceOpen === 'boolean'
+        ? forceOpen
+        : !wrap.classList.contains('open');
+
+    wrap.classList.toggle('open', shouldOpen);
+    toggle.setAttribute('aria-expanded', String(shouldOpen));
+    panel.setAttribute('aria-hidden', String(!shouldOpen));
+}
+
+function openTempleVoicesFromMenu() {
+    toggleTempleFunctionsMenu(false);
+    if (typeof openChatRooms === 'function') openChatRooms();
+}
+
+document.addEventListener('click', function(event) {
+    const wrap = document.getElementById('templeFunctionsWrap');
+    if (wrap && wrap.classList.contains('open') && !wrap.contains(event.target)) {
+        toggleTempleFunctionsMenu(false);
+    }
+});
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') toggleTempleFunctionsMenu(false);
+});
+</script>
+
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
