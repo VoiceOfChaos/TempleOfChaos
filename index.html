@@ -8877,7 +8877,7 @@ button[onclick="showHiddenDedications()"] {
 #chatRoomsModal{position:fixed;inset:0;z-index:1000005;display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
 #chatRoomsModal.active{display:flex}
 #chatRoomsModal .chat-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(5px)}
-#chatRoomsModal .chat-card{position:relative;z-index:2;width:min(980px,96vw);height:min(760px,92vh);display:grid;grid-template-columns:230px 1fr;background:linear-gradient(145deg,#171311,#080707 72%);border:1px solid rgba(210,190,150,.24);box-shadow:0 30px 100px rgba(0,0,0,.9);overflow:hidden}
+#chatRoomsModal .chat-card{position:relative;z-index:2;width:min(1040px,96vw);height:min(780px,92vh);display:grid;grid-template-columns:230px 1fr;background:linear-gradient(145deg,#171311,#080707 72%);border:1px solid rgba(210,190,150,.24);box-shadow:0 30px 100px rgba(0,0,0,.9);overflow:hidden}
 #chatRoomsModal .chat-close{position:absolute;top:10px;right:13px;z-index:5;background:transparent;border:0;color:#b8afa3;font-size:28px;cursor:pointer}
 .chat-sidebar{padding:42px 16px 18px;border-right:1px solid rgba(210,190,150,.16);background:rgba(0,0,0,.18)}
 .chat-symbol{text-align:center;color:#d5bb8c;font-size:30px;margin-bottom:10px}
@@ -8892,7 +8892,7 @@ button[onclick="showHiddenDedications()"] {
 .chat-header h3{margin:0;color:#e3dacd;font-size:20px;font-weight:normal;letter-spacing:.13em}
 .chat-header p{margin:7px 0 0;color:#827a70;font-size:11px}
 .chat-status{padding:8px 28px;color:#a99e90;font-size:10px;letter-spacing:.08em;min-height:15px}
-.chat-messages{flex:1;overflow-y:auto;padding:6px 28px 20px;display:flex;flex-direction:column;gap:10px}
+.chat-messages,.survey-list{flex:1;overflow-y:auto;padding:6px 28px 20px;display:flex;flex-direction:column;gap:10px}
 .chat-message{max-width:82%;padding:11px 13px;border:1px solid rgba(210,190,150,.14);background:rgba(255,255,255,.025)}
 .chat-message.mine{align-self:flex-end;border-color:rgba(213,187,140,.34);background:rgba(213,187,140,.07)}
 .chat-message-meta{display:flex;gap:8px;align-items:baseline;margin-bottom:6px}
@@ -8900,9 +8900,9 @@ button[onclick="showHiddenDedications()"] {
 .chat-message-time{color:#71695f;font-size:9px}
 .chat-message-body{color:#c8c0b6;font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
 .chat-message-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
-.chat-message-actions button{background:transparent;border:1px solid rgba(210,190,150,.18);color:#8f8579;padding:5px 8px;font-family:Georgia,"Times New Roman",serif;font-size:9px;letter-spacing:.08em;cursor:pointer}
-.chat-message-actions button:hover{border-color:rgba(213,187,140,.5);color:#d8c39c}
-.chat-delete-button:hover{border-color:rgba(180,80,80,.6)!important;color:#d08080!important}
+.chat-message-actions button,.survey-admin-panel button,.survey-option,.survey-delete-button{background:transparent;border:1px solid rgba(210,190,150,.18);color:#8f8579;padding:5px 8px;font-family:Georgia,"Times New Roman",serif;font-size:9px;letter-spacing:.08em;cursor:pointer}
+.chat-message-actions button:hover,.survey-admin-panel button:hover,.survey-option:hover{border-color:rgba(213,187,140,.5);color:#d8c39c}
+.chat-delete-button:hover,.survey-delete-button:hover{border-color:rgba(180,80,80,.6)!important;color:#d08080!important}
 .chat-empty{margin:auto;color:#766e65;font-style:italic;text-align:center}
 .chat-composer{padding:16px 28px 22px;border-top:1px solid rgba(210,190,150,.14);display:flex;gap:10px}
 .chat-composer textarea{flex:1;min-height:46px;max-height:110px;resize:vertical;background:#0d0b0a;border:1px solid rgba(210,190,150,.25);color:#ded6cb;padding:12px;font-family:Georgia,"Times New Roman",serif}
@@ -8910,6 +8910,26 @@ button[onclick="showHiddenDedications()"] {
 .chat-login-notice{padding:18px 28px 24px;border-top:1px solid rgba(210,190,150,.14);color:#b6aca0;font-size:12px}
 .chat-login-notice button{margin-left:8px;background:transparent;border:0;color:#d8c39c;text-decoration:underline;cursor:pointer}
 .chat-admin-note{color:#d5bb8c;font-size:10px;letter-spacing:.08em;margin-top:6px}
+
+/* SURVEYS */
+.survey-list{padding-top:18px}
+.survey-card{border:1px solid rgba(213,187,140,.22);background:rgba(255,255,255,.025);padding:18px;position:relative}
+.survey-question{color:#e0d6c8;font-size:17px;line-height:1.45;margin:0 0 14px}
+.survey-meta{color:#746c62;font-size:9px;letter-spacing:.08em;margin-bottom:14px}
+.survey-options{display:flex;flex-direction:column;gap:8px}
+.survey-option{width:100%;text-align:left;position:relative;padding:11px 12px;color:#c7beb2;overflow:hidden}
+.survey-option .survey-option-fill{position:absolute;inset:0 auto 0 0;width:var(--percent,0%);background:rgba(213,187,140,.10);pointer-events:none}
+.survey-option .survey-option-text,.survey-option .survey-option-count{position:relative;z-index:1}
+.survey-option .survey-option-count{float:right;color:#a99d8b}
+.survey-option.selected{border-color:rgba(213,187,140,.65);color:#e1c999}
+.survey-login-note{margin-top:13px;color:#887f74;font-size:11px}
+.survey-total{margin-top:12px;color:#746c62;font-size:10px}
+.survey-delete-button{margin-top:14px}
+.survey-admin-panel{border-top:1px solid rgba(210,190,150,.14);padding:16px 28px 22px}
+.survey-admin-panel h4{margin:0 0 10px;color:#d8c39c;font-size:11px;letter-spacing:.12em;font-weight:normal}
+.survey-admin-panel input{width:100%;box-sizing:border-box;margin:0 0 8px;padding:10px 11px;background:#0d0b0a;border:1px solid rgba(210,190,150,.25);color:#ded6cb;font-family:Georgia,"Times New Roman",serif}
+.survey-admin-actions{display:flex;gap:8px;margin-top:4px}
+.survey-admin-actions button{padding:10px 14px;border-color:rgba(213,187,140,.42);color:#d8c39c}
 @media(max-width:700px){
 #chatRoomsModal{padding:0}
 #chatRoomsModal .chat-card{width:100vw;height:100vh;max-height:none;grid-template-columns:1fr}
@@ -8917,7 +8937,7 @@ button[onclick="showHiddenDedications()"] {
 .chat-sidebar .chat-symbol,.chat-sidebar h2,.chat-sidebar p{display:none}
 .chat-room-button{margin:0}
 .chat-main{padding-top:12px}
-.chat-header,.chat-status,.chat-messages,.chat-composer,.chat-login-notice{padding-left:16px;padding-right:16px}
+.chat-header,.chat-status,.chat-messages,.survey-list,.chat-composer,.chat-login-notice,.survey-admin-panel{padding-left:16px;padding-right:16px}
 }
 </style>
 
@@ -15131,33 +15151,63 @@ document.addEventListener('click', function(event) {
 
 <div id="chatRoomsModal" aria-hidden="true">
   <div class="chat-backdrop" onclick="closeChatRooms()"></div>
+
   <section class="chat-card" role="dialog" aria-modal="true" aria-label="Temple chat rooms">
     <button class="chat-close" type="button" onclick="closeChatRooms()">×</button>
+
     <aside class="chat-sidebar">
-      <div class="chat-symbol">☍</div>
+      <div class="chat-symbol">⚿</div>
       <h2>TEMPLE VOICES</h2>
-      <p>Two chambers. One for the community. One for the Voice of Chaos.</p>
+      <p>Three chambers. One for the community. One for the Voice of Chaos. One for the will of the Temple.</p>
+
       <button class="chat-room-button active" type="button" data-room="general" onclick="switchChatRoom('general')">
-        <strong>GENERAL</strong><span>Registered members can speak.</span>
+        <strong>GENERAL</strong>
+        <span>Registered members can speak.</span>
       </button>
+
       <button class="chat-room-button" type="button" data-room="news" onclick="switchChatRoom('news')">
-        <strong>NEWS</strong><span>Only VoiceOfChaos can publish.</span>
+        <strong>NEWS</strong>
+        <span>Only VoiceOfChaos can publish.</span>
+      </button>
+
+      <button class="chat-room-button" type="button" data-room="surveys" onclick="switchChatRoom('surveys')">
+        <strong>SURVEYS</strong>
+        <span>Vote in Temple polls.</span>
       </button>
     </aside>
+
     <div class="chat-main">
       <header class="chat-header">
         <h3 id="chatRoomTitle">GENERAL</h3>
         <p id="chatRoomDescription">A shared room for registered members of the Temple.</p>
         <div id="chatAdminNote" class="chat-admin-note" hidden></div>
       </header>
+
       <div id="chatStatus" class="chat-status"></div>
+
       <div id="chatMessages" class="chat-messages"></div>
+
+      <div id="surveyList" class="survey-list" hidden></div>
+
       <div id="chatComposer" class="chat-composer">
         <textarea id="chatMessageInput" maxlength="2000" placeholder="Write a message..." aria-label="Write a message"></textarea>
         <button type="button" onclick="sendChatMessage()">SEND</button>
       </div>
+
+      <div id="surveyAdminPanel" class="survey-admin-panel" hidden>
+        <h4>CREATE A SURVEY</h4>
+        <input id="surveyQuestionInput" maxlength="300" placeholder="Survey question">
+        <input class="survey-option-input" maxlength="200" placeholder="Option 1">
+        <input class="survey-option-input" maxlength="200" placeholder="Option 2">
+        <input class="survey-option-input" maxlength="200" placeholder="Option 3 (optional)">
+        <input class="survey-option-input" maxlength="200" placeholder="Option 4 (optional)">
+        <div class="survey-admin-actions">
+          <button type="button" onclick="createSurvey()">CREATE SURVEY</button>
+        </div>
+      </div>
+
       <div id="chatLoginNotice" class="chat-login-notice" hidden>
-        You need to be registered and signed in to speak in the General room.
+        You need to be registered and signed in to speak or vote.
         <button type="button" onclick="closeChatRooms(); openAccountModal()">ENTER THE TEMPLE</button>
       </div>
     </div>
@@ -15170,9 +15220,15 @@ let chatMessages = [];
 let chatChannel = null;
 let chatIsAdmin = false;
 let chatEditingMessageId = null;
+let templeSurveys = [];
+let templeSurveyOptions = [];
+let templeSurveyVotes = [];
 
 const CHAT_TABLE = 'temple_chat_messages';
 const CHAT_ADMIN_TABLE = 'temple_chat_admins';
+const SURVEY_TABLE = 'temple_surveys';
+const SURVEY_OPTIONS_TABLE = 'temple_survey_options';
+const SURVEY_VOTES_TABLE = 'temple_survey_votes';
 
 function escapeChatText(value) {
     return String(value == null ? '' : value)
@@ -15210,6 +15266,11 @@ async function checkChatAdmin() {
     return chatIsAdmin;
 }
 
+function setChatStatus(message) {
+    const status = document.getElementById('chatStatus');
+    if (status) status.textContent = message || '';
+}
+
 function openChatRooms() {
     const modal = document.getElementById('chatRoomsModal');
     if (!modal) return;
@@ -15240,49 +15301,85 @@ function closeChatRooms() {
 async function switchChatRoom(room) {
     cancelChatEdit();
 
-    chatCurrentRoom = room === 'news' ? 'news' : 'general';
+    if (!['general', 'news', 'surveys'].includes(room)) room = 'general';
+    chatCurrentRoom = room;
 
     document.querySelectorAll('.chat-room-button').forEach(button => {
         button.classList.toggle('active', button.dataset.room === chatCurrentRoom);
     });
 
-    document.getElementById('chatRoomTitle').textContent =
-        chatCurrentRoom === 'general' ? 'GENERAL' : 'NEWS';
+    const title = document.getElementById('chatRoomTitle');
+    const description = document.getElementById('chatRoomDescription');
 
-    document.getElementById('chatRoomDescription').textContent =
-        chatCurrentRoom === 'general'
-            ? 'A shared room for registered members of the Temple.'
-            : 'Announcements and messages from the Voice of Chaos.';
+    if (chatCurrentRoom === 'general') {
+        title.textContent = 'GENERAL';
+        description.textContent = 'A shared room for registered members of the Temple.';
+    } else if (chatCurrentRoom === 'news') {
+        title.textContent = 'NEWS';
+        description.textContent = 'Announcements and messages from the Voice of Chaos.';
+    } else {
+        title.textContent = 'SURVEYS';
+        description.textContent = 'Vote in polls created by VoiceOfChaos.';
+    }
 
     await checkChatAdmin();
     updateChatComposer();
-    await loadChatMessages();
-    subscribeToChatRoom();
+    setChatStatus('');
+
+    if (chatCurrentRoom === 'surveys') {
+        await loadSurveys();
+        subscribeToSurveys();
+    } else {
+        await loadChatMessages();
+        subscribeToChatRoom();
+    }
 }
 
 function updateChatComposer() {
     const composer = document.getElementById('chatComposer');
     const notice = document.getElementById('chatLoginNotice');
     const note = document.getElementById('chatAdminNote');
+    const messages = document.getElementById('chatMessages');
+    const surveys = document.getElementById('surveyList');
+    const surveyAdmin = document.getElementById('surveyAdminPanel');
 
-    const canWrite = !!currentAuthUser &&
+    const isSurveyRoom = chatCurrentRoom === 'surveys';
+
+    if (messages) messages.hidden = isSurveyRoom;
+    if (surveys) surveys.hidden = !isSurveyRoom;
+
+    const canWriteMessage = !!currentAuthUser &&
         (chatCurrentRoom === 'general' ||
         (chatCurrentRoom === 'news' && chatIsAdmin));
 
-    if (composer) composer.hidden = !canWrite;
+    if (composer) composer.hidden = !canWriteMessage || isSurveyRoom;
+    if (surveyAdmin) surveyAdmin.hidden = !(isSurveyRoom && currentAuthUser && chatIsAdmin);
 
     if (notice) {
-        notice.hidden = !!currentAuthUser || chatCurrentRoom !== 'general';
-        if (chatCurrentRoom === 'news') notice.hidden = true;
+        if (isSurveyRoom) {
+            notice.hidden = !!currentAuthUser;
+        } else if (chatCurrentRoom === 'general') {
+            notice.hidden = !!currentAuthUser;
+        } else {
+            notice.hidden = true;
+        }
     }
 
     if (note) {
-        note.hidden = chatCurrentRoom !== 'news';
-        note.textContent = chatCurrentRoom === 'news'
-            ? (chatIsAdmin
+        note.hidden = false;
+
+        if (chatCurrentRoom === 'news') {
+            note.textContent = chatIsAdmin
                 ? 'You are posting as VoiceOfChaos.'
-                : 'READ ONLY — ONLY VOICEOFCHAOS CAN PUBLISH HERE.')
-            : '';
+                : 'READ ONLY — ONLY VOICEOFCHAOS CAN PUBLISH HERE.';
+        } else if (chatCurrentRoom === 'surveys') {
+            note.textContent = chatIsAdmin
+                ? 'You can create and delete surveys.'
+                : 'Vote once in each survey.';
+        } else {
+            note.hidden = true;
+            note.textContent = '';
+        }
     }
 
     const input = document.getElementById('chatMessageInput');
@@ -15311,7 +15408,8 @@ function renderChatMessages() {
     }
 
     box.innerHTML = chatMessages.map(message => {
-        const mine = currentAuthUser && message.user_id === currentAuthUser.id;
+        const mine = currentAuthUser && String(message.user_id) === String(currentAuthUser.id);
+        const canDelete = mine || chatIsAdmin;
         const date = new Date(message.created_at);
         const time = isNaN(date) ? '' : date.toLocaleString([], {
             month: 'short',
@@ -15332,10 +15430,10 @@ function renderChatMessages() {
                 <span class="chat-message-time">${escapeChatText(time)}${edited ? ' · edited' : ''}</span>
             </div>
             <div class="chat-message-body">${escapeChatText(message.body || '')}</div>
-            ${mine ? `
+            ${(mine || canDelete) ? `
                 <div class="chat-message-actions">
-                    <button type="button" class="chat-edit-button" onclick="editChatMessage('${escapeChatText(message.id)}')">EDIT</button>
-                    <button type="button" class="chat-delete-button" onclick="deleteChatMessage('${escapeChatText(message.id)}')">DELETE</button>
+                    ${mine ? `<button type="button" class="chat-edit-button" onclick="editChatMessage('${escapeChatText(message.id)}')">EDIT</button>` : ''}
+                    ${canDelete ? `<button type="button" class="chat-delete-button" onclick="deleteChatMessage('${escapeChatText(message.id)}')">DELETE</button>` : ''}
                 </div>
             ` : ''}
         </article>`;
@@ -15347,16 +15445,14 @@ function renderChatMessages() {
 }
 
 async function loadChatMessages() {
-    const status = document.getElementById('chatStatus');
-
     if (!supabaseClient) {
         chatMessages = [];
         renderChatMessages();
-        if (status) status.textContent = 'Chat is not connected to Supabase yet.';
+        setChatStatus('Chat is not connected to Supabase yet.');
         return;
     }
 
-    if (status) status.textContent = 'OPENING THE CHAMBER...';
+    setChatStatus('OPENING THE CHAMBER...');
 
     try {
         const { data, error } = await supabaseClient
@@ -15370,31 +15466,24 @@ async function loadChatMessages() {
 
         chatMessages = data || [];
         renderChatMessages();
-
-        if (status) status.textContent = '';
+        setChatStatus('');
     } catch (error) {
         console.error('Could not load chat messages:', error);
         chatMessages = [];
         renderChatMessages();
-
-        if (status) {
-            status.textContent =
-                'Chat setup is missing or the database needs the updated SQL setup.';
-        }
+        setChatStatus(error.message || 'Could not load messages.');
     }
 }
 
 async function sendChatMessage() {
     const input = document.getElementById('chatMessageInput');
-    const status = document.getElementById('chatStatus');
-
     if (!input) return;
 
     const body = input.value.trim();
     if (!body) return;
 
     if (!currentAuthUser) {
-        if (status) status.textContent = 'Only registered members can send messages.';
+        setChatStatus('Only registered members can send messages.');
         return;
     }
 
@@ -15406,17 +15495,19 @@ async function sendChatMessage() {
     await checkChatAdmin();
 
     if (chatCurrentRoom === 'news' && !chatIsAdmin) {
-        if (status) status.textContent = 'Only VoiceOfChaos can publish in News.';
+        setChatStatus('Only VoiceOfChaos can publish in News.');
         updateChatComposer();
         return;
     }
 
+    if (chatCurrentRoom !== 'general' && chatCurrentRoom !== 'news') return;
+
     if (!supabaseClient) {
-        if (status) status.textContent = 'Chat is not connected.';
+        setChatStatus('Chat is not connected.');
         return;
     }
 
-    if (status) status.textContent = 'SENDING...';
+    setChatStatus('SENDING...');
 
     try {
         const { error } = await supabaseClient
@@ -15433,11 +15524,11 @@ async function sendChatMessage() {
         if (error) throw error;
 
         input.value = '';
-        if (status) status.textContent = '';
+        setChatStatus('');
 
     } catch (error) {
         console.error('Could not send chat message:', error);
-        if (status) status.textContent = error.message || 'Could not send the message.';
+        setChatStatus(error.message || 'Could not send the message.');
     }
 }
 
@@ -15445,7 +15536,6 @@ function editChatMessage(messageId) {
     if (!currentAuthUser) return;
 
     const message = chatMessages.find(item => String(item.id) === String(messageId));
-
     if (!message || String(message.user_id) !== String(currentAuthUser.id)) return;
 
     const input = document.getElementById('chatMessageInput');
@@ -15460,20 +15550,15 @@ function editChatMessage(messageId) {
 
 function cancelChatEdit() {
     const input = document.getElementById('chatMessageInput');
-
     chatEditingMessageId = null;
-
     if (input) input.value = '';
-
     updateChatComposer();
 }
 
 async function saveEditedChatMessage(messageId, body) {
-    const status = document.getElementById('chatStatus');
-
     if (!supabaseClient || !currentAuthUser) return;
 
-    if (status) status.textContent = 'SAVING...';
+    setChatStatus('SAVING...');
 
     try {
         const { error } = await supabaseClient
@@ -15494,126 +15579,320 @@ async function saveEditedChatMessage(messageId, body) {
 
         updateChatComposer();
         await loadChatMessages();
-
-        if (status) status.textContent = '';
+        setChatStatus('');
 
     } catch (error) {
         console.error('Could not edit message:', error);
-        if (status) status.textContent = error.message || 'Could not edit the message.';
+        setChatStatus(error.message || 'Could not edit the message.');
+        alert(error.message || 'Could not edit the message.');
     }
 }
 
 async function deleteChatMessage(messageId) {
-
     if (!currentAuthUser || !supabaseClient) {
         alert('You must be logged in to delete messages.');
         return;
     }
 
-    const message = chatMessages.find(
-        item => String(item.id) === String(messageId)
-    );
-
+    const message = chatMessages.find(item => String(item.id) === String(messageId));
     if (!message) {
         alert('Message not found.');
         return;
     }
 
-    if (
-        String(message.user_id) !==
-        String(currentAuthUser.id)
-    ) {
-        alert('You can only delete your own messages.');
+    await checkChatAdmin();
+
+    const mine = String(message.user_id) === String(currentAuthUser.id);
+
+    if (!mine && !chatIsAdmin) {
+        alert('Only VoiceOfChaos can delete other members’ messages.');
         return;
     }
 
-    const confirmed = confirm(
-        'Delete this message permanently?'
-    );
-
-    if (!confirmed) return;
-
-    const status =
-        document.getElementById('chatStatus');
+    if (!confirm(mine ? 'Delete this message permanently?' : 'Delete this member’s message permanently?')) return;
 
     try {
+        setChatStatus('DELETING...');
 
-        if (status) {
-            status.textContent =
-                'DELETING...';
+        let query = supabaseClient
+            .from(CHAT_TABLE)
+            .delete()
+            .eq('id', messageId);
+
+        if (!chatIsAdmin) {
+            query = query.eq('user_id', currentAuthUser.id);
         }
 
-        const { data, error } =
-            await supabaseClient
-                .from(CHAT_TABLE)
-                .delete()
-                .eq('id', messageId)
-                .eq(
-                    'user_id',
-                    currentAuthUser.id
-                )
-                .select();
+        const { data, error } = await query.select();
 
-        if (error) {
-            throw error;
-        }
+        if (error) throw error;
 
         if (!data || data.length === 0) {
-
-            throw new Error(
-                'Supabase blocked the deletion. Check your DELETE policy.'
-            );
+            throw new Error('Supabase blocked the deletion. Check your DELETE policy.');
         }
 
-        chatMessages =
-            chatMessages.filter(
-                item =>
-                    String(item.id) !==
-                    String(messageId)
-            );
-
+        chatMessages = chatMessages.filter(item => String(item.id) !== String(messageId));
         renderChatMessages();
 
-        if (
-            String(chatEditingMessageId) ===
-            String(messageId)
-        ) {
-
+        if (String(chatEditingMessageId) === String(messageId)) {
             cancelChatEdit();
         }
 
-        if (status) {
-            status.textContent = '';
-        }
+        setChatStatus('');
 
     } catch (error) {
+        console.error('Could not delete message:', error);
+        setChatStatus(error.message || 'Could not delete the message.');
+        alert(error.message || 'Could not delete the message.');
+    }
+}
 
-        console.error(
-            'Could not delete message:',
-            error
-        );
+/* =========================
+   SURVEYS
+========================= */
 
-        if (status) {
+async function loadSurveys() {
+    if (!supabaseClient) {
+        templeSurveys = [];
+        templeSurveyOptions = [];
+        templeSurveyVotes = [];
+        renderSurveys();
+        setChatStatus('Surveys are not connected to Supabase yet.');
+        return;
+    }
 
-            status.textContent =
-                error.message ||
-                'Could not delete the message.';
-        }
+    setChatStatus('OPENING SURVEYS...');
 
-        alert(
-            error.message ||
-            'Could not delete the message.'
-        );
+    try {
+        const [surveysResult, optionsResult, votesResult] = await Promise.all([
+            supabaseClient
+                .from(SURVEY_TABLE)
+                .select('id, question, created_at, created_by')
+                .order('created_at', { ascending: false }),
+            supabaseClient
+                .from(SURVEY_OPTIONS_TABLE)
+                .select('id, survey_id, option_text, position')
+                .order('position', { ascending: true }),
+            supabaseClient
+                .from(SURVEY_VOTES_TABLE)
+                .select('id, survey_id, option_id, user_id')
+        ]);
+
+        if (surveysResult.error) throw surveysResult.error;
+        if (optionsResult.error) throw optionsResult.error;
+        if (votesResult.error) throw votesResult.error;
+
+        templeSurveys = surveysResult.data || [];
+        templeSurveyOptions = optionsResult.data || [];
+        templeSurveyVotes = votesResult.data || [];
+
+        renderSurveys();
+        setChatStatus('');
+
+    } catch (error) {
+        console.error('Could not load surveys:', error);
+        templeSurveys = [];
+        templeSurveyOptions = [];
+        templeSurveyVotes = [];
+        renderSurveys();
+        setChatStatus(error.message || 'Could not load surveys.');
+    }
+}
+
+function renderSurveys() {
+    const box = document.getElementById('surveyList');
+    if (!box) return;
+
+    if (!templeSurveys.length) {
+        box.innerHTML = '<div class="chat-empty">No surveys yet.</div>';
+        return;
+    }
+
+    box.innerHTML = templeSurveys.map(survey => {
+        const options = templeSurveyOptions
+            .filter(option => String(option.survey_id) === String(survey.id))
+            .sort((a, b) => Number(a.position) - Number(b.position));
+
+        const votes = templeSurveyVotes
+            .filter(vote => String(vote.survey_id) === String(survey.id));
+
+        const totalVotes = votes.length;
+
+        const myVote = currentAuthUser
+            ? votes.find(vote => String(vote.user_id) === String(currentAuthUser.id))
+            : null;
+
+        const date = new Date(survey.created_at);
+        const time = isNaN(date) ? '' : date.toLocaleDateString([], {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+
+        return `<article class="survey-card">
+            <div class="survey-question">${escapeChatText(survey.question)}</div>
+            <div class="survey-meta">VOICEOFCHAOS · ${escapeChatText(time)}</div>
+            <div class="survey-options">
+                ${options.map(option => {
+                    const count = votes.filter(vote => String(vote.option_id) === String(option.id)).length;
+                    const percent = totalVotes ? Math.round((count / totalVotes) * 100) : 0;
+                    const selected = myVote && String(myVote.option_id) === String(option.id);
+
+                    return `<button
+                        type="button"
+                        class="survey-option${selected ? ' selected' : ''}"
+                        style="--percent:${percent}%"
+                        onclick="voteInSurvey('${escapeChatText(survey.id)}','${escapeChatText(option.id)}')"
+                    >
+                        <span class="survey-option-fill"></span>
+                        <span class="survey-option-text">${escapeChatText(option.option_text)}</span>
+                        <span class="survey-option-count">${count} · ${percent}%</span>
+                    </button>`;
+                }).join('')}
+            </div>
+            <div class="survey-total">${totalVotes} vote${totalVotes === 1 ? '' : 's'}</div>
+            ${!currentAuthUser ? '<div class="survey-login-note">Sign in to vote.</div>' : ''}
+            ${chatIsAdmin ? `<button type="button" class="survey-delete-button" onclick="deleteSurvey('${escapeChatText(survey.id)}')">DELETE SURVEY</button>` : ''}
+        </article>`;
+    }).join('');
+}
+
+async function createSurvey() {
+    if (!currentAuthUser || !chatIsAdmin || !supabaseClient) {
+        alert('Only VoiceOfChaos can create surveys.');
+        return;
+    }
+
+    const questionInput = document.getElementById('surveyQuestionInput');
+    const optionInputs = Array.from(document.querySelectorAll('.survey-option-input'));
+
+    const question = questionInput ? questionInput.value.trim() : '';
+    const options = optionInputs
+        .map(input => input.value.trim())
+        .filter(Boolean);
+
+    if (!question) {
+        alert('Enter a survey question.');
+        return;
+    }
+
+    if (options.length < 2) {
+        alert('A survey needs at least 2 options.');
+        return;
+    }
+
+    try {
+        setChatStatus('CREATING SURVEY...');
+
+        const { data: survey, error: surveyError } = await supabaseClient
+            .from(SURVEY_TABLE)
+            .insert({
+                question,
+                created_by: currentAuthUser.id
+            })
+            .select('id')
+            .single();
+
+        if (surveyError) throw surveyError;
+
+        const optionRows = options.map((option_text, index) => ({
+            survey_id: survey.id,
+            option_text,
+            position: index + 1
+        }));
+
+        const { error: optionsError } = await supabaseClient
+            .from(SURVEY_OPTIONS_TABLE)
+            .insert(optionRows);
+
+        if (optionsError) throw optionsError;
+
+        if (questionInput) questionInput.value = '';
+        optionInputs.forEach(input => input.value = '');
+
+        await loadSurveys();
+        setChatStatus('');
+
+    } catch (error) {
+        console.error('Could not create survey:', error);
+        setChatStatus(error.message || 'Could not create the survey.');
+        alert(error.message || 'Could not create the survey.');
+    }
+}
+
+async function voteInSurvey(surveyId, optionId) {
+    if (!currentAuthUser) {
+        setChatStatus('Sign in to vote.');
+        return;
+    }
+
+    if (!supabaseClient) return;
+
+    try {
+        setChatStatus('CASTING VOTE...');
+
+        const { error } = await supabaseClient
+            .from(SURVEY_VOTES_TABLE)
+            .upsert({
+                survey_id: surveyId,
+                option_id: optionId,
+                user_id: currentAuthUser.id
+            }, {
+                onConflict: 'survey_id,user_id'
+            });
+
+        if (error) throw error;
+
+        await loadSurveys();
+        setChatStatus('');
+
+    } catch (error) {
+        console.error('Could not vote:', error);
+        setChatStatus(error.message || 'Could not cast your vote.');
+        alert(error.message || 'Could not cast your vote.');
+    }
+}
+
+async function deleteSurvey(surveyId) {
+    if (!currentAuthUser || !chatIsAdmin || !supabaseClient) return;
+
+    if (!confirm('Delete this survey and all of its votes permanently?')) return;
+
+    try {
+        setChatStatus('DELETING SURVEY...');
+
+        const { error } = await supabaseClient
+            .from(SURVEY_TABLE)
+            .delete()
+            .eq('id', surveyId);
+
+        if (error) throw error;
+
+        await loadSurveys();
+        setChatStatus('');
+
+    } catch (error) {
+        console.error('Could not delete survey:', error);
+        setChatStatus(error.message || 'Could not delete the survey.');
+        alert(error.message || 'Could not delete the survey.');
+    }
+}
+
+/* =========================
+   REALTIME
+========================= */
+
+function clearChatChannel() {
+    if (chatChannel && supabaseClient) {
+        supabaseClient.removeChannel(chatChannel);
+        chatChannel = null;
     }
 }
 
 function subscribeToChatRoom() {
     if (!supabaseClient) return;
 
-    if (chatChannel) {
-        supabaseClient.removeChannel(chatChannel);
-        chatChannel = null;
-    }
+    clearChatChannel();
 
     chatChannel = supabaseClient
         .channel('temple-chat-' + chatCurrentRoom)
@@ -15624,17 +15903,14 @@ function subscribeToChatRoom() {
             filter: 'room=eq.' + chatCurrentRoom
         }, payload => {
             if (payload.eventType === 'INSERT') {
-                const message = payload.new;
-
-                if (!chatMessages.some(item => item.id === message.id)) {
-                    chatMessages.push(message);
+                if (!chatMessages.some(item => item.id === payload.new.id)) {
+                    chatMessages.push(payload.new);
                     renderChatMessages();
                 }
             }
 
             if (payload.eventType === 'UPDATE') {
                 const index = chatMessages.findIndex(item => item.id === payload.new.id);
-
                 if (index !== -1) {
                     chatMessages[index] = payload.new;
                     renderChatMessages();
@@ -15645,6 +15921,37 @@ function subscribeToChatRoom() {
                 chatMessages = chatMessages.filter(item => item.id !== payload.old.id);
                 renderChatMessages();
             }
+        })
+        .subscribe();
+}
+
+function subscribeToSurveys() {
+    if (!supabaseClient) return;
+
+    clearChatChannel();
+
+    chatChannel = supabaseClient
+        .channel('temple-surveys')
+        .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: SURVEY_TABLE
+        }, () => {
+            if (chatCurrentRoom === 'surveys') loadSurveys();
+        })
+        .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: SURVEY_OPTIONS_TABLE
+        }, () => {
+            if (chatCurrentRoom === 'surveys') loadSurveys();
+        })
+        .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: SURVEY_VOTES_TABLE
+        }, () => {
+            if (chatCurrentRoom === 'surveys') loadSurveys();
         })
         .subscribe();
 }
