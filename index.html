@@ -12384,7 +12384,7 @@ document.addEventListener("keydown", function(event) {
 
 
 /* =====================================================
-   ACCOUNT SYSTEM — SUPABASE
+   ACCOUNT SYSTEM — SUPABASE (REPAIRED)
 ===================================================== */
 
 const SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
@@ -12392,28 +12392,100 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH
 
 let supabaseClient = null;
 let currentAuthUser = null;
-let accountMode = 'register';
+let accountMode = 'login';
 
 function initSupabase() {
-    if (!window.supabase) {
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
         console.error('Supabase library failed to load.');
         return false;
     }
 
-    if (!SUPABASE_URL.includes('PASTE_') && !SUPABASE_PUBLISHABLE_KEY.includes('PASTE_')) {
-        supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_PUBLISHABLE_KEY
-        );
-        return true;
+    if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY ||
+        SUPABASE_URL.includes('PASTE_') || SUPABASE_PUBLISHABLE_KEY.includes('PASTE_')) {
+        console.error('Supabase URL or publishable key is missing.');
+        return false;
     }
 
-    return false;
+    try {
+        supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY,
+            {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true,
+                    flowType: 'pkce'
+                }
+            }
+        );
+        return true;
+    } catch (error) {
+        console.error('Could not initialise Supabase:', error);
+        supabaseClient = null;
+        return false;
+    }
 }
 
 function setAccountMessage(message) {
     const el = document.getElementById('accountMessage');
     if (el) el.textContent = message || '';
+}
+
+function readableAuthError(error, fallback) {
+    const raw = String(error?.message || error || '').trim();
+    const lower = raw.toLowerCase();
+
+    if (lower.includes('failed to fetch') ||
+        lower.includes('networkerror') ||
+        lower.includes('load failed') ||
+        lower.includes('fetch failed')) {
+        if (window.location.protocol === 'file:') {
+            return 'The Temple is being opened directly as a file. Open it through your website (HTTPS) or a local web server; Supabase authentication cannot work reliably from file://.';
+        }
+        return 'The Temple could not reach the account server. Check your internet connection and make sure the Supabase project is active.';
+    }
+
+    if (lower.includes('invalid login credentials')) {
+        return 'The email or password is incorrect.';
+    }
+
+    if (lower.includes('email not confirmed')) {
+        return 'Your email is not verified yet. Open the verification email, then enter your password again.';
+    }
+
+    if (lower.includes('user already registered') ||
+        lower.includes('already registered') ||
+        lower.includes('already been registered') ||
+        lower.includes('user already exists') ||
+        lower.includes('email exists') ||
+        lower.includes('email_exists')) {
+        return 'An account already exists with this email address. Please enter the Temple instead.';
+    }
+
+    if (lower.includes('duplicate') && (lower.includes('username') || lower.includes('nickname') || lower.includes('profiles_nickname_unique'))) {
+        return 'That name is already taken. Please choose another name.';
+    }
+
+    if (lower.includes('unique') && (lower.includes('username') || lower.includes('nickname') || lower.includes('profiles_nickname_unique'))) {
+        return 'That name is already taken. Please choose another name.';
+    }
+
+    return raw || fallback;
+}
+
+function normalizeUsername(value) {
+    return String(value || '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function usernameKey(value) {
+    return normalizeUsername(value).toLocaleLowerCase();
+}
+
+function normalizeEmail(value) {
+    return String(value || '').trim().toLowerCase();
 }
 
 function openAccountModal(event) {
@@ -12443,35 +12515,33 @@ function closeAccountModal() {
 }
 
 function setAccountMode(mode) {
-    accountMode = mode;
+    accountMode = mode === 'register' ? 'register' : 'login';
+
     const loggedInBox = document.getElementById('accountUserBox');
     const switchWrap = document.querySelector('.account-switch');
-    if (loggedInBox) loggedInBox.classList.remove('active');
-    if (switchWrap) switchWrap.style.display = '';
-
     const register = document.getElementById('registerAccountForm');
     const login = document.getElementById('loginAccountForm');
     const title = document.getElementById('accountTitle');
     const subtitle = document.getElementById('accountSubtitle');
     const switchText = document.getElementById('accountSwitchText');
     const switchButton = document.getElementById('accountSwitchButton');
-    const userBox = document.getElementById('accountUserBox');
 
-    if (userBox) userBox.classList.remove('active');
+    if (loggedInBox) loggedInBox.classList.remove('active');
+    if (switchWrap) switchWrap.style.display = '';
 
-    if (register) register.classList.toggle('account-form-visible', mode === 'register');
-    if (login) login.classList.toggle('account-form-visible', mode === 'login');
+    if (register) register.classList.toggle('account-form-visible', accountMode === 'register');
+    if (login) login.classList.toggle('account-form-visible', accountMode === 'login');
 
-    if (mode === 'register') {
-        title.textContent = 'CREATE YOUR PLACE';
-        subtitle.textContent = 'To kindle your own flame or leave your mark upon the Temple, first create a place within it.';
-        switchText.textContent = 'Already have a place within the Temple?';
-        switchButton.textContent = 'ENTER';
+    if (accountMode === 'register') {
+        if (title) title.textContent = 'CREATE YOUR PLACE';
+        if (subtitle) subtitle.textContent = 'To kindle your own flame or leave your mark upon the Temple, first create a place within it.';
+        if (switchText) switchText.textContent = 'Already have a place within the Temple?';
+        if (switchButton) switchButton.textContent = 'ENTER';
     } else {
-        title.textContent = 'ENTER THE TEMPLE';
-        subtitle.textContent = 'Return to the sanctuary you have created.';
-        switchText.textContent = 'Do not yet have a place within the Temple?';
-        switchButton.textContent = 'CREATE ACCOUNT';
+        if (title) title.textContent = 'ENTER THE TEMPLE';
+        if (subtitle) subtitle.textContent = 'Return to the sanctuary you have created.';
+        if (switchText) switchText.textContent = 'Do not yet have a place within the Temple?';
+        if (switchButton) switchButton.textContent = 'CREATE ACCOUNT';
     }
 
     setAccountMessage('');
@@ -12481,30 +12551,54 @@ function toggleAccountMode() {
     setAccountMode(accountMode === 'register' ? 'login' : 'register');
 }
 
+async function checkUsernameTaken(name) {
+    const key = usernameKey(name);
+    if (!key) return false;
+
+    /* Preferred RPC. The supplied SQL setup creates this function. */
+    let result = await supabaseClient.rpc('is_nickname_taken', {
+        requested_nickname: key
+    });
+
+    /* Backwards compatibility with the older function name. */
+    if (result.error && (result.error.code === '42883' || result.error.code === 'PGRST202')) {
+        result = await supabaseClient.rpc('nickname_is_taken', {
+            requested_nickname: key
+        });
+    }
+
+    if (result.error) {
+        throw result.error;
+    }
+
+    return result.data === true;
+}
+
 async function registerAccount() {
     if (!supabaseClient) {
-        setAccountMessage('The account system is not connected yet. Add your Supabase URL and publishable key first.');
+        setAccountMessage('The account system is not connected. Please reload the page and try again.');
         return;
     }
 
-    const username = document.getElementById('registerUsername').value.trim();
-
-    /*
-     * Normalize the email before it reaches Supabase so the same address
-     * cannot be entered with accidental leading/trailing spaces or casing.
-     */
+    const usernameInput = document.getElementById('registerUsername');
     const emailInput = document.getElementById('registerEmail');
-    const email = emailInput.value.trim().toLowerCase();
-
-    const password = document.getElementById('registerPassword').value;
+    const passwordInput = document.getElementById('registerPassword');
     const button = document.getElementById('registerButton');
 
-    if (emailInput) {
-        emailInput.value = email;
-    }
+    const username = normalizeUsername(usernameInput?.value);
+    const email = normalizeEmail(emailInput?.value);
+    const password = passwordInput?.value || '';
+
+    if (usernameInput) usernameInput.value = username;
+    if (emailInput) emailInput.value = email;
 
     if (!username || !email || !password) {
         setAccountMessage('Please complete every field.');
+        return;
+    }
+
+    if (username.length < 2) {
+        setAccountMessage('Your name must contain at least 2 characters.');
         return;
     }
 
@@ -12517,102 +12611,47 @@ async function registerAccount() {
     button.textContent = 'CHECKING THE NAME...';
 
     try {
-        const normalizedUsername = username.trim();
-
-        /* Existing nickname protection. */
-        let nicknameTaken = null;
-        let nicknameCheckError = null;
-
-        ({ data: nicknameTaken, error: nicknameCheckError } =
-            await supabaseClient.rpc('is_nickname_taken', {
-                requested_nickname: normalizedUsername
-            }));
-
-        if (nicknameCheckError &&
-            (nicknameCheckError.code === '42883' || nicknameCheckError.code === 'PGRST202')) {
-            ({ data: nicknameTaken, error: nicknameCheckError } =
-                await supabaseClient.rpc('nickname_is_taken', {
-                    requested_nickname: normalizedUsername
-                }));
-        }
-
-        if (nicknameCheckError) {
-            throw new Error(
-                'Could not check that nickname. Please run the supplied Supabase SQL setup, then try again.'
-            );
-        }
-
-        if (nicknameTaken === true) {
+        /* Case-insensitive name check. The database unique constraint is the final protection against races. */
+        if (await checkUsernameTaken(username)) {
             throw new Error('That name is already taken. Please choose another name.');
         }
 
         button.textContent = 'CREATING ACCOUNT...';
 
+        const redirectUrl = getTempleRedirectUrl();
+        const options = {
+            data: {
+                nickname: username
+            }
+        };
+
+        /* Do not send an invalid file:// redirect to Supabase. */
+        if (redirectUrl) options.emailRedirectTo = redirectUrl;
+
         const { data, error } = await supabaseClient.auth.signUp({
             email,
             password,
-            options: {
-                data: { username: normalizedUsername },
-                emailRedirectTo: window.location.origin + window.location.pathname
-            }
+            options
         });
 
-        if (error) {
-            const message = String(error.message || '').toLowerCase();
+        if (error) throw error;
 
-            if (
-                message.includes('already registered') ||
-                message.includes('already been registered') ||
-                message.includes('user already exists') ||
-                message.includes('user_already_exists') ||
-                message.includes('email exists') ||
-                message.includes('email_exists')
-            ) {
-                throw new Error('An account already exists with this email address. Please enter the Temple instead.');
-            }
-
-            throw error;
+        if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+            throw new Error('An account already exists with this email address. Please enter the Temple instead.');
         }
 
-        /*
-         * With email confirmation enabled, Supabase may deliberately return a
-         * user without an error for an already-registered address. In that
-         * case the returned user has no identities, which lets the UI refuse
-         * the duplicate registration instead of pretending a new account was
-         * created.
-         */
-        if (
-            data &&
-            data.user &&
-            Array.isArray(data.user.identities) &&
-            data.user.identities.length === 0
-        ) {
-            throw new Error(
-                'An account already exists with this email address. Please enter the Temple instead.'
-            );
-        }
-
-        if (data.session && data.user) {
+        if (data?.session && data?.user) {
             currentAuthUser = data.user;
             updateAccountButton();
-
-            /* Only the guest candles from the current guest session are claimed. */
-            await claimGuestCandlesForUser(currentAuthUser);
-
-            if (typeof loadSanctuary === 'function') {
-                await loadSanctuary();
-            }
-
+            await finishSuccessfulLogin(currentAuthUser);
             setAccountMessage('Welcome to the Temple.');
             setTimeout(closeAccountModal, 700);
         } else {
-            setAccountMessage(
-                'Account created. Check your email to verify your account, then return here to enter the Temple.'
-            );
+            setAccountMessage('Account created. Check your email to verify your account, then return here to enter the Temple.');
         }
     } catch (error) {
         console.error('Registration error:', error);
-        setAccountMessage(error.message || 'Unable to create the account.');
+        setAccountMessage(readableAuthError(error, 'Unable to create the account.'));
     } finally {
         button.disabled = false;
         button.textContent = 'CREATE ACCOUNT';
@@ -12621,13 +12660,18 @@ async function registerAccount() {
 
 async function loginAccount() {
     if (!supabaseClient) {
-        setAccountMessage('The account system is not connected yet. Add your Supabase URL and publishable key first.');
+        setAccountMessage('The account system is not connected. Please reload the page and try again.');
         return;
     }
 
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
+    const emailInput = document.getElementById('loginEmail');
+    const passwordInput = document.getElementById('loginPassword');
     const button = document.getElementById('loginButton');
+
+    const email = normalizeEmail(emailInput?.value);
+    const password = passwordInput?.value || '';
+
+    if (emailInput) emailInput.value = email;
 
     if (!email || !password) {
         setAccountMessage('Please enter your email and password.');
@@ -12643,36 +12687,42 @@ async function loginAccount() {
             password
         });
 
-        if (error) {
-            const message = String(error.message || '').toLowerCase();
-            if (message.includes('email not confirmed')) {
-                throw new Error('Your email is not verified yet. Open the verification email, then return to the Temple and enter your password.');
-            }
-
-            if (message.includes('invalid login credentials')) {
-                throw new Error('The email or password is incorrect.');
-            }
-
-            throw error;
-        }
+        if (error) throw error;
 
         currentAuthUser = data.user;
         updateAccountButton();
-        await claimGuestCandlesForUser(currentAuthUser);
-        if (typeof loadSanctuary === 'function') await loadSanctuary();
+        await finishSuccessfulLogin(currentAuthUser);
         setAccountMessage('Welcome back.');
         setTimeout(closeAccountModal, 500);
     } catch (error) {
-        setAccountMessage(error.message || 'Unable to sign in.');
+        console.error('Login error:', error);
+        setAccountMessage(readableAuthError(error, 'Unable to sign in.'));
     } finally {
         button.disabled = false;
         button.textContent = 'ENTER THE TEMPLE';
     }
 }
 
+async function finishSuccessfulLogin(user) {
+    if (!user) return;
+
+    try {
+        if (typeof claimGuestCandlesForUser === 'function') {
+            await claimGuestCandlesForUser(user);
+        }
+        if (typeof loadSanctuary === 'function') {
+            await loadSanctuary();
+        }
+    } catch (error) {
+        /* Authentication itself succeeded; Sanctuary errors must not make login look broken. */
+        console.error('Post-login Sanctuary sync failed:', error);
+    }
+}
 
 function getTempleRedirectUrl() {
-    /* Keep redirects on the exact page the visitor is using. */
+    if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') {
+        return '';
+    }
     return window.location.origin + window.location.pathname;
 }
 
@@ -12683,13 +12733,15 @@ function getPasswordRedirectUrl() {
 function openPasswordResetModal() {
     const modal = document.getElementById('passwordResetModal');
     if (!modal) return;
+
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+
     const email = document.getElementById('resetEmail');
+    const loginEmail = document.getElementById('loginEmail');
     if (email) {
-        const loginEmail = document.getElementById('loginEmail');
-        if (loginEmail && loginEmail.value) email.value = loginEmail.value;
+        if (loginEmail?.value) email.value = normalizeEmail(loginEmail.value);
         setTimeout(() => email.focus(), 50);
     }
 }
@@ -12704,12 +12756,15 @@ function closePasswordResetModal() {
 
 async function sendPasswordReset() {
     if (!supabaseClient) {
-        setResetMessage('The account system is not connected yet.');
+        setResetMessage('The account system is not connected. Please reload the page and try again.');
         return;
     }
 
-    const email = document.getElementById('resetEmail').value.trim();
+    const emailInput = document.getElementById('resetEmail');
     const button = document.getElementById('resetButton');
+    const email = normalizeEmail(emailInput?.value);
+
+    if (emailInput) emailInput.value = email;
 
     if (!email) {
         setResetMessage('Enter the email address belonging to your account.');
@@ -12720,13 +12775,14 @@ async function sendPasswordReset() {
     button.textContent = 'SENDING...';
 
     try {
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: getPasswordRedirectUrl()
-        });
+        const redirectTo = getPasswordRedirectUrl();
+        const options = redirectTo ? { redirectTo } : undefined;
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, options);
         if (error) throw error;
-        setResetMessage('A password-restoration link has been sent to your email. Open it on your phone or computer to choose a new password.');
+        setResetMessage('A password-restoration link has been sent to your email. Open it and choose a new password.');
     } catch (error) {
-        setResetMessage(error.message || 'Unable to send the password-restoration email.');
+        console.error('Password reset error:', error);
+        setResetMessage(readableAuthError(error, 'Unable to send the password-restoration email.'));
     } finally {
         button.disabled = false;
         button.textContent = 'SEND RESTORATION LINK';
@@ -12757,7 +12813,7 @@ function closeNewPasswordModal() {
 
 async function updateForgottenPassword() {
     if (!supabaseClient) {
-        setNewPasswordMessage('The account system is not connected yet.');
+        setNewPasswordMessage('The account system is not connected.');
         return;
     }
 
@@ -12776,10 +12832,16 @@ async function updateForgottenPassword() {
 
     button.disabled = true;
     button.textContent = 'RESTORING...';
+
     try {
         const { error } = await supabaseClient.auth.updateUser({ password });
         if (error) throw error;
+
         setNewPasswordMessage('Your password has been restored. You may now enter the Temple with your new password.');
+        await supabaseClient.auth.signOut();
+        currentAuthUser = null;
+        updateAccountButton();
+
         setTimeout(() => {
             closeNewPasswordModal();
             setAccountMode('login');
@@ -12788,7 +12850,8 @@ async function updateForgottenPassword() {
             document.body.style.overflow = 'hidden';
         }, 1200);
     } catch (error) {
-        setNewPasswordMessage(error.message || 'Unable to restore your password.');
+        console.error('Password update error:', error);
+        setNewPasswordMessage(readableAuthError(error, 'Unable to restore your password.'));
     } finally {
         button.disabled = false;
         button.textContent = 'SET NEW PASSWORD';
@@ -12800,39 +12863,32 @@ function setNewPasswordMessage(message) {
     if (el) el.textContent = message || '';
 }
 
-async function handlePasswordRecovery() {
+function handlePasswordRecovery() {
     if (!supabaseClient) return;
 
-    // Supabase v2 can deliver recovery through either the auth event or the
-    // URL hash/query. The auth listener below also catches mobile browsers.
     const url = new URL(window.location.href);
     const hash = window.location.hash || '';
-    const hasRecoveryHash = hash.includes('type=recovery') || url.searchParams.get('type') === 'recovery';
+    const hasRecovery = hash.includes('type=recovery') || url.searchParams.get('type') === 'recovery';
 
-    if (hasRecoveryHash) {
+    if (hasRecovery) {
         setTimeout(openNewPasswordModal, 300);
     }
 }
 
 async function logoutAccount() {
-    if (supabaseClient) {
-        await supabaseClient.auth.signOut();
+    try {
+        if (supabaseClient) await supabaseClient.auth.signOut();
+    } catch (error) {
+        console.error('Logout error:', error);
     }
 
     currentAuthUser = null;
 
-    /*
-     * Start a fresh guest session after logout. Candles that belonged to
-     * the previous account remain owned by that account and cannot become
-     * claimable guest candles.
-     */
-    startNewGuestSession();
-
-    sanctuaryCache.candles = [];
+    if (typeof startNewGuestSession === 'function') startNewGuestSession();
+    if (typeof sanctuaryCache !== 'undefined') sanctuaryCache.candles = [];
     updateAccountButton();
     closeAccountModal();
 }
-
 
 function showLoggedInAccount() {
     const register = document.getElementById('registerAccountForm');
@@ -12848,15 +12904,14 @@ function showLoggedInAccount() {
     if (switchWrap) switchWrap.style.display = 'none';
     if (userBox) userBox.classList.add('active');
 
-    const username = currentAuthUser?.user_metadata?.username || currentAuthUser?.email || 'Temple Keeper';
-    title.textContent = 'YOUR PLACE WITHIN THE TEMPLE';
-    subtitle.textContent = 'You are already within the sanctuary. Your personal creations can now belong to your account.';
-    name.textContent = username;
+    const username = currentAuthUser?.user_metadata?.nickname || currentAuthUser?.user_metadata?.username || currentAuthUser?.email || 'Temple Keeper';
+    if (title) title.textContent = 'YOUR PLACE WITHIN THE TEMPLE';
+    if (subtitle) subtitle.textContent = 'You are already within the sanctuary. Your personal creations can now belong to your account.';
+    if (name) name.textContent = username;
     setAccountMessage('');
 
-    /* Refresh the account's candle list without changing the existing Sanctuary flow. */
     if (typeof loadSanctuary === 'function' && supabaseClient) {
-        loadSanctuary();
+        loadSanctuary().catch(error => console.error('Could not load Sanctuary:', error));
     }
 }
 
@@ -12865,7 +12920,7 @@ function updateAccountButton() {
     if (!button) return;
 
     if (currentAuthUser) {
-        const username = currentAuthUser.user_metadata?.username || 'MY SANCTUARY';
+        const username = currentAuthUser.user_metadata?.nickname || currentAuthUser.user_metadata?.username || 'MY SANCTUARY';
         button.textContent = username.toUpperCase();
     } else {
         button.textContent = 'ENTER THE TEMPLE';
@@ -12878,29 +12933,45 @@ async function initialiseAccountSystem() {
         return;
     }
 
-    const { data } = await supabaseClient.auth.getSession();
-    currentAuthUser = data.session?.user || null;
-    updateAccountButton();
+    try {
+        const { data, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        currentAuthUser = data.session?.user || null;
+        updateAccountButton();
 
-    if (currentAuthUser) {
-        await claimGuestCandlesForUser(currentAuthUser);
-        if (typeof loadSanctuary === 'function') await loadSanctuary();
+        if (currentAuthUser) {
+            setTimeout(() => finishSuccessfulLogin(currentAuthUser), 0);
+        }
+    } catch (error) {
+        console.error('Could not load Supabase session:', error);
+        setAccountMessage(readableAuthError(error, 'The account session could not be loaded.'));
+        updateAccountButton();
     }
 
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
         const previousUserId = currentAuthUser?.id || null;
         currentAuthUser = session?.user || null;
         updateAccountButton();
 
-        if (typeof checkChatAdmin === 'function') await checkChatAdmin();
+        /* Never perform additional Supabase requests directly inside the auth
+           callback. Supabase recommends deferring them to avoid auth-lock deadlocks. */
+        if (currentAuthUser && String(currentAuthUser.id) !== String(previousUserId || '')) {
+            setTimeout(() => finishSuccessfulLogin(currentAuthUser), 0);
+        }
+
+        if (typeof checkChatAdmin === 'function') {
+            setTimeout(() => {
+                Promise.resolve(checkChatAdmin()).catch(error => console.error('Chat admin check failed:', error));
+            }, 0);
+        }
         if (typeof updateChatComposer === 'function') updateChatComposer();
         if (typeof renderChatMessages === 'function') renderChatMessages();
-        if (typeof loadSurveys === 'function' && chatCurrentRoom === 'surveys') await loadSurveys();
-
-        if (currentAuthUser && String(currentAuthUser.id) !== String(previousUserId || '')) {
-            await claimGuestCandlesForUser(currentAuthUser);
-            if (typeof loadSanctuary === 'function') await loadSanctuary();
+        if (typeof loadSurveys === 'function' && chatCurrentRoom === 'surveys') {
+            setTimeout(() => {
+                Promise.resolve(loadSurveys()).catch(error => console.error('Survey load failed:', error));
+            }, 0);
         }
+
         if (event === 'PASSWORD_RECOVERY') {
             setTimeout(openNewPasswordModal, 100);
         }
@@ -12914,9 +12985,10 @@ initialiseAccountSystem();
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeAccountModal();
+        closePasswordResetModal();
+        closeNewPasswordModal();
     }
 });
-
 </script>
 
 
@@ -12942,7 +13014,7 @@ document.addEventListener('keydown', function(event) {
         <form id="registerAccountForm" class="account-form" onsubmit="event.preventDefault(); registerAccount();">
             <label>
                 NAME
-                <input id="registerUsername" type="text" autocomplete="username" minlength="2" required>
+                <input id="registerUsername" type="text" autocomplete="nickname" minlength="2" maxlength="40" required>
             </label>
 
             <label>
@@ -15255,8 +15327,8 @@ function escapeChatText(value) {
 function chatDisplayName() {
     return currentAuthUser &&
         currentAuthUser.user_metadata &&
-        currentAuthUser.user_metadata.username
-        ? currentAuthUser.user_metadata.username
+        (currentAuthUser.user_metadata.nickname || currentAuthUser.user_metadata.username)
+        ? (currentAuthUser.user_metadata.nickname || currentAuthUser.user_metadata.username)
         : 'Temple Member';
 }
 
