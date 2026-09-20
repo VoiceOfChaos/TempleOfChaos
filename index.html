@@ -5739,6 +5739,9 @@
 .ritual-community-meta { margin-top:12px; color:rgba(215,205,194,.42); font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
 .ritual-entry-actions { display:flex; gap:8px; margin-top:15px; }
 .ritual-entry-actions .ritual-bookmark-btn { padding:7px 10px; }
+.bookmarked-sanctuary-text { white-space: pre-wrap; line-height: 1.8; }
+.sanctuary-item-actions { display:flex; flex-wrap:wrap; gap:8px; }
+
 
 /* =====================================================
    ACCOUNT SYSTEM
@@ -12650,6 +12653,7 @@ async function loadRitualSubmissions(type) {
         approved.slice().reverse().forEach(item => {
             const article = document.createElement('article');
             article.className='prayer-entry community-ritual-entry';
+            article.dataset.submissionId = String(item.id);
             article.dataset.category = String(item.category || 'other').toLowerCase();
             article.dataset.search = `${item.title} ${item.content} ${item.category || ''} ${(item.tags || []).join(' ')}`.toLowerCase();
             const key=`submission:${item.id}`;
@@ -13570,7 +13574,7 @@ document.addEventListener('keydown', function(event) {
             <button class="sanctuary-tab active" onclick="showSanctuaryTab('prayers',this)">PRAYERS</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('devotions',this)">DEVOTIONS</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('deities',this)">DEITIES</button>
-            <button class="sanctuary-tab" onclick="showSanctuaryTab('saved',this)">SAVED WRITINGS</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('bookmarked',this)">BOOKMARKED</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('candles',this)">CANDLES</button>
             <button class="sanctuary-tab" id="sanctuaryReviewTab" style="display:none" onclick="showSanctuaryTab('review',this)">REVIEW</button>
         </div>
@@ -13578,7 +13582,7 @@ document.addEventListener('keydown', function(event) {
         <section id="sanctuaryPanelPrayers" class="sanctuary-panel active"></section>
         <section id="sanctuaryPanelDevotions" class="sanctuary-panel"></section>
         <section id="sanctuaryPanelDeities" class="sanctuary-panel"></section>
-        <section id="sanctuaryPanelSaved" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelBookmarked" class="sanctuary-panel"></section>
         <section id="sanctuaryPanelCandles" class="sanctuary-panel"></section>
         <section id="sanctuaryPanelReview" class="sanctuary-panel"></section>
     </div>
@@ -13594,6 +13598,7 @@ let sanctuaryCache = {
     devotions: [],
     deities: [],
     saved: [],
+    bookmarked: [],
     candles: []
 };
 
@@ -13668,6 +13673,16 @@ async function loadSanctuary() {
         sanctuaryCache.saved = (!s.error || s.error.code === "42P01") ? (s.data || []) : [];
     } catch (error) {
         console.error("Could not load Sanctuary entries:", error);
+    }
+
+    // Bookmarked public prayers/invocations are stored in ritual_bookmarks.
+    // Load them independently from the older saved_writings table so the
+    // BOOKMARKED tab always reflects the bookmark buttons in the Temple.
+    try {
+        await loadSanctuaryBookmarks();
+    } catch (error) {
+        console.error("Could not load Sanctuary bookmarks:", error);
+        sanctuaryCache.bookmarked = [];
     }
 
     // Load candles separately so a problem with another Sanctuary table can
@@ -13877,12 +13892,12 @@ function renderSanctuaryTab(tab) {
             <div id="sanctuaryDeityForm"></div>
             ${renderDeityList()}
         `;
-    } else if (tab === "saved") {
+    } else if (tab === "bookmarked") {
         panel.innerHTML = `
             <div class="sanctuary-toolbar">
-                <h3>SAVED WRITINGS</h3>
+                <h3>BOOKMARKED</h3>
             </div>
-            ${renderSavedList()}
+            ${renderBookmarkedList()}
         `;
     } else if (tab === "candles") {
         panel.innerHTML = `
@@ -14009,6 +14024,161 @@ function renderDeityList() {
             </div>
         </article>
     `).join("")}</div>`;
+}
+
+async function loadSanctuaryBookmarks() {
+    sanctuaryCache.bookmarked = [];
+    if (!currentAuthUser || !supabaseClient) return;
+
+    const { data: bookmarks, error } = await supabaseClient
+        .from(RITUAL_BOOKMARKS_TABLE)
+        .select('id,entry_type,entry_id,created_at')
+        .eq('user_id', currentAuthUser.id)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        // A missing table should simply make the tab empty rather than break Sanctuary.
+        if (error.code === '42P01' || error.code === 'PGRST205') return;
+        throw error;
+    }
+
+    const rows = bookmarks || [];
+    const results = [];
+
+    // Built-in prayers/invocations live in the page itself. Their bookmark
+    // entry_id is the same slug used by the bookmark buttons.
+    const builtins = [];
+    ['prayer','invocation'].forEach(type => {
+        const content = document.getElementById(
+            type === 'invocation' ? 'invocationContent' : 'prayersContent'
+        );
+        if (!content) return;
+
+        content.querySelectorAll('.prayer-entry:not(.community-ritual-entry)').forEach(entry => {
+            const toggle = entry.querySelector('.prayer-card-toggle');
+            const body = entry.querySelector('.prayer-card-body');
+            if (!toggle || !body) return;
+
+            const slug = ritualSlug(toggle.textContent);
+            const textEl = body.querySelector('.invocation-text');
+            const tagEl = body.querySelector('.prayer-tag');
+            builtins.push({
+                source: 'builtin',
+                type,
+                id: slug,
+                title: toggle.textContent.trim(),
+                content: textEl ? textEl.innerHTML : '',
+                category: tagEl ? tagEl.textContent.trim() : (type === 'prayer' ? 'PRAYER' : 'INVOCATION'),
+                entry
+            });
+        });
+    });
+
+    // Community submissions need their database content because they are not
+    // necessarily present in the page until the public lists finish loading.
+    const submissionIds = rows
+        .filter(x => x.entry_type === 'submission')
+        .map(x => x.entry_id)
+        .filter(Boolean);
+
+    let submissions = [];
+    if (submissionIds.length) {
+        const { data, error: submissionError } = await supabaseClient
+            .from(RITUAL_SUBMISSIONS_TABLE)
+            .select('id,content_type,title,content,category,tags,status')
+            .in('id', submissionIds)
+            .eq('status', 'approved');
+        if (!submissionError) submissions = data || [];
+    }
+
+    rows.forEach(bookmark => {
+        if (bookmark.entry_type === 'builtin') {
+            const matches = builtins.filter(item => item.id === String(bookmark.entry_id));
+            matches.forEach(item => results.push({ ...bookmark, ...item }));
+        } else if (bookmark.entry_type === 'submission') {
+            const item = submissions.find(x => String(x.id) === String(bookmark.entry_id));
+            if (item) {
+                results.push({
+                    ...bookmark,
+                    source: 'submission',
+                    type: item.content_type,
+                    id: item.id,
+                    title: item.title,
+                    content: ritualEscape(item.content || '').replace(/\n/g, '<br>'),
+                    category: [item.category, ...(Array.isArray(item.tags) ? item.tags : [])].filter(Boolean).join(' · ') || item.content_type.toUpperCase()
+                });
+            }
+        }
+    });
+
+    sanctuaryCache.bookmarked = results;
+}
+
+function renderBookmarkedList() {
+    if (!sanctuaryCache.bookmarked.length) {
+        return '<div class="sanctuary-empty">Your bookmarked prayers and invocations will appear here.</div>';
+    }
+
+    return `<div class="sanctuary-list">${sanctuaryCache.bookmarked.map(item => `
+        <article class="sanctuary-item bookmarked-sanctuary-item">
+            <div class="sanctuary-item-title">${escapeSanctuary(item.title)}</div>
+            <div class="sanctuary-item-meta">${escapeSanctuary(item.category || item.type || 'RITUAL')}</div>
+            <div class="sanctuary-item-text bookmarked-sanctuary-text">${item.content || ''}</div>
+            <div class="sanctuary-item-actions">
+                <button class="sanctuary-small" onclick="openBookmarkedRitual(${JSON.stringify(item.source)},${JSON.stringify(item.type)},${JSON.stringify(item.id)})">OPEN</button>
+                <button class="sanctuary-small" onclick="removeSanctuaryBookmark(${JSON.stringify(item.source)},${JSON.stringify(item.id)},this)">REMOVE BOOKMARK</button>
+            </div>
+        </article>
+    `).join('')}</div>`;
+}
+
+async function removeSanctuaryBookmark(entryType, entryId, button) {
+    if (!currentAuthUser || !supabaseClient) return;
+    const { error } = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE)
+        .delete()
+        .eq('user_id', currentAuthUser.id)
+        .eq('entry_type', entryType)
+        .eq('entry_id', String(entryId));
+    if (error) {
+        alert(error.message || 'Could not remove bookmark.');
+        return;
+    }
+    await loadSanctuaryBookmarks();
+    renderSanctuaryTab('bookmarked');
+
+    // Refresh the bookmark button on the original page too.
+    if (typeof loadBuiltInBookmarkStates === 'function' && entryType === 'builtin') {
+        await loadBuiltInBookmarkStates('prayer');
+        await loadBuiltInBookmarkStates('invocation');
+    }
+}
+
+function openBookmarkedRitual(source, type, id) {
+    if (source === 'builtin') {
+        const content = document.getElementById(type === 'invocation' ? 'invocationContent' : 'prayersContent');
+        const entries = content ? content.querySelectorAll('.prayer-entry:not(.community-ritual-entry)') : [];
+        for (const entry of entries) {
+            const toggle = entry.querySelector('.prayer-card-toggle');
+            if (toggle && ritualSlug(toggle.textContent) === String(id)) {
+                entry.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+                closeSanctuary();
+                entry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+        }
+    }
+
+    // For community submissions, close Sanctuary and let the public list be visible.
+    closeSanctuary();
+    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : 'prayersContent');
+    const entry = content?.querySelector(`.community-ritual-entry[data-submission-id="${CSS.escape(String(id))}"]`);
+    if (entry) {
+        entry.classList.add('open');
+        const toggle = entry.querySelector('.prayer-card-toggle');
+        if (toggle) toggle.setAttribute('aria-expanded', 'true');
+        entry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 }
 
 function renderSavedList() {
