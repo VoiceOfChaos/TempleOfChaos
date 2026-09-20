@@ -15252,12 +15252,12 @@ document.addEventListener('click', function(event) {
 
       <button class="chat-room-button" type="button" data-room="news" onclick="switchChatRoom('news')">
         <strong>NEWS</strong>
-        <span>Only VoiceOfChaos can publish.</span>
+        <span>Read-only announcements.</span>
       </button>
 
       <button class="chat-room-button" type="button" data-room="surveys" onclick="switchChatRoom('surveys')">
         <strong>SURVEYS</strong>
-        <span>Vote in Temple polls.</span>
+        <span>Read-only surveys.</span>
       </button>
     </aside>
 
@@ -15408,10 +15408,10 @@ async function switchChatRoom(room) {
         description.textContent = 'A shared room for registered members of the Temple.';
     } else if (chatCurrentRoom === 'news') {
         title.textContent = 'NEWS';
-        description.textContent = 'Announcements and messages from the Voice of Chaos.';
+        description.textContent = 'Announcements and messages from the Temple.';
     } else {
         title.textContent = 'SURVEYS';
-        description.textContent = 'Vote in polls created by VoiceOfChaos.';
+        description.textContent = 'Temple surveys and results.';
     }
 
     await checkChatAdmin();
@@ -15441,20 +15441,15 @@ function updateChatComposer() {
     if (messages) messages.hidden = isSurveyRoom;
     if (surveys) surveys.hidden = !isSurveyRoom;
 
-    const canWriteMessage = !!currentAuthUser &&
-        (chatCurrentRoom === 'general' ||
-        (chatCurrentRoom === 'news' && chatIsAdmin));
+    const canWriteMessage = !!currentAuthUser && chatCurrentRoom === 'general';
 
     if (composer) composer.hidden = !canWriteMessage || isSurveyRoom;
-    if (surveyAdmin) surveyAdmin.hidden = !(isSurveyRoom && currentAuthUser && chatIsAdmin);
+    if (surveyAdmin) surveyAdmin.hidden = true;
 
     if (notice) {
-        // Unregistered visitors see no message/survey input boxes.
+        // News and surveys are read-only for everyone. Only General requires registration to write.
         if (isSurveyRoom) {
-            notice.hidden = !!currentAuthUser;
-            if (loginNoticeText) {
-                loginNoticeText.textContent = 'You need to be registered and signed in to vote.';
-            }
+            notice.hidden = true;
         } else if (chatCurrentRoom === 'general') {
             notice.hidden = !!currentAuthUser;
             if (loginNoticeText) {
@@ -15470,13 +15465,9 @@ function updateChatComposer() {
         note.hidden = false;
 
         if (chatCurrentRoom === 'news') {
-            note.textContent = chatIsAdmin
-                ? 'You are posting as VoiceOfChaos.'
-                : 'READ ONLY — ONLY VOICEOFCHAOS CAN PUBLISH HERE.';
+            note.textContent = 'READ ONLY';
         } else if (chatCurrentRoom === 'surveys') {
-            note.textContent = chatIsAdmin
-                ? 'You can create and delete surveys.'
-                : 'Vote once in each survey.';
+            note.textContent = 'READ ONLY';
         } else {
             note.hidden = true;
             note.textContent = '';
@@ -15487,11 +15478,7 @@ function updateChatComposer() {
     const sendButton = document.querySelector('#chatComposer button');
 
     if (input) {
-        input.placeholder = chatEditingMessageId
-            ? 'Edit your message...'
-            : (chatCurrentRoom === 'news'
-                ? 'Publish a message as VoiceOfChaos...'
-                : 'Write a message...');
+        input.placeholder = chatEditingMessageId ? 'Edit your message...' : 'Write a message...';
     }
 
     if (sendButton) {
@@ -15510,7 +15497,7 @@ function renderChatMessages() {
 
     box.innerHTML = chatMessages.map(message => {
         const mine = currentAuthUser && String(message.user_id) === String(currentAuthUser.id);
-        const canDelete = mine;
+        const canDelete = mine && chatCurrentRoom === 'general';
         const date = new Date(message.created_at);
         const time = isNaN(date) ? '' : date.toLocaleString([], {
             month: 'short',
@@ -15531,7 +15518,7 @@ function renderChatMessages() {
                 <span class="chat-message-time">${escapeChatText(time)}${edited ? ' · edited' : ''}</span>
             </div>
             <div class="chat-message-body">${escapeChatText(message.body || '')}</div>
-            ${mine ? `
+            ${canDelete ? `
                 <div class="chat-message-actions">
                     <button type="button" class="chat-edit-button" onclick="editChatMessage('${escapeChatText(message.id)}')">EDIT</button>
                     <button type="button" class="chat-delete-button" onclick="deleteChatMessage('${escapeChatText(message.id)}')">DELETE</button>
@@ -15595,13 +15582,10 @@ async function sendChatMessage() {
 
     await checkChatAdmin();
 
-    if (chatCurrentRoom === 'news' && !chatIsAdmin) {
-        setChatStatus('Only VoiceOfChaos can publish in News.');
-        updateChatComposer();
+    if (chatCurrentRoom !== 'general') {
+        setChatStatus('This section is read-only.');
         return;
     }
-
-    if (chatCurrentRoom !== 'general' && chatCurrentRoom !== 'news') return;
 
     if (!supabaseClient) {
         setChatStatus('Chat is not connected.');
@@ -15836,21 +15820,18 @@ function renderSurveys() {
                     const percent = totalVotes ? Math.round((count / totalVotes) * 100) : 0;
                     const selected = myVote && String(myVote.option_id) === String(option.id);
 
-                    return `<button
-                        type="button"
+                    return `<div
                         class="survey-option${selected ? ' selected' : ''}"
                         style="--percent:${percent}%"
-                        onclick="voteInSurvey('${escapeChatText(survey.id)}','${escapeChatText(option.id)}')"
+                        aria-disabled="true"
                     >
                         <span class="survey-option-fill"></span>
                         <span class="survey-option-text">${escapeChatText(option.option_text)}</span>
                         <span class="survey-option-count">${count} · ${percent}%</span>
-                    </button>`;
+                    </div>`;
                 }).join('')}
             </div>
             <div class="survey-total">${totalVotes} vote${totalVotes === 1 ? '' : 's'}</div>
-            ${!currentAuthUser ? '<div class="survey-login-note">Sign in to vote.</div>' : ''}
-            ${chatIsAdmin ? `<button type="button" class="survey-delete-button" onclick="deleteSurvey('${escapeChatText(survey.id)}')">DELETE SURVEY</button>` : ''}
         </article>`;
     }).join('');
 }
