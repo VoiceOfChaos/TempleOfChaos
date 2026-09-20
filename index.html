@@ -15510,7 +15510,7 @@ function renderChatMessages() {
 
     box.innerHTML = chatMessages.map(message => {
         const mine = currentAuthUser && String(message.user_id) === String(currentAuthUser.id);
-        const canDelete = mine || chatIsAdmin;
+        const canDelete = mine;
         const date = new Date(message.created_at);
         const time = isNaN(date) ? '' : date.toLocaleString([], {
             month: 'short',
@@ -15531,10 +15531,10 @@ function renderChatMessages() {
                 <span class="chat-message-time">${escapeChatText(time)}${edited ? ' · edited' : ''}</span>
             </div>
             <div class="chat-message-body">${escapeChatText(message.body || '')}</div>
-            ${(mine || canDelete) ? `
+            ${mine ? `
                 <div class="chat-message-actions">
-                    ${mine ? `<button type="button" class="chat-edit-button" onclick="editChatMessage('${escapeChatText(message.id)}')">EDIT</button>` : ''}
-                    ${canDelete ? `<button type="button" class="chat-delete-button" onclick="deleteChatMessage('${escapeChatText(message.id)}')">DELETE</button>` : ''}
+                    <button type="button" class="chat-edit-button" onclick="editChatMessage('${escapeChatText(message.id)}')">EDIT</button>
+                    <button type="button" class="chat-delete-button" onclick="deleteChatMessage('${escapeChatText(message.id)}')">DELETE</button>
                 </div>
             ` : ''}
         </article>`;
@@ -15701,28 +15701,25 @@ async function deleteChatMessage(messageId) {
         return;
     }
 
-    await checkChatAdmin();
-
     const mine = String(message.user_id) === String(currentAuthUser.id);
 
-    if (!mine && !chatIsAdmin) {
-        alert('Only VoiceOfChaos can delete other members’ messages.');
+    // Members may only delete their own messages. This is also enforced by
+    // the Supabase RLS policy, so it cannot be bypassed by changing the UI.
+    if (!mine) {
+        alert('You can only delete your own messages.');
         return;
     }
 
-    if (!confirm(mine ? 'Delete this message permanently?' : 'Delete this member’s message permanently?')) return;
+    if (!confirm('Delete this message permanently?')) return;
 
     try {
         setChatStatus('DELETING...');
 
-        let query = supabaseClient
+        const query = supabaseClient
             .from(CHAT_TABLE)
             .delete()
-            .eq('id', messageId);
-
-        if (!chatIsAdmin) {
-            query = query.eq('user_id', currentAuthUser.id);
-        }
+            .eq('id', messageId)
+            .eq('user_id', currentAuthUser.id);
 
         const { data, error } = await query.select();
 
