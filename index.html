@@ -5442,7 +5442,8 @@
 
 #prayersSearch,
 #invocationSearch,
-#devotionSearch {
+#devotionSearch,
+.ritual-category-filter {
     width: 100%;
     box-sizing: border-box;
     padding: 13px 15px;
@@ -12121,6 +12122,16 @@ function openRitualPathPopup(path) {
                     aria-label="Search invocations"
                     value=""
                 >
+                <select id="invocationCategoryFilter" class="ritual-category-filter" aria-label="Filter invocations by category">
+                    <option value="">ALL CATEGORIES</option>
+                    <option value="personal">PERSONAL</option>
+                    <option value="traditional">TRADITIONAL</option>
+                    <option value="historic">HISTORICAL</option>
+                    <option value="devotional">DEVOTIONAL</option>
+                    <option value="deity">DEITY / DIVINE</option>
+                    <option value="ritual">RITUAL</option>
+                    <option value="other">OTHER</option>
+                </select>
             </div>
 
             <div id="invocationCommunityTools" class="ritual-community-tools"></div>
@@ -12206,38 +12217,28 @@ function openRitualPathPopup(path) {
         `;
 
         const search = document.getElementById("invocationSearch");
-        const entries = Array.from(document.querySelectorAll("#invocationContent .prayer-entry"));
+        const categoryFilter = document.getElementById("invocationCategoryFilter");
         const noResults = document.getElementById("invocationNoResults");
 
         function filterInvocations() {
             const query = search.value.trim().toLowerCase();
+            const category = categoryFilter.value;
+            const entries = Array.from(document.querySelectorAll("#invocationContent .prayer-entry"));
             let visibleCount = 0;
-
             entries.forEach(entry => {
-                const haystack = (
-                    entry.textContent + " " + (entry.dataset.search || "")
-                ).toLowerCase();
-
-                const matches = !query || haystack.includes(query);
+                const haystack = (entry.textContent + " " + (entry.dataset.search || "")).toLowerCase();
+                const entryCategory = ritualCategoryFromEntry(entry);
+                const matchesText = !query || haystack.includes(query);
+                const matchesCategory = !category || entryCategory === category;
+                const matches = matchesText && matchesCategory;
                 entry.style.display = matches ? "" : "none";
-
                 if (matches) visibleCount++;
             });
-
             noResults.hidden = visibleCount !== 0;
         }
 
         search.addEventListener("input", filterInvocations);
-
-        entries.forEach(entry => {
-            const toggle = entry.querySelector(".prayer-card-toggle");
-            if (!toggle) return;
-            toggle.addEventListener("click", () => {
-                const isOpen = entry.classList.toggle("open");
-                toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-            });
-        });
-
+        categoryFilter.addEventListener("change", filterInvocations);
         filterInvocations();
         setupRitualCommunity("invocation");
     } else if (path === "prayers") {
@@ -12251,6 +12252,16 @@ function openRitualPathPopup(path) {
                     aria-label="Search prayers and epithets"
                     value=""
                 >
+                <select id="prayersCategoryFilter" class="ritual-category-filter" aria-label="Filter prayers by category">
+                    <option value="">ALL CATEGORIES</option>
+                    <option value="personal">PERSONAL</option>
+                    <option value="traditional">TRADITIONAL</option>
+                    <option value="historic">HISTORICAL</option>
+                    <option value="devotional">DEVOTIONAL</option>
+                    <option value="deity">DEITY / DIVINE</option>
+                    <option value="ritual">RITUAL</option>
+                    <option value="other">OTHER</option>
+                </select>
             </div>
 
             <div id="prayersCommunityTools" class="ritual-community-tools"></div>
@@ -12395,40 +12406,28 @@ function openRitualPathPopup(path) {
         `;
 
         const search = document.getElementById("prayersSearch");
+        const categoryFilter = document.getElementById("prayersCategoryFilter");
         const noResults = document.getElementById("prayersNoResults");
-
-        const entries = Array.from(document.querySelectorAll("#prayersContent .prayer-entry"));
 
         function filterPrayers() {
             const query = search.value.trim().toLowerCase();
+            const category = categoryFilter.value;
+            const entries = Array.from(document.querySelectorAll("#prayersContent .prayer-entry"));
             let visibleCount = 0;
-
             entries.forEach(entry => {
-                const haystack = (
-                    entry.textContent + " " + (entry.dataset.search || "")
-                ).toLowerCase();
-
-                const matches = !query || haystack.includes(query);
+                const haystack = (entry.textContent + " " + (entry.dataset.search || "")).toLowerCase();
+                const entryCategory = ritualCategoryFromEntry(entry);
+                const matchesText = !query || haystack.includes(query);
+                const matchesCategory = !category || entryCategory === category;
+                const matches = matchesText && matchesCategory;
                 entry.style.display = matches ? "" : "none";
-
                 if (matches) visibleCount++;
             });
-
             noResults.hidden = visibleCount !== 0;
         }
 
         search.addEventListener("input", filterPrayers);
-
-        entries.forEach(entry => {
-            const toggle = entry.querySelector(".prayer-card-toggle");
-            if (!toggle) return;
-
-            toggle.addEventListener("click", () => {
-                const isOpen = entry.classList.toggle("open");
-                toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-            });
-        });
-
+        categoryFilter.addEventListener("change", filterPrayers);
         filterPrayers();
         setupRitualCommunity("prayer");
     } else if (path === "devotion") {
@@ -12442,6 +12441,16 @@ function openRitualPathPopup(path) {
                     aria-label="Search devotions"
                     value=""
                 >
+                <select id="devotionCategoryFilter" class="ritual-category-filter" aria-label="Filter devotions by category">
+                    <option value="">ALL CATEGORIES</option>
+                    <option value="personal">PERSONAL</option>
+                    <option value="traditional">TRADITIONAL</option>
+                    <option value="historic">HISTORICAL</option>
+                    <option value="devotional">DEVOTIONAL</option>
+                    <option value="deity">DEITY / DIVINE</option>
+                    <option value="ritual">RITUAL</option>
+                    <option value="other">OTHER</option>
+                </select>
             </div>
 
             <div id="devotionCommunityTools" class="ritual-community-tools"></div>
@@ -12457,24 +12466,30 @@ function openRitualPathPopup(path) {
         `;
 
         const search = document.getElementById("devotionSearch");
+        const categoryFilter = document.getElementById("devotionCategoryFilter");
         const noResults = document.getElementById("devotionNoResults");
-        const entries = Array.from(document.querySelectorAll("#devotionContent .prayer-entry"));
 
         function filterDevotions() {
             const query = search.value.trim().toLowerCase();
+            const category = categoryFilter.value;
+            const entries = Array.from(document.querySelectorAll("#devotionContent .prayer-entry"));
             let visibleCount = 0;
             entries.forEach(entry => {
                 const haystack = (entry.textContent + " " + (entry.dataset.search || "")).toLowerCase();
-                const matches = !query || haystack.includes(query);
+                const entryCategory = ritualCategoryFromEntry(entry);
+                const matchesText = !query || haystack.includes(query);
+                const matchesCategory = !category || entryCategory === category;
+                const matches = matchesText && matchesCategory;
                 entry.style.display = matches ? "" : "none";
                 if (matches) visibleCount++;
             });
             const publicIntro = document.querySelector("#devotionContent .ritual-empty-public");
-            if (publicIntro) publicIntro.style.display = query ? "none" : "";
-            noResults.hidden = !query || visibleCount !== 0;
+            if (publicIntro) publicIntro.style.display = (query || category) ? "none" : "";
+            noResults.hidden = (!query && !category) || visibleCount !== 0;
         }
 
         search.addEventListener("input", filterDevotions);
+        categoryFilter.addEventListener("change", filterDevotions);
         filterDevotions();
         setupRitualCommunity("devotion");
     } else {
@@ -12502,6 +12517,19 @@ function ritualEscape(value) {
     return String(value ?? '')
         .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
         .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function ritualCategoryFromEntry(entry) {
+    const explicit = String(entry?.dataset?.category || '').trim().toLowerCase();
+    if (explicit) return explicit;
+    const tag = String(entry?.querySelector('.prayer-tag')?.textContent || entry?.querySelector('[data-tag]')?.getAttribute('data-tag') || '').toLowerCase();
+    if (tag.includes('traditional')) return 'traditional';
+    if (tag.includes('historical') || tag.includes('historic')) return 'historic';
+    if (tag.includes('devotional') || tag.includes('devotion')) return 'devotional';
+    if (tag.includes('deity') || tag.includes('divine')) return 'deity';
+    if (tag.includes('ritual')) return 'ritual';
+    if (tag.includes('personal')) return 'personal';
+    return 'other';
 }
 
 async function setupRitualCommunity(type) {
@@ -12590,8 +12618,11 @@ async function submitRitualContent(event,type){
         const {error}=await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).insert({content_type:type,title,content,category,tags,submitted_by:currentAuthUser.id,status:'pending'});
         if(error)throw error;
         event.target.reset(); closeRitualSubmissionModal();
-        alert('Submitted for review. It will appear after approval.');
-        if(chatIsAdmin) await loadRitualSubmissions(type);
+        alert('Submitted for review. It has been added to the Review section in My Sanctuary.');
+        if(chatIsAdmin) {
+            await loadRitualSubmissions(type);
+            if (document.getElementById('profileRitualReviewList')) await loadProfileRitualReviews();
+        }
     }catch(error){ console.error('Ritual submission failed:',error); alert(error.message||'Could not submit this ritual content.'); }
 }
 
@@ -12619,6 +12650,7 @@ async function loadRitualSubmissions(type) {
         approved.slice().reverse().forEach(item => {
             const article = document.createElement('article');
             article.className='prayer-entry community-ritual-entry';
+            article.dataset.category = String(item.category || 'other').toLowerCase();
             article.dataset.search = `${item.title} ${item.content} ${item.category || ''} ${(item.tags || []).join(' ')}`.toLowerCase();
             const key=`submission:${item.id}`;
             const marked=bookmarks.has(key);
@@ -13901,7 +13933,7 @@ async function loadProfileRitualReviews() {
     try {
         const { data, error } = await supabaseClient
             .from(RITUAL_SUBMISSIONS_TABLE)
-            .select('id,content_type,title,content,category,tags,status,created_at,submitted_by')
+            .select('id,content_type,title,content,category,tags,status,created_at,submitted_by,reviewed_at,reviewed_by')
             .eq('status','pending')
             .order('created_at',{ascending:false});
         if (error) throw error;
@@ -13911,7 +13943,7 @@ async function loadProfileRitualReviews() {
             return;
         }
         list.innerHTML = items.map(item => {
-            const typeLabel = item.content_type === 'invocation' ? 'INVOCATION' : type === 'prayer' ? 'PRAYER' : 'DEVOTION';
+            const typeLabel = item.content_type === 'invocation' ? 'INVOCATION' : item.content_type === 'prayer' ? 'PRAYER' : 'DEVOTION';
             const tags = Array.isArray(item.tags) ? item.tags : String(item.tags || '').split(',').map(x=>x.trim()).filter(Boolean);
             const meta = [typeLabel, item.category, ...tags].filter(Boolean).join(' · ');
             return `<article class="ritual-profile-review-item">
