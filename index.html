@@ -5513,6 +5513,11 @@
     color: #fff5df;
 }
 
+.prayer-card-toggle:focus-visible {
+    outline: 1px solid rgba(210,190,150,.65);
+    outline-offset: -2px;
+}
+
 .prayer-card-toggle::after {
     content: '+';
     float: right;
@@ -12456,9 +12461,6 @@ function openRitualPathPopup(path) {
             <div id="devotionCommunityTools" class="ritual-community-tools"></div>
 
             <div id="devotionContent" class="prayers-content devotion-content">
-                <div class="ritual-empty-public">
-                    <h4>DEVOTIONS</h4>
-                </div>
                 <div id="devotionNoResults" class="prayers-no-results" hidden>
                     No devotions found.
                 </div>
@@ -12483,8 +12485,6 @@ function openRitualPathPopup(path) {
                 entry.style.display = matches ? "" : "none";
                 if (matches) visibleCount++;
             });
-            const publicIntro = document.querySelector("#devotionContent .ritual-empty-public");
-            if (publicIntro) publicIntro.style.display = (query || category) ? "none" : "";
             noResults.hidden = (!query && !category) || visibleCount !== 0;
         }
 
@@ -12733,10 +12733,12 @@ function decorateRitualBuiltIns(type) {
         const toggle = entry.querySelector('.prayer-card-toggle');
         const body = entry.querySelector('.prayer-card-body');
         if (!toggle || !body || body.querySelector('.ritual-entry-actions')) return;
+        const category = ritualCategoryFromEntry(entry);
+        entry.dataset.category = category;
         const key = `builtin:${type}:${ritualSlug(toggle.textContent)}`;
         const actions = document.createElement('div');
         actions.className = 'ritual-entry-actions';
-        actions.innerHTML = `<button type="button" class="ritual-bookmark-btn" data-bookmark-key="${ritualEscape(key)}" onclick="toggleRitualBookmark('builtin','${ritualEscape(ritualSlug(toggle.textContent))}',this)">☆ BOOKMARK</button>`;
+        actions.innerHTML = `<button type="button" class="ritual-bookmark-btn" data-bookmark-key="${ritualEscape(key)}" aria-label="Bookmark ${ritualEscape(toggle.textContent)}" onclick="toggleRitualBookmark('builtin','${ritualEscape(ritualSlug(toggle.textContent))}',this)">☆ BOOKMARK</button>`;
         body.appendChild(actions);
         bindRitualEntry(entry);
     });
