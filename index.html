@@ -5680,10 +5680,10 @@
 ===================================================== */
 .ritual-community-tools { width:100%; margin:0 0 24px; text-align:left; }
 .ritual-community-toolbar { display:flex; gap:10px; flex-wrap:wrap; margin:0 0 18px; }
-.ritual-submit-modal { position:fixed; inset:0; z-index:10050; display:none; align-items:center; justify-content:center; padding:24px; }
+.ritual-submit-modal { position:fixed; inset:0; z-index:100200; display:none; align-items:center; justify-content:center; padding:24px; }
 .ritual-submit-modal.active { display:flex; }
 .ritual-submit-modal-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.78); backdrop-filter:blur(3px); }
-.ritual-submit-modal-card { position:relative; width:min(720px,94vw); max-height:88vh; overflow:auto; border:1px solid rgba(210,190,150,.28); background:#100e0d; box-shadow:0 20px 80px rgba(0,0,0,.7); padding:28px; }
+.ritual-submit-modal-card { position:relative; z-index:2; width:min(720px,94vw); max-height:88vh; overflow:auto; border:1px solid rgba(210,190,150,.28); background:#100e0d; box-shadow:0 20px 80px rgba(0,0,0,.7); padding:28px; }
 .ritual-submit-modal-close { position:absolute; top:12px; right:16px; border:0; background:none; color:#d8c9b6; font-size:28px; cursor:pointer; }
 .ritual-submit-modal-title { margin:0 0 6px; font-size:22px; letter-spacing:.12em; color:#e6dccf; }
 .ritual-submit-modal-subtitle { margin:0 0 22px; color:rgba(215,205,194,.55); font-size:11px; line-height:1.6; }
@@ -5718,6 +5718,14 @@
 .ritual-review-item:first-child { border-top:0; }
 .ritual-review-item h5 { margin:0 0 7px; color:#e6dccf; font-size:13px; font-weight:normal; letter-spacing:.08em; }
 .ritual-review-item p { margin:0 0 10px; color:rgba(225,215,203,.72); font-size:12px; line-height:1.65; white-space:pre-wrap; }
+.ritual-profile-review { text-align:left; }
+.ritual-profile-review-intro { color:rgba(215,205,194,.55); font-size:11px; line-height:1.6; margin:0 0 18px; }
+.ritual-profile-review-item { padding:18px 0; border-top:1px solid rgba(210,190,150,.14); }
+.ritual-profile-review-item:first-child { border-top:0; }
+.ritual-profile-review-item h4 { margin:0 0 7px; color:#e6dccf; font-size:15px; font-weight:normal; letter-spacing:.08em; }
+.ritual-profile-review-item .ritual-review-content { margin:12px 0; color:rgba(225,215,203,.72); font-size:12px; line-height:1.7; white-space:pre-wrap; max-height:260px; overflow:auto; padding:12px; border:1px solid rgba(210,190,150,.1); background:rgba(0,0,0,.16); }
+.ritual-profile-review-actions { display:flex; gap:9px; flex-wrap:wrap; }
+
 .ritual-review-actions { display:flex; gap:8px; flex-wrap:wrap; }
 .ritual-community-meta { margin-top:12px; color:rgba(215,205,194,.42); font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
 .ritual-entry-actions { display:flex; gap:8px; margin-top:15px; }
@@ -12456,7 +12464,6 @@ async function setupRitualCommunity(type) {
     tools.innerHTML = `
         <div class="ritual-community-toolbar">
             <button type="button" class="ritual-community-btn" onclick="openRitualSubmissionModal('${type}')">+ SUBMIT NEW ${type === 'invocation' ? 'INVOCATION' : 'PRAYER'}</button>
-            ${chatIsAdmin ? `<button type="button" class="ritual-community-btn" onclick="openRitualSubmissionModal('${type}', true)">REVIEW SUBMISSIONS</button>` : ''}
         </div>`;
 
     decorateRitualBuiltIns(type);
@@ -12729,6 +12736,7 @@ function closeRitualPathPopup() {
 document.addEventListener("keydown", function(event) {
     if (event.key === "Escape") {
         closeRitualPathPopup();
+        closeRitualSubmissionModal();
     }
 });
 
@@ -13469,12 +13477,13 @@ document.addEventListener('keydown', function(event) {
             <p>A private place for what you create within the Temple.</p>
         </div>
 
-        <div class="sanctuary-tabs">
+        <div class="sanctuary-tabs" id="sanctuaryTabs">
             <button class="sanctuary-tab active" onclick="showSanctuaryTab('prayers',this)">PRAYERS</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('devotions',this)">DEVOTIONS</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('deities',this)">DEITIES</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('saved',this)">SAVED WRITINGS</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('candles',this)">CANDLES</button>
+            <button class="sanctuary-tab" id="sanctuaryReviewTab" style="display:none" onclick="showSanctuaryTab('review',this)">REVIEW</button>
         </div>
 
         <section id="sanctuaryPanelPrayers" class="sanctuary-panel active"></section>
@@ -13482,6 +13491,7 @@ document.addEventListener('keydown', function(event) {
         <section id="sanctuaryPanelDeities" class="sanctuary-panel"></section>
         <section id="sanctuaryPanelSaved" class="sanctuary-panel"></section>
         <section id="sanctuaryPanelCandles" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelReview" class="sanctuary-panel"></section>
     </div>
 </div>
 
@@ -13511,6 +13521,9 @@ function openSanctuary() {
     }
 
     closeAccountModal();
+
+    // The Review area is an administrator-only part of the profile.
+    Promise.resolve(checkChatAdmin && checkChatAdmin()).then(() => updateSanctuaryReviewTab()).catch(() => updateSanctuaryReviewTab());
 
     const modal = document.getElementById("sanctuaryModal");
     modal.classList.add("active");
@@ -13789,8 +13802,91 @@ function renderSanctuaryTab(tab) {
             </div>
             ${renderCandleList()}
         `;
+    } else if (tab === "review") {
+        if (!chatIsAdmin) {
+            panel.innerHTML = '<div class="sanctuary-empty">This area is only available to the Temple administrator.</div>';
+            return;
+        }
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>RITUAL SUBMISSIONS</h3>
+                <button class="sanctuary-action" onclick="loadProfileRitualReviews()">REFRESH</button>
+            </div>
+            <div class="ritual-profile-review">
+                <p class="ritual-profile-review-intro">Review community prayers and invocations here. Nothing becomes public until you approve it.</p>
+                <div id="profileRitualReviewList"><div class="sanctuary-empty">Loading submissions...</div></div>
+            </div>
+        `;
+        loadProfileRitualReviews();
+    }
+}
 
+function updateSanctuaryReviewTab() {
+    const tab = document.getElementById('sanctuaryReviewTab');
+    if (!tab) return;
+    tab.style.display = chatIsAdmin ? '' : 'none';
+    if (!chatIsAdmin && sanctuaryCurrentTab === 'review') {
+        sanctuaryCurrentTab = 'prayers';
+        showSanctuaryTab('prayers', document.querySelector('.sanctuary-tab'));
+    }
+    if (chatIsAdmin && sanctuaryCurrentTab === 'review') renderSanctuaryTab('review');
+}
 
+async function loadProfileRitualReviews() {
+    const list = document.getElementById('profileRitualReviewList');
+    if (!list || !chatIsAdmin || !supabaseClient) return;
+    list.innerHTML = '<div class="sanctuary-empty">Loading submissions...</div>';
+    try {
+        const { data, error } = await supabaseClient
+            .from(RITUAL_SUBMISSIONS_TABLE)
+            .select('id,content_type,title,content,category,tags,status,created_at,submitted_by')
+            .eq('status','pending')
+            .order('created_at',{ascending:false});
+        if (error) throw error;
+        const items = data || [];
+        if (!items.length) {
+            list.innerHTML = '<div class="sanctuary-empty">No submissions are waiting for review.</div>';
+            return;
+        }
+        list.innerHTML = items.map(item => {
+            const typeLabel = item.content_type === 'invocation' ? 'INVOCATION' : 'PRAYER';
+            const tags = Array.isArray(item.tags) ? item.tags : String(item.tags || '').split(',').map(x=>x.trim()).filter(Boolean);
+            const meta = [typeLabel, item.category, ...tags].filter(Boolean).join(' · ');
+            return `<article class="ritual-profile-review-item">
+                <h4>${ritualEscape(item.title)}</h4>
+                <div class="prayer-tag">${ritualEscape(meta)}</div>
+                <div class="ritual-review-content">${ritualEscape(item.content)}</div>
+                <div class="ritual-profile-review-actions">
+                    <button type="button" class="ritual-review-btn" onclick="reviewRitualSubmissionFromProfile('${item.id}','${item.content_type}','approved')">APPROVE</button>
+                    <button type="button" class="ritual-review-btn" onclick="reviewRitualSubmissionFromProfile('${item.id}','${item.content_type}','deleted')">DELETE</button>
+                </div>
+            </article>`;
+        }).join('');
+    } catch (error) {
+        console.error('Could not load profile ritual reviews:', error);
+        list.innerHTML = '<div class="sanctuary-empty">Could not load submissions. Check the ritual submissions table and permissions.</div>';
+    }
+}
+
+async function reviewRitualSubmissionFromProfile(id, type, status) {
+    if (!chatIsAdmin || !currentAuthUser || !supabaseClient) {
+        alert('Only the Temple administrator can review submissions.');
+        return;
+    }
+    if (status === 'deleted' && !confirm('Delete this submission permanently?')) return;
+    try {
+        if (status === 'deleted') {
+            const { error } = await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).delete().eq('id',id);
+            if (error) throw error;
+        } else {
+            const { error } = await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).update({status:'approved', reviewed_by:currentAuthUser.id, reviewed_at:new Date().toISOString()}).eq('id',id);
+            if (error) throw error;
+        }
+        await loadProfileRitualReviews();
+        await loadRitualSubmissions(type);
+    } catch (error) {
+        console.error('Could not review ritual submission from profile:', error);
+        alert(error.message || 'Could not review submission.');
     }
 }
 
