@@ -5740,7 +5740,24 @@
 .ritual-entry-actions { display:flex; gap:8px; margin-top:15px; }
 .ritual-entry-actions .ritual-bookmark-btn { padding:7px 10px; }
 .bookmarked-sanctuary-text { white-space: pre-wrap; line-height: 1.8; }
-.sanctuary-item-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.bookmarked-sanctuary-item { padding: 0; overflow: hidden; }
+.bookmarked-sanctuary-toggle {
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:18px;
+    padding:20px; border:0; background:transparent; color:#e6dccf; font:inherit;
+    text-align:left; cursor:pointer;
+}
+.bookmarked-sanctuary-toggle:hover { background:rgba(210,190,150,.045); }
+.bookmarked-sanctuary-heading { min-width:0; }
+.bookmarked-sanctuary-heading .sanctuary-item-title { margin:0 0 6px; }
+.bookmarked-sanctuary-arrow { flex:0 0 auto; color:#b9aa95; font-size:18px; transition:transform .25s ease; }
+.bookmarked-sanctuary-item.open .bookmarked-sanctuary-arrow { transform:rotate(45deg); }
+.bookmarked-sanctuary-body { display:none; padding:0 20px 20px; border-top:1px solid rgba(210,190,150,.10); }
+.bookmarked-sanctuary-item.open .bookmarked-sanctuary-body { display:block; }
+.bookmarked-sanctuary-body .bookmarked-sanctuary-text { margin-top:16px; }
+.bookmarked-sanctuary-search { width:100%; margin:0 0 18px; padding:13px 15px; border:1px solid rgba(210,190,150,.22); background:rgba(0,0,0,.24); color:#eee5d7; outline:none; font:inherit; }
+.bookmarked-sanctuary-search::placeholder { color:rgba(215,205,194,.42); }
+.bookmarked-sanctuary-search:focus { border-color:rgba(210,190,150,.5); }
+.sanctuary-item-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
 
 
 /* =====================================================
@@ -14119,19 +14136,72 @@ function renderBookmarkedList() {
         return '<div class="sanctuary-empty">Your bookmarked prayers and invocations will appear here.</div>';
     }
 
-    return `<div class="sanctuary-list">${sanctuaryCache.bookmarked.map(item => `
-        <article class="sanctuary-item bookmarked-sanctuary-item">
-            <div class="sanctuary-item-title">${escapeSanctuary(item.title)}</div>
-            <div class="sanctuary-item-meta">${escapeSanctuary(item.category || item.type || 'RITUAL')}</div>
-            <div class="sanctuary-item-text bookmarked-sanctuary-text">${item.content || ''}</div>
-            <div class="sanctuary-item-actions">
-                <button class="sanctuary-small" onclick="openBookmarkedRitual(${JSON.stringify(item.source)},${JSON.stringify(item.type)},${JSON.stringify(item.id)})">OPEN</button>
-                <button class="sanctuary-small" onclick="removeSanctuaryBookmark(${JSON.stringify(item.source)},${JSON.stringify(item.id)},this)">REMOVE BOOKMARK</button>
+    return `
+        <div class="bookmarked-sanctuary-wrap">
+            <input
+                id="sanctuaryBookmarkSearch"
+                class="bookmarked-sanctuary-search"
+                type="search"
+                placeholder="SEARCH BOOKMARKED PRAYERS AND INVOCATIONS..."
+                aria-label="Search bookmarked prayers and invocations"
+                oninput="filterSanctuaryBookmarks(this.value)"
+            >
+            <div id="sanctuaryBookmarkList" class="sanctuary-list">
+                ${sanctuaryCache.bookmarked.map((item, index) => `
+                    <article
+                        class="sanctuary-item bookmarked-sanctuary-item"
+                        data-bookmark-search="${escapeSanctuary(`${item.title} ${item.category || ''} ${item.type || ''}`.toLowerCase())}"
+                    >
+                        <button
+                            type="button"
+                            class="bookmarked-sanctuary-toggle"
+                            aria-expanded="false"
+                            onclick="toggleSanctuaryBookmarkItem(this)"
+                        >
+                            <span class="bookmarked-sanctuary-heading">
+                                <span class="sanctuary-item-title">${escapeSanctuary(item.title)}</span>
+                                <span class="sanctuary-item-meta">${escapeSanctuary(item.category || item.type || 'RITUAL')}</span>
+                            </span>
+                            <span class="bookmarked-sanctuary-arrow">+</span>
+                        </button>
+
+                        <div class="bookmarked-sanctuary-body">
+                            <div class="sanctuary-item-text bookmarked-sanctuary-text">${item.content || ''}</div>
+                            <div class="sanctuary-item-actions">
+                                <button class="sanctuary-small" type="button" onclick="openBookmarkedRitual(${JSON.stringify(item.source)},${JSON.stringify(item.type)},${JSON.stringify(item.id)})">OPEN</button>
+                                <button class="sanctuary-small" type="button" onclick="removeSanctuaryBookmark(${JSON.stringify(item.source)},${JSON.stringify(item.id)},this)">REMOVE BOOKMARK</button>
+                            </div>
+                        </div>
+                    </article>
+                `).join('')}
             </div>
-        </article>
-    `).join('')}</div>`;
+            <div id="sanctuaryBookmarkNoResults" class="sanctuary-empty" style="display:none;">No bookmarked writings found.</div>
+        </div>`;
 }
 
+function toggleSanctuaryBookmarkItem(button) {
+    const item = button.closest('.bookmarked-sanctuary-item');
+    if (!item) return;
+    const open = item.classList.toggle('open');
+    button.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+function filterSanctuaryBookmarks(value) {
+    const query = String(value || '').trim().toLowerCase();
+    const list = document.getElementById('sanctuaryBookmarkList');
+    const noResults = document.getElementById('sanctuaryBookmarkNoResults');
+    if (!list) return;
+
+    let visible = 0;
+    list.querySelectorAll('.bookmarked-sanctuary-item').forEach(item => {
+        const haystack = item.dataset.bookmarkSearch || '';
+        const match = !query || haystack.includes(query);
+        item.style.display = match ? '' : 'none';
+        if (match) visible++;
+    });
+
+    if (noResults) noResults.style.display = visible ? 'none' : 'block';
+}
 async function removeSanctuaryBookmark(entryType, entryId, button) {
     if (!currentAuthUser || !supabaseClient) return;
     const { error } = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE)
