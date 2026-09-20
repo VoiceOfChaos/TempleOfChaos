@@ -5679,6 +5679,20 @@
    COMMUNITY RITUAL SUBMISSIONS + BOOKMARKS
 ===================================================== */
 .ritual-community-tools { width:100%; margin:0 0 24px; text-align:left; }
+.ritual-community-toolbar { display:flex; gap:10px; flex-wrap:wrap; margin:0 0 18px; }
+.ritual-submit-modal { position:fixed; inset:0; z-index:10050; display:none; align-items:center; justify-content:center; padding:24px; }
+.ritual-submit-modal.active { display:flex; }
+.ritual-submit-modal-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.78); backdrop-filter:blur(3px); }
+.ritual-submit-modal-card { position:relative; width:min(720px,94vw); max-height:88vh; overflow:auto; border:1px solid rgba(210,190,150,.28); background:#100e0d; box-shadow:0 20px 80px rgba(0,0,0,.7); padding:28px; }
+.ritual-submit-modal-close { position:absolute; top:12px; right:16px; border:0; background:none; color:#d8c9b6; font-size:28px; cursor:pointer; }
+.ritual-submit-modal-title { margin:0 0 6px; font-size:22px; letter-spacing:.12em; color:#e6dccf; }
+.ritual-submit-modal-subtitle { margin:0 0 22px; color:rgba(215,205,194,.55); font-size:11px; line-height:1.6; }
+.ritual-submission-form { display:none; padding:0; margin:0; border:0; background:none; }
+.ritual-submission-form.active { display:block; }
+.ritual-submission-form select { width:100%; box-sizing:border-box; padding:12px; margin:0 0 14px; border:1px solid rgba(210,190,150,.22); background:#090807; color:#eee5d7; font:inherit; }
+.ritual-submission-form small { display:block; margin:-7px 0 14px; color:rgba(215,205,194,.42); font-size:10px; }
+.ritual-review-panel { margin-top:22px; }
+.ritual-review-empty { color:rgba(215,205,194,.45); font-size:11px; }
 .ritual-community-actions { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px; }
 .ritual-community-btn, .ritual-bookmark-btn, .ritual-review-btn {
     border:1px solid rgba(210,190,150,.24); background:rgba(210,190,150,.04);
@@ -10545,6 +10559,15 @@ button[onclick="showHiddenDedications()"] {
 
         </div>
 
+        <div id="ritualSubmissionModal" class="ritual-submit-modal" aria-hidden="true">
+            <div class="ritual-submit-modal-backdrop" onclick="closeRitualSubmissionModal()"></div>
+            <div class="ritual-submit-modal-card" role="dialog" aria-modal="true" aria-labelledby="ritualSubmitModalTitle">
+                <button type="button" class="ritual-submit-modal-close" onclick="closeRitualSubmissionModal()" aria-label="Close">×</button>
+                <h3 id="ritualSubmitModalTitle" class="ritual-submit-modal-title">SUBMIT RITUAL CONTENT</h3>
+                <p class="ritual-submit-modal-subtitle">Share a prayer or invocation with the Temple. Submissions are reviewed before they become public.</p>
+                <div id="ritualSubmitModalBody"></div>
+            </div>
+        </div>
 
         <div class="ritual-quote">
 
@@ -12431,22 +12454,64 @@ async function setupRitualCommunity(type) {
 
     await checkChatAdmin();
     tools.innerHTML = `
-        <div class="ritual-community-actions">
-            <button type="button" class="ritual-community-btn" onclick="toggleRitualSubmissionForm('${type}')">+ SUBMIT NEW ${type === 'invocation' ? 'INVOCATION' : 'PRAYER'}</button>
-        </div>
-        <form id="ritualSubmissionForm-${type}" class="ritual-submission-form" onsubmit="submitRitualContent(event, '${type}')">
+        <div class="ritual-community-toolbar">
+            <button type="button" class="ritual-community-btn" onclick="openRitualSubmissionModal('${type}')">+ SUBMIT NEW ${type === 'invocation' ? 'INVOCATION' : 'PRAYER'}</button>
+            ${chatIsAdmin ? `<button type="button" class="ritual-community-btn" onclick="openRitualSubmissionModal('${type}', true)">REVIEW SUBMISSIONS</button>` : ''}
+        </div>`;
+
+    decorateRitualBuiltIns(type);
+    await loadRitualSubmissions(type);
+}
+
+function openRitualSubmissionModal(type, reviewOnly=false) {
+    if (!currentAuthUser) {
+        alert('You must be registered and signed in to submit ritual content.');
+        return;
+    }
+    const modal = document.getElementById('ritualSubmissionModal');
+    const body = document.getElementById('ritualSubmitModalBody');
+    const title = document.getElementById('ritualSubmitModalTitle');
+    if (!modal || !body) return;
+    const label = type === 'invocation' ? 'INVOCATION' : 'PRAYER';
+    title.textContent = reviewOnly ? `REVIEW ${label} SUBMISSIONS` : `SUBMIT NEW ${label}`;
+    body.innerHTML = reviewOnly ? `<div id="ritualReviewModal-${type}"></div>` : `
+        <form id="ritualSubmissionForm-${type}" class="ritual-submission-form active" onsubmit="submitRitualContent(event, '${type}')">
             <label for="ritualTitle-${type}">TITLE</label>
-            <input id="ritualTitle-${type}" maxlength="120" required placeholder="e.g. Invocation of Erebus">
+            <input id="ritualTitle-${type}" maxlength="120" required placeholder="e.g. Prayer to Nyx">
+            <label for="ritualCategory-${type}">CATEGORY</label>
+            <select id="ritualCategory-${type}" required>
+                <option value="personal">Personal</option>
+                <option value="traditional">Traditional</option>
+                <option value="historic">Historical</option>
+                <option value="devotional">Devotional</option>
+                <option value="deity">Deity / Divine</option>
+                <option value="ritual">Ritual</option>
+                <option value="other">Other</option>
+            </select>
+            <label for="ritualTags-${type}">TAGS</label>
+            <input id="ritualTags-${type}" maxlength="300" placeholder="e.g. Nyx, night, protection, healing">
+            <small>Separate tags with commas.</small>
             <label for="ritualContent-${type}">TEXT</label>
             <textarea id="ritualContent-${type}" maxlength="12000" required placeholder="Write the invocation or prayer here..."></textarea>
             <p class="ritual-submission-note">Your submission will be reviewed before it appears publicly.</p>
             <button type="submit" class="ritual-community-btn">SUBMIT FOR REVIEW</button>
-        </form>
-        <div id="ritualReview-${type}"></div>
-    `;
+        </form>`;
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    if (reviewOnly) loadRitualReviewIntoModal(type);
+}
 
-    decorateRitualBuiltIns(type);
-    await loadRitualSubmissions(type);
+function closeRitualSubmissionModal() {
+    const modal = document.getElementById('ritualSubmissionModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+}
+
+function toggleRitualSubmissionForm(type) {
+    openRitualSubmissionModal(type);
 }
 
 function toggleRitualSubmissionForm(type) {
@@ -12458,33 +12523,21 @@ function toggleRitualSubmissionForm(type) {
     if (form) form.classList.toggle('active');
 }
 
-async function submitRitualContent(event, type) {
+async function submitRitualContent(event,type){
     event.preventDefault();
-    if (!currentAuthUser || !supabaseClient) {
-        alert('You must be registered and signed in to submit ritual content.');
-        return;
-    }
-    const title = document.getElementById(`ritualTitle-${type}`)?.value.trim();
-    const content = document.getElementById(`ritualContent-${type}`)?.value.trim();
-    if (!title || !content) return;
-
-    try {
-        const { error } = await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).insert({
-            content_type: type,
-            title,
-            content,
-            submitted_by: currentAuthUser.id,
-            status: 'pending'
-        });
-        if (error) throw error;
-        event.target.reset();
-        event.target.classList.remove('active');
+    if(!currentAuthUser || !supabaseClient){ alert('You must be registered and signed in to submit ritual content.'); return; }
+    const title=document.getElementById(`ritualTitle-${type}`)?.value.trim();
+    const content=document.getElementById(`ritualContent-${type}`)?.value.trim();
+    const category=document.getElementById(`ritualCategory-${type}`)?.value;
+    const tags=(document.getElementById(`ritualTags-${type}`)?.value||'').split(',').map(x=>x.trim()).filter(Boolean);
+    if(!title||!content||!category)return;
+    try{
+        const {error}=await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).insert({content_type:type,title,content,category,tags,submitted_by:currentAuthUser.id,status:'pending'});
+        if(error)throw error;
+        event.target.reset(); closeRitualSubmissionModal();
         alert('Submitted for review. It will appear after approval.');
-        if (chatIsAdmin) await loadRitualSubmissions(type);
-    } catch (error) {
-        console.error('Ritual submission failed:', error);
-        alert(error.message || 'Could not submit this ritual content.');
-    }
+        if(chatIsAdmin) await loadRitualSubmissions(type);
+    }catch(error){ console.error('Ritual submission failed:',error); alert(error.message||'Could not submit this ritual content.'); }
 }
 
 async function loadRitualSubmissions(type) {
@@ -12494,64 +12547,87 @@ async function loadRitualSubmissions(type) {
 
     try {
         let query = supabaseClient.from(RITUAL_SUBMISSIONS_TABLE)
-            .select('id,content_type,title,content,submitted_by,status,created_at')
-            .eq('content_type', type)
-            .order('created_at', { ascending: false });
-        if (!chatIsAdmin) query = query.eq('status', 'approved');
+            .select('id,content_type,title,content,category,tags,submitted_by,status,created_at')
+            .eq('content_type', type).order('created_at', { ascending:false });
+        if (!chatIsAdmin) query = query.eq('status','approved');
         const { data, error } = await query;
         if (error) throw error;
 
         const approved = (data || []).filter(x => x.status === 'approved');
-        const pending = (data || []).filter(x => x.status === 'pending');
         const bookmarks = new Set();
         if (currentAuthUser) {
-            const b = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE)
-                .select('entry_type,entry_id')
-                .eq('user_id', currentAuthUser.id);
+            const b = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE).select('entry_type,entry_id').eq('user_id',currentAuthUser.id);
             if (!b.error) (b.data || []).forEach(x => bookmarks.add(`${x.entry_type}:${x.entry_id}`));
         }
 
         content.querySelectorAll('.community-ritual-entry').forEach(el => el.remove());
         approved.slice().reverse().forEach(item => {
             const article = document.createElement('article');
-            article.className = 'prayer-entry community-ritual-entry';
-            article.dataset.search = `${item.title} ${item.content}`.toLowerCase();
-            const key = `submission:${item.id}`;
-            const marked = bookmarks.has(key);
-            article.innerHTML = `
+            article.className='prayer-entry community-ritual-entry';
+            article.dataset.search = `${item.title} ${item.content} ${item.category || ''} ${(item.tags || []).join(' ')}`.toLowerCase();
+            const key=`submission:${item.id}`;
+            const marked=bookmarks.has(key);
+            const tags=Array.isArray(item.tags) ? item.tags : String(item.tags || '').split(',').map(x=>x.trim()).filter(Boolean);
+            const tagText=[item.category, ...tags].filter(Boolean).join(' · ');
+            article.innerHTML=`
                 <button type="button" class="prayer-card-toggle" aria-expanded="false">${ritualEscape(item.title)}</button>
                 <div class="prayer-card-body">
-                    <div class="prayer-tag">COMMUNITY SUBMISSION</div>
+                    <div class="prayer-tag">${ritualEscape(tagText || 'COMMUNITY SUBMISSION')}</div>
                     <div class="invocation-text">${ritualEscape(item.content).replace(/\n/g,'<br>')}</div>
                     <div class="ritual-entry-actions">
-                        <button type="button" class="ritual-bookmark-btn ${marked ? 'bookmarked' : ''}" onclick="toggleRitualBookmark('submission','${item.id}',this)">${marked ? '★ BOOKMARKED' : '☆ BOOKMARK'}</button>
+                        <button type="button" class="ritual-bookmark-btn ${marked?'bookmarked':''}" onclick="toggleRitualBookmark('submission','${item.id}',this)">${marked?'★ BOOKMARKED':'☆ BOOKMARK'}</button>
+                        ${chatIsAdmin ? `<button type="button" class="ritual-review-btn" onclick="deleteRitualSubmission('${item.id}','${type}')">DELETE</button>` : ''}
                     </div>
                 </div>`;
             content.appendChild(article);
             bindRitualEntry(article);
         });
 
-        if (chatIsAdmin) {
-            const review = document.getElementById(`ritualReview-${type}`);
-            if (review) {
-                review.innerHTML = pending.length ? `
-                    <div class="ritual-review-panel">
-                        <h4 class="ritual-review-title">PENDING REVIEW</h4>
-                        ${pending.map(item => `
-                            <div class="ritual-review-item">
-                                <h5>${ritualEscape(item.title)}</h5>
-                                <p>${ritualEscape(item.content)}</p>
-                                <div class="ritual-review-actions">
-                                    <button type="button" class="ritual-review-btn" onclick="reviewRitualSubmission('${item.id}','${type}','approved')">APPROVE</button>
-                                    <button type="button" class="ritual-review-btn" onclick="reviewRitualSubmission('${item.id}','${type}','deleted')">DELETE</button>
-                                </div>
-                            </div>`).join('')}
-                    </div>` : '';
-            }
-        }
-    } catch (error) {
-        console.error('Could not load ritual submissions:', error);
+        if (chatIsAdmin && document.getElementById(`ritualReviewModal-${type}`)) loadRitualReviewIntoModal(type);
+    } catch(error) {
+        console.error('Could not load ritual submissions:',error);
+        if (error?.code === 'PGRST205') alert('The ritual submissions table has not been created yet. Run the ritual community SQL in Supabase first.');
     }
+}
+
+async function loadRitualReviewIntoModal(type) {
+    const review=document.getElementById(`ritualReviewModal-${type}`);
+    if (!review || !chatIsAdmin || !supabaseClient) return;
+    try {
+        const {data,error}=await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE)
+            .select('id,title,content,category,tags,status,created_at').eq('content_type',type).order('created_at',{ascending:false});
+        if(error) throw error;
+        const pending=(data||[]).filter(x=>x.status==='pending');
+        const label=type==='invocation'?'INVOCATION':'PRAYER';
+        review.innerHTML=pending.length ? `<div class="ritual-review-panel"><h4 class="ritual-review-title">PENDING ${label}S</h4>${pending.map(item=>{
+            const tags=Array.isArray(item.tags)?item.tags:String(item.tags||'').split(',').map(x=>x.trim()).filter(Boolean);
+            return `<div class="ritual-review-item"><h5>${ritualEscape(item.title)}</h5><div class="prayer-tag">${ritualEscape([item.category,...tags].filter(Boolean).join(' · ') || 'UNTAGGED')}</div><p>${ritualEscape(item.content)}</p><div class="ritual-review-actions"><button type="button" class="ritual-review-btn" onclick="reviewRitualSubmission('${item.id}','${type}','approved')">APPROVE</button><button type="button" class="ritual-review-btn" onclick="deleteRitualSubmission('${item.id}','${type}')">DELETE</button></div></div>`;
+        }).join('')}</div>` : '<p class="ritual-review-empty">No submissions are waiting for review.</p>';
+    } catch(error) {
+        console.error('Could not load ritual review:',error);
+        review.innerHTML='<p class="ritual-review-empty">Could not load submissions. Check that the ritual submissions table exists.</p>';
+    }
+}
+
+async function reviewRitualSubmission(id,type,status){
+    if(!chatIsAdmin||!supabaseClient)return;
+    try{
+        const {error}=await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).update({status}).eq('id',id);
+        if(error)throw error;
+        await loadRitualSubmissions(type);
+        await loadRitualReviewIntoModal(type);
+    }catch(error){alert(error.message||'Could not update the submission.');}
+}
+
+async function deleteRitualSubmission(id,type){
+    if(!chatIsAdmin||!supabaseClient)return;
+    if(!confirm('Delete this ritual submission?'))return;
+    try{
+        const {error}=await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).delete().eq('id',id);
+        if(error)throw error;
+        await loadRitualSubmissions(type);
+        if(document.getElementById(`ritualReviewModal-${type}`)) await loadRitualReviewIntoModal(type);
+    }catch(error){alert(error.message||'Could not delete the submission.');}
 }
 
 function bindRitualEntry(entry) {
