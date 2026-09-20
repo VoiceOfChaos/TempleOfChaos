@@ -12815,19 +12815,12 @@ function closeRitualPathPopup() {
     document.body.style.overflow = "";
 }
 
-// Reliable accordion handling for every ritual entry, including dynamically
-// loaded community submissions. This is delegated from the document so it
-// continues to work even when the ritual popup replaces its innerHTML.
-document.addEventListener("click", function(event) {
-    const toggle = event.target.closest("#ritualPathPopupBody .prayer-card-toggle");
-    if (!toggle) return;
-
-    const entry = toggle.closest(".prayer-entry");
-    if (!entry) return;
-
-    const isOpen = entry.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-});
+/*
+ * Accordion handling is attached once to each entry by bindRitualEntry().
+ * Do NOT add a second delegated click handler here: having both handlers
+ * caused the entry to open and immediately close again, so the prayer /
+ * invocation text appeared to be missing.
+ */
 
 document.addEventListener("keydown", function(event) {
     if (event.key === "Escape") {
