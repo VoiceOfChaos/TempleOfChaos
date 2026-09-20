@@ -16048,12 +16048,12 @@ document.addEventListener('click', function(event) {
 
       <button class="chat-room-button" type="button" data-room="news" onclick="switchChatRoom('news')">
         <strong>NEWS</strong>
-        <span>Read-only announcements.</span>
+        <span>Announcements from the Temple.</span>
       </button>
 
       <button class="chat-room-button" type="button" data-room="surveys" onclick="switchChatRoom('surveys')">
         <strong>SURVEYS</strong>
-        <span>Read-only surveys.</span>
+        <span>Members can vote.</span>
       </button>
     </aside>
 
@@ -16088,7 +16088,6 @@ document.addEventListener('click', function(event) {
 
       <div id="chatLoginNotice" class="chat-login-notice" hidden>
         <span id="chatLoginNoticeText">You need to be registered and signed in to speak or vote.</span>
-        <button type="button" onclick="closeChatRooms(); openAccountModal()">ENTER THE TEMPLE</button>
       </div>
     </div>
   </section>
@@ -16161,9 +16160,10 @@ function isVoiceOfChaosAccount() {
 }
 
 function updateChatRoomVisibility() {
-    const canAccessPrivateRooms = isVoiceOfChaosAccount();
+    // NEWS and SURVEYS are visible to all registered members.
+    // Only VoiceOfChaos gets writing/creation controls.
     document.querySelectorAll('.chat-room-button[data-room="news"], .chat-room-button[data-room="surveys"]').forEach(button => {
-        button.hidden = !canAccessPrivateRooms;
+        button.hidden = false;
     });
 }
 
@@ -16205,13 +16205,12 @@ async function switchChatRoom(room) {
 
     if (!['general', 'news', 'surveys'].includes(room)) room = 'general';
 
+    await ensureChatUser();
     await checkChatAdmin();
     updateChatRoomVisibility();
 
-    // NEWS and SURVEYS are private to the VoiceOfChaos account.
-    if ((room === 'news' || room === 'surveys') && !isVoiceOfChaosAccount()) {
-        room = 'general';
-    }
+    // NEWS and SURVEYS are readable by all registered members.
+    // Writing in NEWS and creating surveys remain restricted below.
 
     chatCurrentRoom = room;
 
@@ -16245,6 +16244,23 @@ async function switchChatRoom(room) {
     }
 }
 
+async function ensureChatUser() {
+    if (!supabaseClient) return currentAuthUser || null;
+
+    try {
+        // Always refresh the session before opening/switching rooms so a
+        // newly registered or logged-in member is immediately recognised.
+        const { data, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        currentAuthUser = data.session?.user || null;
+        updateAccountButton();
+        return currentAuthUser;
+    } catch (error) {
+        console.warn('Could not refresh chat session:', error);
+        return currentAuthUser || null;
+    }
+}
+
 function updateChatComposer() {
     const composer = document.getElementById('chatComposer');
     const notice = document.getElementById('chatLoginNotice');
@@ -16273,7 +16289,9 @@ function updateChatComposer() {
 
     if (notice) {
         if (isSurveyRoom) {
-            notice.hidden = !currentAuthUser;
+            // Registered members should see the survey itself without a
+            // login/view-only notice. Guests only get the sign-in message.
+            notice.hidden = !!currentAuthUser;
             if (loginNoticeText) {
                 loginNoticeText.textContent = 'You need to be registered and signed in to vote.';
             }
@@ -16283,8 +16301,11 @@ function updateChatComposer() {
                 loginNoticeText.textContent = 'You need to be registered and signed in to write.';
             }
         } else if (isNewsRoom) {
-            // NEWS is writable only by VoiceOfChaos.
-            notice.hidden = true;
+            // NEWS is readable by everyone, but only VoiceOfChaos can write.
+            notice.hidden = !!canAccessPrivateRooms || !currentAuthUser;
+            if (loginNoticeText && currentAuthUser && !canAccessPrivateRooms) {
+                loginNoticeText.textContent = 'News is read-only.';
+            }
         }
     }
 
@@ -16730,7 +16751,8 @@ async function createSurvey() {
 }
 
 async function voteInSurvey(surveyId, optionId) {
-    if (!currentAuthUser) {
+    const user = await ensureChatUser();
+    if (!user) {
         setChatStatus('Sign in to vote.');
         return;
     }
@@ -16745,7 +16767,7 @@ async function voteInSurvey(surveyId, optionId) {
             .upsert({
                 survey_id: surveyId,
                 option_id: optionId,
-                user_id: currentAuthUser.id
+                user_id: user.id
             }, {
                 onConflict: 'survey_id,user_id'
             });
