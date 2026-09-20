@@ -12638,7 +12638,7 @@ async function submitRitualContent(event,type){
         const {error}=await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).insert({content_type:type,title,content,category,tags,submitted_by:currentAuthUser.id,status:'pending'});
         if(error)throw error;
         event.target.reset(); closeRitualSubmissionModal();
-        alert('Submitted for review. It has been added to the Review section in My Sanctuary.');
+        alert('Sent to review.');
         if(chatIsAdmin) {
             await loadRitualSubmissions(type);
             if (document.getElementById('profileRitualReviewList')) await loadProfileRitualReviews();
@@ -16061,7 +16061,6 @@ document.addEventListener('click', function(event) {
       <header class="chat-header">
         <h3 id="chatRoomTitle">GENERAL</h3>
         <p id="chatRoomDescription">A shared room for registered members of the Temple.</p>
-        <div id="chatAdminNote" class="chat-admin-note" hidden></div>
       </header>
 
       <div id="chatStatus" class="chat-status"></div>
@@ -16154,6 +16153,20 @@ async function checkChatAdmin() {
     return chatIsAdmin;
 }
 
+function isVoiceOfChaosAccount() {
+    if (!chatIsAdmin || !currentAuthUser) return false;
+    const metadata = currentAuthUser.user_metadata || {};
+    const name = String(metadata.nickname || metadata.username || '').trim().toLowerCase();
+    return name === 'voiceofchaos';
+}
+
+function updateChatRoomVisibility() {
+    const canAccessPrivateRooms = isVoiceOfChaosAccount();
+    document.querySelectorAll('.chat-room-button[data-room="news"], .chat-room-button[data-room="surveys"]').forEach(button => {
+        button.hidden = !canAccessPrivateRooms;
+    });
+}
+
 function setChatStatus(message) {
     const status = document.getElementById('chatStatus');
     if (status) status.textContent = message || '';
@@ -16167,6 +16180,7 @@ function openChatRooms() {
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
 
+    updateChatRoomVisibility();
     switchChatRoom(chatCurrentRoom);
 }
 
@@ -16190,6 +16204,15 @@ async function switchChatRoom(room) {
     cancelChatEdit();
 
     if (!['general', 'news', 'surveys'].includes(room)) room = 'general';
+
+    await checkChatAdmin();
+    updateChatRoomVisibility();
+
+    // NEWS and SURVEYS are private to the VoiceOfChaos account.
+    if ((room === 'news' || room === 'surveys') && !isVoiceOfChaosAccount()) {
+        room = 'general';
+    }
+
     chatCurrentRoom = room;
 
     document.querySelectorAll('.chat-room-button').forEach(button => {
@@ -16210,7 +16233,6 @@ async function switchChatRoom(room) {
         description.textContent = 'Temple surveys and results.';
     }
 
-    await checkChatAdmin();
     updateChatComposer();
     setChatStatus('');
 
@@ -16233,40 +16255,36 @@ function updateChatComposer() {
     const surveyAdmin = document.getElementById('surveyAdminPanel');
 
     const isSurveyRoom = chatCurrentRoom === 'surveys';
+    const isNewsRoom = chatCurrentRoom === 'news';
+    const canAccessPrivateRooms = isVoiceOfChaosAccount();
 
     if (messages) messages.hidden = isSurveyRoom;
     if (surveys) surveys.hidden = !isSurveyRoom;
 
-    const canWriteMessage = !!currentAuthUser && chatCurrentRoom === 'general';
+    // GENERAL: registered members may write.
+    // NEWS: only VoiceOfChaos may write.
+    // SURVEYS: everyone may vote; only VoiceOfChaos may create surveys.
+    const canWriteMessage =
+        !!currentAuthUser &&
+        (chatCurrentRoom === 'general' || (isNewsRoom && canAccessPrivateRooms));
 
     if (composer) composer.hidden = !canWriteMessage || isSurveyRoom;
-    if (surveyAdmin) surveyAdmin.hidden = true;
+    if (surveyAdmin) surveyAdmin.hidden = !(isSurveyRoom && canAccessPrivateRooms);
 
     if (notice) {
-        // News and surveys are read-only for everyone. Only General requires registration to write.
         if (isSurveyRoom) {
-            notice.hidden = true;
+            notice.hidden = !currentAuthUser;
+            if (loginNoticeText) {
+                loginNoticeText.textContent = 'You need to be registered and signed in to vote.';
+            }
         } else if (chatCurrentRoom === 'general') {
             notice.hidden = !!currentAuthUser;
             if (loginNoticeText) {
                 loginNoticeText.textContent = 'You need to be registered and signed in to write.';
             }
-        } else {
-            // News is read-only for everyone except VoiceOfChaos.
+        } else if (isNewsRoom) {
+            // NEWS is writable only by VoiceOfChaos.
             notice.hidden = true;
-        }
-    }
-
-    if (note) {
-        note.hidden = false;
-
-        if (chatCurrentRoom === 'news') {
-            note.textContent = 'READ ONLY';
-        } else if (chatCurrentRoom === 'surveys') {
-            note.textContent = 'READ ONLY';
-        } else {
-            note.hidden = true;
-            note.textContent = '';
         }
     }
 
@@ -16378,7 +16396,13 @@ async function sendChatMessage() {
 
     await checkChatAdmin();
 
-    if (chatCurrentRoom !== 'general') {
+    // GENERAL is writable by registered members. NEWS is writable only by VoiceOfChaos.
+    if (chatCurrentRoom === 'news' && !isVoiceOfChaosAccount()) {
+        setChatStatus('Only VoiceOfChaos can write in News.');
+        return;
+    }
+
+    if (chatCurrentRoom !== 'general' && chatCurrentRoom !== 'news') {
         setChatStatus('This section is read-only.');
         return;
     }
@@ -16616,15 +16640,17 @@ function renderSurveys() {
                     const percent = totalVotes ? Math.round((count / totalVotes) * 100) : 0;
                     const selected = myVote && String(myVote.option_id) === String(option.id);
 
-                    return `<div
+                    return `<button
+                        type="button"
                         class="survey-option${selected ? ' selected' : ''}"
                         style="--percent:${percent}%"
-                        aria-disabled="true"
+                        onclick="voteInSurvey('${escapeChatText(survey.id)}','${escapeChatText(option.id)}')"
+                        ${!currentAuthUser ? 'title="Sign in to vote"' : ''}
                     >
                         <span class="survey-option-fill"></span>
                         <span class="survey-option-text">${escapeChatText(option.option_text)}</span>
                         <span class="survey-option-count">${count} · ${percent}%</span>
-                    </div>`;
+                    </button>`;
                 }).join('')}
             </div>
             <div class="survey-total">${totalVotes} vote${totalVotes === 1 ? '' : 's'}</div>
