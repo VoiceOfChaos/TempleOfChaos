@@ -5674,6 +5674,41 @@
 
 
 
+
+/* =====================================================
+   COMMUNITY RITUAL SUBMISSIONS + BOOKMARKS
+===================================================== */
+.ritual-community-tools { width:100%; margin:0 0 24px; text-align:left; }
+.ritual-community-actions { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px; }
+.ritual-community-btn, .ritual-bookmark-btn, .ritual-review-btn {
+    border:1px solid rgba(210,190,150,.24); background:rgba(210,190,150,.04);
+    color:#d8c9b6; padding:10px 13px; font:inherit; font-size:10px;
+    letter-spacing:.12em; text-transform:uppercase; cursor:pointer;
+}
+.ritual-community-btn:hover, .ritual-bookmark-btn:hover, .ritual-review-btn:hover {
+    border-color:rgba(210,190,150,.52); background:rgba(210,190,150,.08); color:#fff5df;
+}
+.ritual-bookmark-btn.bookmarked { color:#f0d39a; border-color:rgba(240,211,154,.55); }
+.ritual-submission-form { display:none; padding:18px; margin-bottom:18px; border:1px solid rgba(210,190,150,.18); background:rgba(0,0,0,.18); }
+.ritual-submission-form.active { display:block; }
+.ritual-submission-form label { display:block; margin:0 0 7px; color:rgba(220,205,185,.7); font-size:10px; letter-spacing:.14em; }
+.ritual-submission-form input, .ritual-submission-form textarea {
+    width:100%; box-sizing:border-box; padding:12px; margin:0 0 14px; border:1px solid rgba(210,190,150,.22);
+    background:rgba(0,0,0,.28); color:#eee5d7; outline:none; font:inherit;
+}
+.ritual-submission-form textarea { min-height:180px; resize:vertical; line-height:1.7; }
+.ritual-submission-note { margin:0 0 14px; color:rgba(215,205,194,.58); font-size:11px; line-height:1.6; }
+.ritual-review-panel { margin-bottom:20px; padding:16px; border:1px solid rgba(210,190,150,.18); background:rgba(120,90,50,.06); text-align:left; }
+.ritual-review-title { margin:0 0 12px; color:#e6dccf; font-size:11px; letter-spacing:.16em; }
+.ritual-review-item { padding:13px 0; border-top:1px solid rgba(210,190,150,.12); }
+.ritual-review-item:first-child { border-top:0; }
+.ritual-review-item h5 { margin:0 0 7px; color:#e6dccf; font-size:13px; font-weight:normal; letter-spacing:.08em; }
+.ritual-review-item p { margin:0 0 10px; color:rgba(225,215,203,.72); font-size:12px; line-height:1.65; white-space:pre-wrap; }
+.ritual-review-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.ritual-community-meta { margin-top:12px; color:rgba(215,205,194,.42); font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
+.ritual-entry-actions { display:flex; gap:8px; margin-top:15px; }
+.ritual-entry-actions .ritual-bookmark-btn { padding:7px 10px; }
+
 /* =====================================================
    ACCOUNT SYSTEM
 ===================================================== */
@@ -12054,6 +12089,8 @@ function openRitualPathPopup(path) {
                 >
             </div>
 
+            <div id="invocationCommunityTools" class="ritual-community-tools"></div>
+
             <div id="invocationContent" class="prayers-content invocation-content">
 
                 <article class="prayer-entry" data-search="chaos primordial source divinity spark gods wisdom illusions truth darkness gnosis power">
@@ -12168,6 +12205,7 @@ function openRitualPathPopup(path) {
         });
 
         filterInvocations();
+        setupRitualCommunity("invocation");
     } else if (path === "prayers") {
         body.innerHTML = `
             <div class="prayers-search-wrap">
@@ -12180,6 +12218,8 @@ function openRitualPathPopup(path) {
                     value=""
                 >
             </div>
+
+            <div id="prayersCommunityTools" class="ritual-community-tools"></div>
 
             <div id="prayersContent" class="prayers-content">
 
@@ -12321,11 +12361,11 @@ function openRitualPathPopup(path) {
         `;
 
         const search = document.getElementById("prayersSearch");
-        const entries = Array.from(document.querySelectorAll("#prayersContent .prayer-entry"));
         const noResults = document.getElementById("prayersNoResults");
 
         function filterPrayers() {
             const query = search.value.trim().toLowerCase();
+            const entries = Array.from(document.querySelectorAll("#prayersContent .prayer-entry"));
 
             let visibleCount = 0;
 
@@ -12356,6 +12396,7 @@ function openRitualPathPopup(path) {
         });
 
         filterPrayers();
+        setupRitualCommunity("prayer");
     } else {
         /* Other ritual paths remain unchanged. */
         body.innerHTML = "";
@@ -12365,6 +12406,239 @@ function openRitualPathPopup(path) {
     popup.classList.add("active");
     popup.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
+}
+
+
+/* =====================================================
+   COMMUNITY RITUAL CONTENT
+===================================================== */
+const RITUAL_SUBMISSIONS_TABLE = 'ritual_submissions';
+const RITUAL_BOOKMARKS_TABLE = 'ritual_bookmarks';
+
+function ritualSlug(value) {
+    return String(value || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function ritualEscape(value) {
+    return String(value ?? '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+async function setupRitualCommunity(type) {
+    const tools = document.getElementById(type === 'invocation' ? 'invocationCommunityTools' : 'prayersCommunityTools');
+    if (!tools) return;
+
+    await checkChatAdmin();
+    tools.innerHTML = `
+        <div class="ritual-community-actions">
+            <button type="button" class="ritual-community-btn" onclick="toggleRitualSubmissionForm('${type}')">+ SUBMIT NEW ${type === 'invocation' ? 'INVOCATION' : 'PRAYER'}</button>
+        </div>
+        <form id="ritualSubmissionForm-${type}" class="ritual-submission-form" onsubmit="submitRitualContent(event, '${type}')">
+            <label for="ritualTitle-${type}">TITLE</label>
+            <input id="ritualTitle-${type}" maxlength="120" required placeholder="e.g. Invocation of Erebus">
+            <label for="ritualContent-${type}">TEXT</label>
+            <textarea id="ritualContent-${type}" maxlength="12000" required placeholder="Write the invocation or prayer here..."></textarea>
+            <p class="ritual-submission-note">Your submission will be reviewed before it appears publicly.</p>
+            <button type="submit" class="ritual-community-btn">SUBMIT FOR REVIEW</button>
+        </form>
+        <div id="ritualReview-${type}"></div>
+    `;
+
+    decorateRitualBuiltIns(type);
+    await loadRitualSubmissions(type);
+}
+
+function toggleRitualSubmissionForm(type) {
+    if (!currentAuthUser) {
+        alert('You must be registered and signed in to submit ritual content.');
+        return;
+    }
+    const form = document.getElementById(`ritualSubmissionForm-${type}`);
+    if (form) form.classList.toggle('active');
+}
+
+async function submitRitualContent(event, type) {
+    event.preventDefault();
+    if (!currentAuthUser || !supabaseClient) {
+        alert('You must be registered and signed in to submit ritual content.');
+        return;
+    }
+    const title = document.getElementById(`ritualTitle-${type}`)?.value.trim();
+    const content = document.getElementById(`ritualContent-${type}`)?.value.trim();
+    if (!title || !content) return;
+
+    try {
+        const { error } = await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).insert({
+            content_type: type,
+            title,
+            content,
+            submitted_by: currentAuthUser.id,
+            status: 'pending'
+        });
+        if (error) throw error;
+        event.target.reset();
+        event.target.classList.remove('active');
+        alert('Submitted for review. It will appear after approval.');
+        if (chatIsAdmin) await loadRitualSubmissions(type);
+    } catch (error) {
+        console.error('Ritual submission failed:', error);
+        alert(error.message || 'Could not submit this ritual content.');
+    }
+}
+
+async function loadRitualSubmissions(type) {
+    if (!supabaseClient) return;
+    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : 'prayersContent');
+    if (!content) return;
+
+    try {
+        let query = supabaseClient.from(RITUAL_SUBMISSIONS_TABLE)
+            .select('id,content_type,title,content,submitted_by,status,created_at')
+            .eq('content_type', type)
+            .order('created_at', { ascending: false });
+        if (!chatIsAdmin) query = query.eq('status', 'approved');
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const approved = (data || []).filter(x => x.status === 'approved');
+        const pending = (data || []).filter(x => x.status === 'pending');
+        const bookmarks = new Set();
+        if (currentAuthUser) {
+            const b = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE)
+                .select('entry_type,entry_id')
+                .eq('user_id', currentAuthUser.id);
+            if (!b.error) (b.data || []).forEach(x => bookmarks.add(`${x.entry_type}:${x.entry_id}`));
+        }
+
+        content.querySelectorAll('.community-ritual-entry').forEach(el => el.remove());
+        approved.slice().reverse().forEach(item => {
+            const article = document.createElement('article');
+            article.className = 'prayer-entry community-ritual-entry';
+            article.dataset.search = `${item.title} ${item.content}`.toLowerCase();
+            const key = `submission:${item.id}`;
+            const marked = bookmarks.has(key);
+            article.innerHTML = `
+                <button type="button" class="prayer-card-toggle" aria-expanded="false">${ritualEscape(item.title)}</button>
+                <div class="prayer-card-body">
+                    <div class="prayer-tag">COMMUNITY SUBMISSION</div>
+                    <div class="invocation-text">${ritualEscape(item.content).replace(/\n/g,'<br>')}</div>
+                    <div class="ritual-entry-actions">
+                        <button type="button" class="ritual-bookmark-btn ${marked ? 'bookmarked' : ''}" onclick="toggleRitualBookmark('submission','${item.id}',this)">${marked ? '★ BOOKMARKED' : '☆ BOOKMARK'}</button>
+                    </div>
+                </div>`;
+            content.appendChild(article);
+            bindRitualEntry(article);
+        });
+
+        if (chatIsAdmin) {
+            const review = document.getElementById(`ritualReview-${type}`);
+            if (review) {
+                review.innerHTML = pending.length ? `
+                    <div class="ritual-review-panel">
+                        <h4 class="ritual-review-title">PENDING REVIEW</h4>
+                        ${pending.map(item => `
+                            <div class="ritual-review-item">
+                                <h5>${ritualEscape(item.title)}</h5>
+                                <p>${ritualEscape(item.content)}</p>
+                                <div class="ritual-review-actions">
+                                    <button type="button" class="ritual-review-btn" onclick="reviewRitualSubmission('${item.id}','${type}','approved')">APPROVE</button>
+                                    <button type="button" class="ritual-review-btn" onclick="reviewRitualSubmission('${item.id}','${type}','deleted')">DELETE</button>
+                                </div>
+                            </div>`).join('')}
+                    </div>` : '';
+            }
+        }
+    } catch (error) {
+        console.error('Could not load ritual submissions:', error);
+    }
+}
+
+function bindRitualEntry(entry) {
+    const toggle = entry.querySelector('.prayer-card-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', () => {
+        const open = entry.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+}
+
+function decorateRitualBuiltIns(type) {
+    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : 'prayersContent');
+    if (!content) return;
+    content.querySelectorAll('.prayer-entry:not(.community-ritual-entry)').forEach(entry => {
+        const toggle = entry.querySelector('.prayer-card-toggle');
+        const body = entry.querySelector('.prayer-card-body');
+        if (!toggle || !body || body.querySelector('.ritual-entry-actions')) return;
+        const key = `builtin:${type}:${ritualSlug(toggle.textContent)}`;
+        const actions = document.createElement('div');
+        actions.className = 'ritual-entry-actions';
+        actions.innerHTML = `<button type="button" class="ritual-bookmark-btn" data-bookmark-key="${ritualEscape(key)}" onclick="toggleRitualBookmark('builtin','${ritualEscape(ritualSlug(toggle.textContent))}',this)">☆ BOOKMARK</button>`;
+        body.appendChild(actions);
+        bindRitualEntry(entry);
+    });
+    loadBuiltInBookmarkStates(type);
+}
+
+async function loadBuiltInBookmarkStates(type) {
+    if (!currentAuthUser || !supabaseClient) return;
+    const { data } = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE)
+        .select('entry_type,entry_id').eq('user_id', currentAuthUser.id).eq('entry_type','builtin');
+    const keys = new Set((data || []).map(x => x.entry_id));
+    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : 'prayersContent');
+    if (!content) return;
+    content.querySelectorAll('.ritual-bookmark-btn[data-bookmark-key]').forEach(btn => {
+        const key = btn.dataset.bookmarkKey || '';
+        const id = key.split(':').slice(2).join(':');
+        if (keys.has(id)) { btn.classList.add('bookmarked'); btn.textContent = '★ BOOKMARKED'; }
+    });
+}
+
+async function toggleRitualBookmark(entryType, entryId, button) {
+    if (!currentAuthUser || !supabaseClient) {
+        alert('You must be registered and signed in to bookmark ritual content.');
+        return;
+    }
+    try {
+        const { data: existing, error: findError } = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE)
+            .select('id').eq('user_id', currentAuthUser.id).eq('entry_type', entryType).eq('entry_id', entryId).maybeSingle();
+        if (findError) throw findError;
+        if (existing) {
+            const { error } = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE).delete().eq('id', existing.id);
+            if (error) throw error;
+            button.classList.remove('bookmarked'); button.textContent = '☆ BOOKMARK';
+        } else {
+            const { error } = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE).insert({ user_id: currentAuthUser.id, entry_type: entryType, entry_id: entryId });
+            if (error) throw error;
+            button.classList.add('bookmarked'); button.textContent = '★ BOOKMARKED';
+        }
+    } catch (error) {
+        console.error('Bookmark failed:', error);
+        alert(error.message || 'Could not update bookmark.');
+    }
+}
+
+async function reviewRitualSubmission(id, type, status) {
+    if (!chatIsAdmin || !currentAuthUser || !supabaseClient) {
+        alert('Only the Temple administrator can review submissions.');
+        return;
+    }
+    if (status === 'deleted' && !confirm('Delete this submission permanently?')) return;
+    try {
+        if (status === 'deleted') {
+            const { error } = await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).delete().eq('id', id);
+            if (error) throw error;
+        } else {
+            const { error } = await supabaseClient.from(RITUAL_SUBMISSIONS_TABLE).update({ status:'approved', reviewed_by:currentAuthUser.id, reviewed_at:new Date().toISOString() }).eq('id', id);
+            if (error) throw error;
+        }
+        await loadRitualSubmissions(type);
+        const search = document.getElementById(type === 'invocation' ? 'invocationSearch' : 'prayersSearch');
+        if (search) search.dispatchEvent(new Event('input'));
+    } catch (error) {
+        console.error('Could not review ritual submission:', error);
+        alert(error.message || 'Could not review submission.');
+    }
 }
 
 function closeRitualPathPopup() {
