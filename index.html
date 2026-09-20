@@ -14168,8 +14168,7 @@ function renderBookmarkedList() {
                         <div class="bookmarked-sanctuary-body">
                             <div class="sanctuary-item-text bookmarked-sanctuary-text">${item.content || ''}</div>
                             <div class="sanctuary-item-actions">
-                                <button class="sanctuary-small" type="button" onclick="openBookmarkedRitual(${JSON.stringify(item.source)},${JSON.stringify(item.type)},${JSON.stringify(item.id)})">OPEN</button>
-                                <button class="sanctuary-small" type="button" onclick="removeSanctuaryBookmark(${JSON.stringify(item.source)},${JSON.stringify(item.id)},this)">REMOVE BOOKMARK</button>
+                                <button class="sanctuary-small" type="button" onclick="removeSanctuaryBookmark(${JSON.stringify(item.id)},this)">REMOVE BOOKMARK</button>
                             </div>
                         </div>
                     </article>
@@ -14202,24 +14201,49 @@ function filterSanctuaryBookmarks(value) {
 
     if (noResults) noResults.style.display = visible ? 'none' : 'block';
 }
-async function removeSanctuaryBookmark(entryType, entryId, button) {
-    if (!currentAuthUser || !supabaseClient) return;
-    const { error } = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE)
-        .delete()
-        .eq('user_id', currentAuthUser.id)
-        .eq('entry_type', entryType)
-        .eq('entry_id', String(entryId));
-    if (error) {
-        alert(error.message || 'Could not remove bookmark.');
+async function removeSanctuaryBookmark(bookmarkId, button) {
+    if (!currentAuthUser || !supabaseClient) {
+        alert('You must be registered and signed in to remove bookmarks.');
         return;
     }
-    await loadSanctuaryBookmarks();
-    renderSanctuaryTab('bookmarked');
 
-    // Refresh the bookmark button on the original page too.
-    if (typeof loadBuiltInBookmarkStates === 'function' && entryType === 'builtin') {
-        await loadBuiltInBookmarkStates('prayer');
-        await loadBuiltInBookmarkStates('invocation');
+    const originalText = button ? button.textContent : '';
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'REMOVING...';
+    }
+
+    try {
+        // Delete the exact bookmark row. This is more reliable than matching
+        // entry_type/entry_id, especially when an entry ID comes from a
+        // submission or has a different database type.
+        const { error } = await supabaseClient
+            .from(RITUAL_BOOKMARKS_TABLE)
+            .delete()
+            .eq('id', bookmarkId)
+            .eq('user_id', currentAuthUser.id);
+
+        if (error) throw error;
+
+        // Remove it immediately from the current Sanctuary list.
+        sanctuaryCache.bookmarked = sanctuaryCache.bookmarked.filter(
+            item => String(item.id) !== String(bookmarkId)
+        );
+
+        renderSanctuaryTab('bookmarked');
+
+        // Refresh bookmark states on the original Temple cards.
+        if (typeof loadBuiltInBookmarkStates === 'function') {
+            await loadBuiltInBookmarkStates('prayer');
+            await loadBuiltInBookmarkStates('invocation');
+        }
+    } catch (error) {
+        console.error('Could not remove bookmark:', error);
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalText || 'REMOVE BOOKMARK';
+        }
+        alert(error.message || 'Could not remove bookmark.');
     }
 }
 
