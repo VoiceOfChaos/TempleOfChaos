@@ -5441,7 +5441,8 @@
 }
 
 #prayersSearch,
-#invocationSearch {
+#invocationSearch,
+#devotionSearch {
     width: 100%;
     box-sizing: border-box;
     padding: 13px 15px;
@@ -5453,12 +5454,14 @@
 }
 
 #prayersSearch::placeholder,
-#invocationSearch::placeholder {
+#invocationSearch::placeholder,
+#devotionSearch::placeholder {
     color: rgba(215,205,194,.38);
 }
 
 #prayersSearch:focus,
-#invocationSearch:focus {
+#invocationSearch:focus,
+#devotionSearch:focus {
     border-color: rgba(210,190,150,.48);
 }
 
@@ -10572,7 +10575,7 @@ button[onclick="showHiddenDedications()"] {
             <div class="ritual-submit-modal-card" role="dialog" aria-modal="true" aria-labelledby="ritualSubmitModalTitle">
                 <button type="button" class="ritual-submit-modal-close" onclick="closeRitualSubmissionModal()" aria-label="Close">×</button>
                 <h3 id="ritualSubmitModalTitle" class="ritual-submit-modal-title">SUBMIT RITUAL CONTENT</h3>
-                <p class="ritual-submit-modal-subtitle">Share a prayer or invocation with the Temple. Submissions are reviewed before they become public.</p>
+                <p class="ritual-submit-modal-subtitle">Share your ritual work with the Temple. Submissions are reviewed before they become public.</p>
                 <div id="ritualSubmitModalBody"></div>
             </div>
         </div>
@@ -12394,10 +12397,10 @@ function openRitualPathPopup(path) {
         const search = document.getElementById("prayersSearch");
         const noResults = document.getElementById("prayersNoResults");
 
+        const entries = Array.from(document.querySelectorAll("#prayersContent .prayer-entry"));
+
         function filterPrayers() {
             const query = search.value.trim().toLowerCase();
-            const entries = Array.from(document.querySelectorAll("#prayersContent .prayer-entry"));
-
             let visibleCount = 0;
 
             entries.forEach(entry => {
@@ -12428,8 +12431,53 @@ function openRitualPathPopup(path) {
 
         filterPrayers();
         setupRitualCommunity("prayer");
+    } else if (path === "devotion") {
+        body.innerHTML = `
+            <div class="prayers-search-wrap">
+                <label for="devotionSearch">SEARCH THE DEVOTIONS</label>
+                <input
+                    type="search"
+                    id="devotionSearch"
+                    placeholder=""
+                    aria-label="Search devotions"
+                    value=""
+                >
+            </div>
+
+            <div id="devotionCommunityTools" class="ritual-community-tools"></div>
+
+            <div id="devotionContent" class="prayers-content devotion-content">
+                <div class="ritual-empty-public">
+                    <h4>DEVOTIONS</h4>
+                </div>
+                <div id="devotionNoResults" class="prayers-no-results" hidden>
+                    No devotions found.
+                </div>
+            </div>
+        `;
+
+        const search = document.getElementById("devotionSearch");
+        const noResults = document.getElementById("devotionNoResults");
+        const entries = Array.from(document.querySelectorAll("#devotionContent .prayer-entry"));
+
+        function filterDevotions() {
+            const query = search.value.trim().toLowerCase();
+            let visibleCount = 0;
+            entries.forEach(entry => {
+                const haystack = (entry.textContent + " " + (entry.dataset.search || "")).toLowerCase();
+                const matches = !query || haystack.includes(query);
+                entry.style.display = matches ? "" : "none";
+                if (matches) visibleCount++;
+            });
+            const publicIntro = document.querySelector("#devotionContent .ritual-empty-public");
+            if (publicIntro) publicIntro.style.display = query ? "none" : "";
+            noResults.hidden = !query || visibleCount !== 0;
+        }
+
+        search.addEventListener("input", filterDevotions);
+        filterDevotions();
+        setupRitualCommunity("devotion");
     } else {
-        /* Other ritual paths remain unchanged. */
         body.innerHTML = "";
     }
 
@@ -12457,13 +12505,13 @@ function ritualEscape(value) {
 }
 
 async function setupRitualCommunity(type) {
-    const tools = document.getElementById(type === 'invocation' ? 'invocationCommunityTools' : 'prayersCommunityTools');
+    const tools = document.getElementById(type === 'invocation' ? 'invocationCommunityTools' : type === 'prayer' ? 'prayersCommunityTools' : 'devotionCommunityTools');
     if (!tools) return;
 
     await checkChatAdmin();
     tools.innerHTML = `
         <div class="ritual-community-toolbar">
-            <button type="button" class="ritual-community-btn" onclick="openRitualSubmissionModal('${type}')">+ SUBMIT NEW ${type === 'invocation' ? 'INVOCATION' : 'PRAYER'}</button>
+            <button type="button" class="ritual-community-btn" onclick="openRitualSubmissionModal('${type}')">+ SUBMIT NEW ${type === 'invocation' ? 'INVOCATION' : type === 'prayer' ? 'PRAYER' : 'DEVOTION'}</button>
         </div>`;
 
     decorateRitualBuiltIns(type);
@@ -12479,7 +12527,7 @@ function openRitualSubmissionModal(type, reviewOnly=false) {
     const body = document.getElementById('ritualSubmitModalBody');
     const title = document.getElementById('ritualSubmitModalTitle');
     if (!modal || !body) return;
-    const label = type === 'invocation' ? 'INVOCATION' : 'PRAYER';
+    const label = type === 'invocation' ? 'INVOCATION' : type === 'prayer' ? 'PRAYER' : 'DEVOTION';
     title.textContent = reviewOnly ? `REVIEW ${label} SUBMISSIONS` : `SUBMIT NEW ${label}`;
     body.innerHTML = reviewOnly ? `<div id="ritualReviewModal-${type}"></div>` : `
         <form id="ritualSubmissionForm-${type}" class="ritual-submission-form active" onsubmit="submitRitualContent(event, '${type}')">
@@ -12499,7 +12547,7 @@ function openRitualSubmissionModal(type, reviewOnly=false) {
             <input id="ritualTags-${type}" maxlength="300" placeholder="e.g. Nyx, night, protection, healing">
             <small>Separate tags with commas.</small>
             <label for="ritualContent-${type}">TEXT</label>
-            <textarea id="ritualContent-${type}" maxlength="12000" required placeholder="Write the invocation or prayer here..."></textarea>
+            <textarea id="ritualContent-${type}" maxlength="12000" required placeholder="Write the invocation, prayer, or devotion here..."></textarea>
             <p class="ritual-submission-note">Your submission will be reviewed before it appears publicly.</p>
             <button type="submit" class="ritual-community-btn">SUBMIT FOR REVIEW</button>
         </form>`;
@@ -12549,7 +12597,7 @@ async function submitRitualContent(event,type){
 
 async function loadRitualSubmissions(type) {
     if (!supabaseClient) return;
-    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : 'prayersContent');
+    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : type === 'prayer' ? 'prayersContent' : 'devotionContent');
     if (!content) return;
 
     try {
@@ -12605,7 +12653,7 @@ async function loadRitualReviewIntoModal(type) {
             .select('id,title,content,category,tags,status,created_at').eq('content_type',type).order('created_at',{ascending:false});
         if(error) throw error;
         const pending=(data||[]).filter(x=>x.status==='pending');
-        const label=type==='invocation'?'INVOCATION':'PRAYER';
+        const label=type==='invocation'?'INVOCATION':type==='prayer'?'PRAYER':'DEVOTION';
         review.innerHTML=pending.length ? `<div class="ritual-review-panel"><h4 class="ritual-review-title">PENDING ${label}S</h4>${pending.map(item=>{
             const tags=Array.isArray(item.tags)?item.tags:String(item.tags||'').split(',').map(x=>x.trim()).filter(Boolean);
             return `<div class="ritual-review-item"><h5>${ritualEscape(item.title)}</h5><div class="prayer-tag">${ritualEscape([item.category,...tags].filter(Boolean).join(' · ') || 'UNTAGGED')}</div><p>${ritualEscape(item.content)}</p><div class="ritual-review-actions"><button type="button" class="ritual-review-btn" onclick="reviewRitualSubmission('${item.id}','${type}','approved')">APPROVE</button><button type="button" class="ritual-review-btn" onclick="deleteRitualSubmission('${item.id}','${type}')">DELETE</button></div></div>`;
@@ -12647,7 +12695,7 @@ function bindRitualEntry(entry) {
 }
 
 function decorateRitualBuiltIns(type) {
-    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : 'prayersContent');
+    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : type === 'prayer' ? 'prayersContent' : 'devotionContent');
     if (!content) return;
     content.querySelectorAll('.prayer-entry:not(.community-ritual-entry)').forEach(entry => {
         const toggle = entry.querySelector('.prayer-card-toggle');
@@ -12668,7 +12716,7 @@ async function loadBuiltInBookmarkStates(type) {
     const { data } = await supabaseClient.from(RITUAL_BOOKMARKS_TABLE)
         .select('entry_type,entry_id').eq('user_id', currentAuthUser.id).eq('entry_type','builtin');
     const keys = new Set((data || []).map(x => x.entry_id));
-    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : 'prayersContent');
+    const content = document.getElementById(type === 'invocation' ? 'invocationContent' : type === 'prayer' ? 'prayersContent' : 'devotionContent');
     if (!content) return;
     content.querySelectorAll('.ritual-bookmark-btn[data-bookmark-key]').forEach(btn => {
         const key = btn.dataset.bookmarkKey || '';
@@ -12716,7 +12764,7 @@ async function reviewRitualSubmission(id, type, status) {
             if (error) throw error;
         }
         await loadRitualSubmissions(type);
-        const search = document.getElementById(type === 'invocation' ? 'invocationSearch' : 'prayersSearch');
+        const search = document.getElementById(type === 'invocation' ? 'invocationSearch' : type === 'prayer' ? 'prayersSearch' : 'devotionSearch');
         if (search) search.dispatchEvent(new Event('input'));
     } catch (error) {
         console.error('Could not review ritual submission:', error);
@@ -12732,6 +12780,20 @@ function closeRitualPathPopup() {
     popup.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
 }
+
+// Reliable accordion handling for every ritual entry, including dynamically
+// loaded community submissions. This is delegated from the document so it
+// continues to work even when the ritual popup replaces its innerHTML.
+document.addEventListener("click", function(event) {
+    const toggle = event.target.closest("#ritualPathPopupBody .prayer-card-toggle");
+    if (!toggle) return;
+
+    const entry = toggle.closest(".prayer-entry");
+    if (!entry) return;
+
+    const isOpen = entry.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+});
 
 document.addEventListener("keydown", function(event) {
     if (event.key === "Escape") {
@@ -13813,7 +13875,7 @@ function renderSanctuaryTab(tab) {
                 <button class="sanctuary-action" onclick="loadProfileRitualReviews()">REFRESH</button>
             </div>
             <div class="ritual-profile-review">
-                <p class="ritual-profile-review-intro">Review community prayers and invocations here. Nothing becomes public until you approve it.</p>
+                <p class="ritual-profile-review-intro">Review community prayers, invocations, and devotions here. Nothing becomes public until you approve it.</p>
                 <div id="profileRitualReviewList"><div class="sanctuary-empty">Loading submissions...</div></div>
             </div>
         `;
@@ -13849,7 +13911,7 @@ async function loadProfileRitualReviews() {
             return;
         }
         list.innerHTML = items.map(item => {
-            const typeLabel = item.content_type === 'invocation' ? 'INVOCATION' : 'PRAYER';
+            const typeLabel = item.content_type === 'invocation' ? 'INVOCATION' : type === 'prayer' ? 'PRAYER' : 'DEVOTION';
             const tags = Array.isArray(item.tags) ? item.tags : String(item.tags || '').split(',').map(x=>x.trim()).filter(Boolean);
             const meta = [typeLabel, item.category, ...tags].filter(Boolean).join(' · ');
             return `<article class="ritual-profile-review-item">
