@@ -15438,7 +15438,7 @@ function renderChatMessages() {
 
     box.innerHTML = chatMessages.map(message => {
         const mine = currentAuthUser && String(message.user_id) === String(currentAuthUser.id);
-        const canDelete = mine; // Everyone, including VoiceOfChaos, can delete only their own messages.
+        const canDelete = mine || chatIsAdmin;
         const date = new Date(message.created_at);
         const time = isNaN(date) ? '' : date.toLocaleString([], {
             month: 'short',
@@ -15633,12 +15633,12 @@ async function deleteChatMessage(messageId) {
 
     const mine = String(message.user_id) === String(currentAuthUser.id);
 
-    if (!mine) {
-        alert('You can only delete your own messages.');
+    if (!mine && !chatIsAdmin) {
+        alert('Only VoiceOfChaos can delete other members’ messages.');
         return;
     }
 
-    if (!confirm('Delete this message permanently?')) return;
+    if (!confirm(mine ? 'Delete this message permanently?' : 'Delete this member’s message permanently?')) return;
 
     try {
         setChatStatus('DELETING...');
@@ -15648,8 +15648,9 @@ async function deleteChatMessage(messageId) {
             .delete()
             .eq('id', messageId);
 
-        // Never allow deletion of another user's message.
-        query = query.eq('user_id', currentAuthUser.id);
+        if (!chatIsAdmin) {
+            query = query.eq('user_id', currentAuthUser.id);
+        }
 
         const { data, error } = await query.select();
 
