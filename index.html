@@ -16311,7 +16311,7 @@ function renderChatMessages() {
 
     box.innerHTML = chatMessages.map(message => {
         const mine = currentAuthUser && String(message.user_id) === String(currentAuthUser.id);
-        const canDelete = mine && chatCurrentRoom === 'general';
+        const canDelete = mine && (chatCurrentRoom === 'general' || chatCurrentRoom === 'news');
         const date = new Date(message.created_at);
         const time = isNaN(date) ? '' : date.toLocaleString([], {
             month: 'short',
@@ -16654,6 +16654,9 @@ function renderSurveys() {
                 }).join('')}
             </div>
             <div class="survey-total">${totalVotes} vote${totalVotes === 1 ? '' : 's'}</div>
+            ${chatIsAdmin ? `
+                <button type="button" class="survey-delete-button" onclick="deleteSurvey('${escapeChatText(survey.id)}')">DELETE SURVEY</button>
+            ` : ''}
         </article>`;
     }).join('');
 }
