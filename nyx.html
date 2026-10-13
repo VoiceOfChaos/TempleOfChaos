@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Garden of Nyx</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#d8b46a; --ember:#e0592f; --violet:#5b2a86;
+  --night:#0b0710; --ink:#ece2d0; --panel:rgba(18,10,24,.92);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
+  font-family:'Cormorant Garamond',serif;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ---------- WORLD ---------- */
+#viewport{position:fixed;inset:0;overflow:hidden;cursor:pointer}
+#world{position:absolute;left:0;top:0;width:1400px;height:1400px;will-change:transform;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(40,60,160,.35) 0, rgba(40,60,160,0) 38%),
+    repeating-radial-gradient(circle at 13px 17px, rgba(40,70,45,.25) 0 2px, transparent 2px 23px),
+    repeating-radial-gradient(circle at 5px 9px, rgba(20,40,25,.4) 0 1.5px, transparent 1.5px 17px),
+    radial-gradient(circle at 50% 48%, #1d2a20 0, #111c15 55%, #070d09 100%);}
+.ground{position:absolute;pointer-events:none}
+.ring{border-radius:50%;border:44px solid rgba(130,110,95,.22);box-shadow:inset 0 0 30px rgba(0,0,0,.5),0 0 30px rgba(0,0,0,.4)}
+.plaza{border-radius:50%;background:
+  repeating-conic-gradient(from 0deg at 50% 50%, rgba(140,125,115,.22) 0 15deg, rgba(110,95,90,.22) 15deg 30deg);
+  box-shadow:0 0 60px rgba(216,180,106,.12), inset 0 0 40px rgba(0,0,0,.6)}
+.walk{background:rgba(130,110,95,.22);box-shadow:inset 0 0 14px rgba(0,0,0,.5)}
+
+.sprite{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
+.flip{display:block;transition:transform .15s}
+
+/* player */
+#player .body{animation:none}
+#player.moving .body{animation:bob .35s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.lantern{filter:drop-shadow(0 0 6px #ffb347)}
+#player::after{content:"";position:absolute;left:50%;top:60%;width:140px;height:140px;transform:translate(-50%,-50%);
+  background:radial-gradient(circle, rgba(255,190,110,.18), transparent 70%);pointer-events:none}
+
+/* statue + altar */
+.halo{animation:pulse 4s ease-in-out infinite;transform-origin:120px 34px}
+@keyframes pulse{50%{opacity:.55;transform:scale(1.15)}}
+.flame{animation:flick .25s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes flick{to{transform:scaleY(1.12) scaleX(.9)}}
+#altar{position:relative}
+#offerings{position:absolute;left:14px;right:14px;top:-18px;height:40px}
+.placed{position:absolute;bottom:0;transform:translateX(-50%);width:30px;height:30px}
+.placed svg{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.placed.new{animation:land .6s ease-out}
+@keyframes land{0%{transform:translate(-50%,-40px) scale(1.4);opacity:0}100%{transform:translate(-50%,0) scale(1);opacity:1}}
+.altar-glow{position:absolute;inset:-30px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,140,60,.45), transparent 65%);opacity:0;transition:opacity .4s}
+.altar-glow.on{opacity:1}
+
+/* symbol stones */
+.symbol{display:flex;flex-direction:column;align-items:center}
+.glyph{width:44px;height:44px;color:var(--gold);filter:drop-shadow(0 0 6px rgba(216,180,106,.85));animation:float 3.2s ease-in-out infinite}
+.glyph svg{width:100%;height:100%}
+.stone{width:46px;height:44px;margin-top:6px;border-radius:4px 4px 2px 2px;
+  background:linear-gradient(90deg,#3d3745,#6e6578 50%,#3a3442);box-shadow:0 8px 10px rgba(0,0,0,.5);
+  border-top:4px solid #7c7388}
+.symbol.near .glyph{color:#fff1c8;filter:drop-shadow(0 0 12px rgba(255,220,150,1))}
+@keyframes float{50%{transform:translateY(-6px)}}
+
+.fly{position:absolute;width:3px;height:3px;border-radius:50%;background:#eef0ff;box-shadow:0 0 8px 2px rgba(170,190,255,.7);
+  pointer-events:none;animation:drift linear infinite}
+@keyframes drift{0%{transform:translate(0,0);opacity:0}20%{opacity:1}50%{transform:translate(30px,-40px)}80%{opacity:1}100%{transform:translate(-20px,-80px);opacity:0}}
+.orb{width:10px;height:10px;border-radius:50%;background:#ffcf8a;box-shadow:0 0 14px 5px rgba(255,170,80,.45);animation:float 4s ease-in-out infinite}
+
+/* ---------- UI ---------- */
+.ui{position:fixed;z-index:5000}
+#topbar{top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;
+  background:linear-gradient(rgba(11,7,16,.95),rgba(11,7,16,0))}
+#topbar h1{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.12em;color:var(--gold);font-weight:400;text-align:center;flex:1}
+.btn{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:var(--ink);background:rgba(91,42,134,.35);
+  border:1px solid rgba(216,180,106,.45);border-radius:20px;padding:6px 12px;text-decoration:none;cursor:pointer}
+#hint{top:50px;left:50%;transform:translateX(-50%);font-style:italic;font-size:15px;color:rgba(236,226,208,.75);
+  text-align:center;padding:0 16px;transition:opacity 1s;pointer-events:none;width:100%}
+
+#card{left:12px;right:12px;bottom:12px;max-width:520px;margin:0 auto;max-height:46vh;overflow-y:auto;
+  background:var(--panel);border:1px solid rgba(216,180,106,.4);border-radius:14px;padding:16px 18px 18px;
+  box-shadow:0 0 40px rgba(91,42,134,.5);transform:translateY(130%);transition:transform .35s ease}
+#card.show{transform:translateY(0)}
+#card .head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+#card .icon{width:40px;height:40px;color:var(--gold);flex:none}
+#card h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);font-weight:400}
+#card .sub{font-style:italic;font-size:14px;opacity:.7}
+#card{z-index:5100}
+#card p{font-size:17px;line-height:1.45;margin-bottom:10px}
+#card h3{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;color:var(--gold);font-weight:400;
+  margin:14px 0 4px;padding-top:10px;border-top:1px solid rgba(216,180,106,.2)}
+#card.lore{max-height:62vh}
+.figs{display:flex;justify-content:center;gap:24px;margin:4px 0 12px}
+.fig{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--gold)}
+.fig svg{width:96px;height:96px;filter:drop-shadow(0 0 6px rgba(216,180,106,.6))}
+.fig span{font-size:13px;font-style:italic;opacity:.75;color:var(--ink)}
+#loreBtn{margin:8px 6px 0 0;font-size:10px}
+#card .x{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--ink);font-size:22px;cursor:pointer;opacity:.7}
+
+#tray{left:0;right:0;bottom:0;padding:10px 10px 14px;background:linear-gradient(rgba(11,7,16,0),rgba(11,7,16,.96) 30%);
+  transform:translateY(110%);transition:transform .35s ease;text-align:center}
+#tray.show{transform:translateY(0)}
+#tray .label{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:var(--gold);margin:14px 0 8px}
+#items{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.off{width:54px;cursor:grab;touch-action:none;display:flex;flex-direction:column;align-items:center;gap:2px}
+.off .pic{width:46px;height:46px;border-radius:50%;background:rgba(91,42,134,.3);border:1px solid rgba(216,180,106,.35);
+  display:flex;align-items:center;justify-content:center}
+.off .pic svg{width:32px;height:32px;pointer-events:none}
+.off span{font-size:12px;line-height:1.1;opacity:.85}
+#clear{margin-top:8px;font-size:10px;opacity:.7}
+
+.ghost{position:fixed;z-index:9000;width:48px;height:48px;transform:translate(-50%,-50%) scale(1.2);pointer-events:none;
+  filter:drop-shadow(0 0 10px rgba(255,200,120,.9))}
+.ghost svg{width:100%;height:100%}
+#toast{left:50%;top:90px;transform:translate(-50%,-20px);max-width:90%;width:max-content;background:var(--panel);
+  border:1px solid rgba(216,180,106,.5);border-radius:12px;padding:10px 16px;font-size:16px;font-style:italic;text-align:center;
+  opacity:0;transition:all .4s;pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<div id="viewport"><div id="world"></div></div>
+
+<div id="topbar" class="ui">
+  <a class="btn" href="gardens.html">← Gardens</a>
+  <h1>Garden of Nyx</h1>
+  <span style="width:70px"></span>
+</div>
+<div id="hint" class="ui">Tap anywhere to walk (or use arrow keys / WASD).<br>Visit her symbols, then bring offerings to the altar.</div>
+
+<div id="card" class="ui">
+  <button class="x" aria-label="Close">×</button>
+  <div class="head"><div class="icon"></div><div><h2></h2><div class="sub"></div></div></div>
+  <div class="body"></div>
+</div>
+
+<div id="tray" class="ui">
+  <div class="label">Drag an offering onto the altar</div>
+  <div id="items"></div>
+  <button id="loreBtn" class="btn">✦ Her lore</button>
+  <button id="clear" class="btn">Clear the altar</button>
+</div>
+<div id="toast" class="ui"></div>
+
+<script>
+/* =========================================================
+   EDIT HERE: deity, symbols and offerings
+   ========================================================= */
+const DEITY = "NYX";
+const STORAGE_KEY = "garden-offerings-nyx";
+
+const SYMBOLS = [
+  { name:"The Primordial Void", sub:"Born of Chaos",
+    text:"Nyx is one of the very first beings, born straight out of Chaos. She is the darkness that came before light, and of all the gods she stands closest to the original void.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M30 30 a3 3 0 1 1 3 3 a6 6 0 1 1 -6 -6 a10 10 0 1 1 10 10 a15 15 0 1 1 -15 -15 a20 20 0 1 1 20 20"/></svg>` },
+  { name:"The Starry Veil", sub:"Mantle of the sky",
+    text:"Each evening Nyx draws her dark mantle across the sky, and the stars shine from its folds. It is the veil of mystery that hides and shelters all things until morning.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M5 48 C9 16 51 16 55 48 C47 39 39 37 30 41 C21 37 13 39 5 48Z" fill="currentColor"/><g fill="#0b0710"><circle cx="20" cy="30" r="1.6"/><circle cx="30" cy="24" r="2"/><circle cx="40" cy="31" r="1.6"/><circle cx="25" cy="36" r="1.2"/><circle cx="36" cy="38" r="1.2"/></g></svg>` },
+  { name:"The Black Wings", sub:"Black-winged Night",
+    text:"Poets call her black-winged Night as she sweeps over the earth. Her wings bring rest to the living and cover the world in the softness of the dark.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 30 C22 16 10 10 3 13 C8 17 9 21 6 25 C12 26 13 30 10 34 C17 34 19 38 17 44 C24 41 28 36 30 30Z M30 30 C38 16 50 10 57 13 C52 17 51 21 54 25 C48 26 47 30 50 34 C43 34 41 38 43 44 C36 41 32 36 30 30Z" fill="currentColor"/></svg>` },
+  { name:"The Cosmic Egg", sub:"Where love was born",
+    text:"In the old stories, Night laid an egg in the endless dark, and from it came Eros, the first love, the force that joins all things together. Creation begins in her darkness.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><ellipse cx="30" cy="33" rx="16" ry="21"/><path d="M14 33 L20 28 L25 35 L30 27 L35 35 L40 28 L46 33"/><path d="M30 6 L31.5 11 L36 12 L31.5 13 L30 18 L28.5 13 L24 12 L28.5 11Z" fill="currentColor" stroke="none"/></svg>` },
+  { name:"The Chariot of Night", sub:"Across the heavens",
+    text:"Later writers picture her driving a chariot drawn by dark horses across the heavens, with the stars following behind her. When her journey ends, Day begins hers.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="30" cy="34" r="16"/><circle cx="30" cy="34" r="3" fill="currentColor"/><path d="M30 18 V50 M14 34 H46 M18.7 22.7 L41.3 45.3 M41.3 22.7 L18.7 45.3"/><path d="M38 4 A6 6 0 1 0 38 14 A4.5 6 0 1 1 38 4Z" fill="currentColor" stroke="none"/></svg>` },
+  { name:"The Bronze Threshold", sub:"Where Night meets Day",
+    text:"At the bronze threshold of her house, Night and Day meet and pass each other, one leaving as the other enters. It is the eternal turning of dark and light, where neither can stay forever.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 8 A16 16 0 0 0 14 24 V54 H30Z" fill="#0b0710" stroke="currentColor" stroke-width="2"/><path d="M30 8 A16 16 0 0 1 46 24 V54 H30Z" fill="currentColor"/><path d="M8 55 H52" stroke="#b5803a" stroke-width="4" stroke-linecap="round"/></svg>` },
+  { name:"The Poppy", sub:"Sleep and Death, her sons",
+    text:"The poppy belongs to her twin sons, Hypnos (Sleep) and Thanatos (Death). It is the flower of sleep and dreams, and of the gentle crossing from one world into another.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 34 C30 44 28 50 26 57" stroke="#2f6b3a" stroke-width="2.5" fill="none"/><g fill="#b3202e"><ellipse cx="22" cy="20" rx="10" ry="9"/><ellipse cx="38" cy="20" rx="10" ry="9"/><ellipse cx="22" cy="30" rx="10" ry="8"/><ellipse cx="38" cy="30" rx="10" ry="8"/></g><circle cx="30" cy="25" r="5" fill="#140c12"/><circle cx="30" cy="25" r="2" fill="currentColor"/></svg>` }
+];
+
+const LORE = {
+  name:"Nyx", sub:"Primordial Night · Daughter of Chaos",
+  sections:[
+    { title:"Her Name",
+      text:"Nyx is simply the Greek word for night; her Roman counterpart is Nox. She is less a goddess of the night than Night herself: the darkness that existed before the world was ever lit." },
+    { title:"Daughter of Chaos",
+      text:"In Hesiod's Theogony, Chaos, the yawning void, came first. From Chaos came Erebus, the deep darkness, and Nyx, black Night. Joined with Erebus, she gave birth to their opposites: Aether, the bright upper air, and Hemera, the Day." },
+    { title:"Mother of Powers",
+      text:"On her own she brought forth many of the forces that shape mortal life: Hypnos (Sleep) and Thanatos (Death), the Dreams, Moros (Doom), the Keres, the Fates, Nemesis, Eris (Strife), Geras (Old Age), Apate (Deceit) and the Hesperides of the sunset." },
+    { title:"Feared by Zeus",
+      text:"In Homer's Iliad, Hypnos runs to Nyx for protection from the anger of Zeus. The king of the gods holds back, unwilling to offend swift Night. Even the highest of the Olympians respects her." },
+    { title:"The House of Night",
+      text:"Hesiod places her house at the edge of the world, near Tartarus, wrapped in dark clouds. There Night and Day pass each other at a great bronze threshold and greet each other, one going in as the other comes out. They are never at home together." },
+    { title:"The First Egg",
+      text:"In Aristophanes' comedy The Birds (414 BCE), black-winged Night lays an egg in the depths of Erebus, and golden-winged Eros springs from it. In Orphic tradition she is a primordial goddess of prophecy who counsels even Zeus from her cave." },
+    { title:"Her Worship",
+      text:"She had few temples, but Pausanias mentions an oracle of Night at Megara, and the Orphic Hymn to Night asks for an offering of torches. Today she is honoured in Hellenic polytheism, witchcraft and chaos traditions as the primordial mother of darkness, dreams and mystery." },
+    { title:"Correspondences",
+      text:"Time: deep night and the dark moon. Colours: black, deep blue and silver. Symbols: stars, the veil, wings and the egg. Animals: owls and black horses. Plants: the poppy and night-blooming flowers. Offerings: torches and candles, dark wine, honey, milk, poppies and incense." }
+  ]
+};
+
+const OFFERINGS = {
+  torch:{ label:"Torch", msg:"A torch is lit for her, the offering the Orphic hymn asks of Night.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M18 37 L20 20 L22 37Z" fill="#8a6a46"/><path d="M14 18 H26 L23 22 H17Z" fill="#6e5236"/><path class="flame" d="M20 2 C27 8 28 13 20 17 C12 13 13 8 20 2Z" fill="#ff8a3d"/><path d="M20 8 C23 11 23 14 20 16 C17 14 17 11 20 8Z" fill="#ffe08a"/></svg>` },
+  wine:{ label:"Dark wine", msg:"Dark wine, poured out for the mother of the gods of night.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M11 5 H29 C29 16 25 21 20 21 C15 21 11 16 11 5Z" fill="#3a0a24" stroke="#c9cde6" stroke-width="1.5"/><path d="M20 21 V33 M13 35 H27" stroke="#c9cde6" stroke-width="2"/></svg>` },
+  honey:{ label:"Honey", msg:"Honey, sweet as the sleep she brings to all living things.",
+    svg:`<svg viewBox="0 0 40 40"><rect x="10" y="14" width="20" height="22" rx="4" fill="#e0a12a"/><rect x="11" y="8" width="18" height="7" rx="1.5" fill="#8a5a2b"/><path d="M14 21 H26" stroke="#fff3c4" stroke-width="1.5" opacity=".6"/></svg>` },
+  milk:{ label:"Milk", msg:"A bowl of milk, pale as starlight, given to the Mother of Night.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M5 20 H35 C34 30 28 35 20 35 C12 35 6 30 5 20Z" fill="#6b5a7a"/><ellipse cx="20" cy="20" rx="15" ry="4" fill="#f4f1ea"/></svg>` },
+  poppy:{ label:"Poppy", msg:"A poppy for her sons, Sleep and Death, and for every dream she sends.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M20 22 V38" stroke="#2f6b3a" stroke-width="2"/><g fill="#b3202e"><ellipse cx="14" cy="12" rx="7" ry="6"/><ellipse cx="26" cy="12" rx="7" ry="6"/><ellipse cx="14" cy="19" rx="7" ry="6"/><ellipse cx="26" cy="19" rx="7" ry="6"/></g><circle cx="20" cy="16" r="3.5" fill="#140c12"/></svg>` },
+  incense:{ label:"Incense", msg:"Incense smoke drifts upward, vanishing into her darkness.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M8 36 H32" stroke="#6e6578" stroke-width="4" stroke-linecap="round"/><path d="M20 34 L22 14" stroke="#7a2b1d" stroke-width="2"/><path d="M22 13 C17 9 26 7 21 2" stroke="#cfc3d6" stroke-width="1.5" fill="none" opacity=".8"/></svg>` }
+};
+
+/* =========================================================
+   WORLD SETUP
+   ========================================================= */
+const W = 1400, H = 1400, CX = 700, CY = 680;
+const world = document.getElementById('world');
+const vp = document.getElementById('viewport');
+const obstacles = [];
+
+function el(cls, x, y, html, z){
+  const d = document.createElement('div');
+  d.className = 'sprite ' + (cls||'');
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  d.style.zIndex = z !== undefined ? z : Math.round(y);
+  d.innerHTML = html; world.appendChild(d); return d;
+}
+function ground(cls, x, y, w, h){
+  const d = document.createElement('div');
+  d.className = 'ground ' + cls;
+  Object.assign(d.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+  world.appendChild(d); return d;
+}
+
+// paths
+ground('walk', CX-24, CY+180, 48, H-(CY+180));
+ground('ring', CX-442, CY-442, 884, 884);
+ground('plaza', CX-200, CY-200, 400, 400);
+
+// statue
+const statueSVG = `<svg viewBox="0 0 240 320" width="240" height="320">
+<defs>
+ <linearGradient id="st" x1="0" x2="1"><stop offset="0" stop-color="#1f2340"/><stop offset=".5" stop-color="#3c4370"/><stop offset="1" stop-color="#1b1f38"/></linearGradient>
+ <radialGradient id="hl"><stop offset="0" stop-color="#8fa2ff" stop-opacity=".55"/><stop offset=".45" stop-color="#2a3a9a" stop-opacity=".3"/><stop offset="1" stop-color="#2a3a9a" stop-opacity="0"/></radialGradient>
+</defs>
+<circle class="halo" cx="120" cy="70" r="90" fill="url(#hl)" style="transform-origin:120px 70px"/>
+<g fill="#eef0ff"><circle cx="40" cy="20" r="1.5"/><circle cx="76" cy="10" r="1"/><circle cx="160" cy="14" r="1.4"/><circle cx="204" cy="26" r="1"/><circle cx="120" cy="6" r="1.6"/><circle cx="24" cy="60" r="1"/><circle cx="220" cy="64" r="1.3"/></g>
+<!-- great black wings, raised -->
+<path d="M108 112 C82 70 44 40 6 38 C20 50 22 58 14 68 C30 70 34 80 26 90 C42 90 46 102 40 114 C58 110 70 118 72 134 C84 124 96 118 108 112Z" fill="#14172a" stroke="#3c4370"/>
+<path d="M132 112 C158 70 196 40 234 38 C220 50 218 58 226 68 C210 70 206 80 214 90 C198 90 194 102 200 114 C182 110 170 118 168 134 C156 124 144 118 132 112Z" fill="#14172a" stroke="#3c4370"/>
+<!-- starry veil billowing over the head -->
+<path d="M86 124 C76 72 94 44 120 42 C146 44 164 72 154 124 C146 104 134 96 120 96 C106 96 94 104 86 124Z" fill="#262c55" stroke="#11142a"/>
+<g fill="#eef0ff"><circle cx="104" cy="62" r="1.4"/><circle cx="120" cy="52" r="1.8"/><circle cx="136" cy="62" r="1.4"/><circle cx="96" cy="88" r="1.1"/><circle cx="144" cy="88" r="1.1"/><circle cx="112" cy="74" r="1"/><circle cx="130" cy="76" r="1"/></g>
+<!-- robe -->
+<path d="M102 104 Q120 96 138 104 L150 252 Q120 258 90 252Z" fill="url(#st)" stroke="#11142a"/>
+<path d="M112 112 L104 250 M128 112 L136 250 M120 114 V253" stroke="#11142a" stroke-opacity=".5" fill="none"/>
+<g fill="#cfd5ff" opacity=".8"><circle cx="110" cy="150" r="1.2"/><circle cx="128" cy="180" r="1.2"/><circle cx="116" cy="214" r="1.2"/><circle cx="134" cy="232" r="1"/><circle cx="104" cy="200" r="1"/></g>
+<!-- arms holding a star -->
+<path d="M104 112 C96 128 104 142 114 146 M136 112 C144 128 136 142 126 146" stroke="#3c4370" stroke-width="8" stroke-linecap="round" fill="none"/>
+<path d="M120 134 L123 143 L132 146 L123 149 L120 158 L117 149 L108 146 L117 143Z" fill="#eef0ff"/>
+<!-- head, eyes closed in sleep -->
+<circle cx="120" cy="82" r="14" fill="#7c84ad" stroke="#11142a"/>
+<path d="M113 84 Q115 86 117 84 M123 84 Q125 86 127 84" stroke="#11142a" stroke-width="1.4" fill="none"/>
+<!-- pedestal -->
+<rect x="70" y="250" width="100" height="14" fill="#2d3254"/>
+<rect x="78" y="264" width="84" height="46" fill="#1f2340"/>
+<rect x="64" y="308" width="112" height="12" fill="#15182c"/>
+<text x="120" y="292" text-anchor="middle" font-family="Cinzel,serif" font-size="12" letter-spacing="2" fill="#c9cde6">${DEITY}</text>
+</svg>`;
+el('', CX, CY-30, statueSVG);
+obstacles.push({x:CX, y:CY-60, r:70});
+
+// altar
+const altarSVG = `<div id="altar"><div class="altar-glow"></div>
+<svg viewBox="0 0 220 90" width="220" height="90">
+ <rect x="4" y="18" width="212" height="16" rx="2" fill="#5d5566"/>
+ <rect x="4" y="18" width="212" height="3" fill="#d8b46a" opacity=".55"/>
+ <rect x="14" y="34" width="192" height="52" fill="#3b3543"/>
+ <g opacity=".8"><circle cx="110" cy="60" r="16" fill="none" stroke="#c9cde6" stroke-width="1.5"/><path d="M110 48 L113 57 L122 60 L113 63 L110 72 L107 63 L98 60 L107 57Z" fill="#c9cde6"/></g>
+ <rect x="12" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M15 -6 C19 -2 19 1 15 3 C11 1 11 -2 15 -6Z" fill="#ffb347"/>
+ <rect x="202" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M205 -6 C209 -2 209 1 205 3 C201 1 201 -2 205 -6Z" fill="#ffb347"/>
+</svg><div id="offerings"></div></div>`;
+const ALTAR = {x:CX, y:CY+100};
+el('', ALTAR.x, ALTAR.y, altarSVG);
+[-70,-25,25,70].forEach(dx=>obstacles.push({x:CX+dx, y:ALTAR.y-25, r:26}));
+const altarEl = document.getElementById('altar');
+const offEl = document.getElementById('offerings');
+const glowEl = document.querySelector('.altar-glow');
+
+// symbols around the garden
+const ANGLES = [-90,-38,14,62,118,166,218];
+const symbolEls = SYMBOLS.map((s,i)=>{
+  const a = ANGLES[i]*Math.PI/180, r = 480;
+  s.x = CX + Math.cos(a)*r; s.y = CY + Math.sin(a)*r + 30;
+  obstacles.push({x:s.x, y:s.y-15, r:24});
+  return el('symbol', s.x, s.y, `<div class="glyph">${s.svg}</div><div class="stone"></div>`);
+});
+
+// floating lights along the ring
+for(let i=0;i<16;i++){
+  const a = i/16*Math.PI*2 + .2;
+  if (Math.abs(Math.cos(a)) < .1 && Math.sin(a) > 0) continue;
+  el('', CX+Math.cos(a)*372, CY+Math.sin(a)*372, '<div class="orb"></div>');
+}
+
+// seeded trees and rose bushes
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rand = rng(666);
+const cypress = `<svg viewBox="0 0 40 110" width="40" height="110"><ellipse cx="20" cy="106" rx="14" ry="4" fill="rgba(0,0,0,.45)"/><rect x="18" y="92" width="4" height="14" fill="#2b1d14"/><path d="M20 2 C34 30 32 70 20 96 C8 70 6 30 20 2Z" fill="#10241a" stroke="#1f3d2b"/></svg>`;
+const bush = `<svg viewBox="0 0 60 40" width="60" height="40"><ellipse cx="30" cy="36" rx="26" ry="4" fill="rgba(0,0,0,.4)"/><ellipse cx="30" cy="22" rx="26" ry="15" fill="#15301f"/><circle cx="17" cy="16" r="3.5" fill="#e6eaff"/><circle cx="34" cy="12" r="3.5" fill="#cfd6ff"/><circle cx="44" cy="22" r="3.5" fill="#e6eaff"/><circle cx="25" cy="26" r="3.5" fill="#b9c2f0"/></svg>`;
+let placedTrees = 0, tries = 0;
+while(placedTrees < 70 && tries < 2000){
+  tries++;
+  const x = 40 + rand()*(W-80), y = 60 + rand()*(H-100);
+  const d = Math.hypot(x-CX, y-CY);
+  const okZone = (d > 545) || (d > 235 && d < 345);
+  const onSouthPath = Math.abs(x-CX) < 70 && y > CY;
+  const tooClose = obstacles.some(o=>Math.hypot(o.x-x,o.y-y) < o.r+40);
+  if(!okZone || onSouthPath || tooClose) continue;
+  const isBush = rand() < .35;
+  el('', x, y, isBush ? bush : cypress);
+  obstacles.push({x, y:y-6, r:isBush?22:13});
+  placedTrees++;
+}
+
+// fireflies
+for(let i=0;i<70;i++){ // stars of the night
+  const f = document.createElement('div'); f.className='fly';
+  f.style.left = (rand()*W)+'px'; f.style.top = (rand()*H)+'px';
+  f.style.animationDuration = (5+rand()*7)+'s'; f.style.animationDelay = (-rand()*10)+'s';
+  f.style.zIndex = 3000; world.appendChild(f);
+}
+
+// player
+const player = el('', 0, 0, `<div class="flip"><div class="body"><svg viewBox="0 0 40 52" width="38" height="50">
+<ellipse cx="20" cy="49" rx="12" ry="3" fill="rgba(0,0,0,.5)"/>
+<path d="M20 5 C11 5 9 16 10 22 L5 48 H35 L30 22 C31 16 29 5 20 5Z" fill="#2b1f3a" stroke="#7a5a9c"/>
+<path d="M14 18 C14 12 26 12 26 18 C26 23 14 23 14 18Z" fill="#0b0710"/>
+<circle cx="17.5" cy="18" r="1.3" fill="#ffcf70"/><circle cx="22.5" cy="18" r="1.3" fill="#ffcf70"/>
+<path d="M30 27 L33 30" stroke="#999"/><circle class="lantern" cx="33" cy="34" r="4" fill="#ffb347"/>
+</svg></div></div>`);
+player.id = 'player';
+const flipEl = player.querySelector('.flip');
+
+/* =========================================================
+   MOVEMENT + CAMERA
+   ========================================================= */
+let px = CX, py = H-90, tx = null, ty = null, facing = 1;
+let camX = 0, camY = 0;
+const SPEED = 190, keys = {};
+const KEYMAP = {ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',ArrowUp:'u',w:'u',W:'u',ArrowDown:'d',s:'d',S:'d'};
+addEventListener('keydown',e=>{ if(KEYMAP[e.key]){keys[KEYMAP[e.key]]=true; e.preventDefault(); hideHint();} });
+addEventListener('keyup',e=>{ if(KEYMAP[e.key]) keys[KEYMAP[e.key]]=false; });
+
+vp.addEventListener('pointerdown', e=>{
+  tx = e.clientX + camX; ty = e.clientY + camY; hideHint();
+});
+
+function collide(){
+  for(const o of obstacles){
+    const dx = px-o.x, dy = py-o.y, d = Math.hypot(dx,dy), min = o.r + 12;
+    if(d < min && d > 0.01){ px = o.x + dx/d*min; py = o.y + dy/d*min; }
+  }
+  px = Math.max(20, Math.min(W-20, px)); py = Math.max(40, Math.min(H-10, py));
+}
+
+function step(dt){
+  let vx = (keys.r?1:0)-(keys.l?1:0), vy = (keys.d?1:0)-(keys.u?1:0);
+  if(vx||vy) tx = null;
+  else if(tx !== null){
+    const dx = tx-px, dy = ty-py, d = Math.hypot(dx,dy);
+    if(d < 5) tx = null; else { vx = dx/d; vy = dy/d; }
+  }
+  const m = Math.hypot(vx,vy), moving = m > 0;
+  if(moving){
+    vx/=m; vy/=m;
+    const ox = px, oy = py;
+    px += vx*SPEED*dt; py += vy*SPEED*dt; collide();
+    if(tx !== null && Math.hypot(px-ox,py-oy) < SPEED*dt*0.25) tx = null; // stuck
+    if(Math.abs(vx) > .2) facing = vx < 0 ? -1 : 1;
+  }
+  player.classList.toggle('moving', moving);
+  flipEl.style.transform = `scaleX(${facing})`;
+  player.style.left = px+'px'; player.style.top = py+'px'; player.style.zIndex = Math.round(py);
+
+  const vw = innerWidth, vh = innerHeight;
+  const goalX = vw >= W ? (W-vw)/2 : Math.max(0, Math.min(W-vw, px - vw/2));
+  const goalY = vh >= H ? (H-vh)/2 : Math.max(0, Math.min(H-vh, py - vh*0.45));
+  camX += (goalX-camX)*Math.min(1, dt*6); camY += (goalY-camY)*Math.min(1, dt*6);
+  world.style.transform = `translate(${-camX}px,${-camY}px)`;
+
+  checkNearby();
+}
+
+let last = performance.now();
+camX = Math.max(0, Math.min(W-innerWidth, px-innerWidth/2));
+camY = Math.max(0, Math.min(H-innerHeight, py-innerHeight*0.45));
+function loop(t){ const dt = Math.min(.05,(t-last)/1000); last = t; step(dt); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+
+/* =========================================================
+   SYMBOL CARDS + ALTAR TRAY
+   ========================================================= */
+const card = document.getElementById('card'), tray = document.getElementById('tray');
+let current = -1, dismissed = -1, loreOpen = false;
+card.querySelector('.x').addEventListener('click', ()=>{ dismissed = current; loreOpen = false; showCard(-1); });
+document.getElementById('loreBtn').addEventListener('click', ()=>{ loreOpen = true; dismissed = -1; });
+
+function showCard(i){
+  if(i === current) return;
+  current = i;
+  symbolEls.forEach((s,k)=>s.classList.toggle('near', k===i));
+  if(i === -1){ card.classList.remove('show'); return; }
+  const isLore = i === 'lore';
+  const s = isLore ? LORE : SYMBOLS[i];
+  card.classList.toggle('lore', isLore);
+  card.querySelector('.icon').innerHTML = SYMBOLS[isLore ? 0 : i].svg;
+  card.querySelector('h2').textContent = s.name;
+  card.querySelector('.sub').textContent = s.sub;
+  const body = card.querySelector('.body'); body.innerHTML = '';
+  if(!isLore && s.figures){
+    const row = document.createElement('div'); row.className = 'figs';
+    s.figures.forEach(f=>{
+      const fig = document.createElement('div'); fig.className = 'fig';
+      fig.innerHTML = f.svg; const c = document.createElement('span'); c.textContent = f.caption;
+      fig.appendChild(c); row.appendChild(fig);
+    });
+    body.appendChild(row);
+  }
+  (isLore ? s.sections : [{text:s.text}]).forEach(sec=>{
+    if(sec.title){ const h = document.createElement('h3'); h.textContent = sec.title; body.appendChild(h); }
+    const p = document.createElement('p'); p.textContent = sec.text; body.appendChild(p);
+  });
+  card.scrollTop = 0; card.classList.add('show');
+}
+function checkNearby(){
+  let best = -1, bd = 110;
+  SYMBOLS.forEach((s,i)=>{ const d = Math.hypot(px-s.x, py-s.y); if(d < bd){ bd = d; best = i; } });
+  const nearAltar = Math.hypot(px-ALTAR.x, py-ALTAR.y) < 170;
+  if(!nearAltar) loreOpen = false;
+  if(best === -1 && (loreOpen || Math.hypot(px-CX, py-(CY-60)) < 150)) best = 'lore';
+  if(best !== dismissed) showCard(best);
+  if(best === -1) dismissed = -1;
+  tray.classList.toggle('show', nearAltar);
+}
+
+/* =========================================================
+   OFFERINGS (drag & drop, saved in this browser)
+   ========================================================= */
+let placed = [];
+try { placed = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e){ placed = []; }
+function save(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(placed)); } catch(e){} }
+function render(animateLast){
+  offEl.innerHTML = placed.map(o=>`<div class="placed" style="left:${o.f*100}%">${OFFERINGS[o.t].svg}</div>`).join('');
+  if(animateLast && offEl.lastElementChild) offEl.lastElementChild.classList.add('new');
+}
+render();
+
+const items = document.getElementById('items');
+Object.entries(OFFERINGS).forEach(([key,o])=>{
+  const d = document.createElement('div'); d.className='off'; d.dataset.type = key;
+  d.innerHTML = `<div class="pic">${o.svg}</div><span>${o.label}</span>`;
+  items.appendChild(d);
+});
+
+let ghost = null, dragType = null;
+function moveGhost(e){ ghost.style.left = e.clientX+'px'; ghost.style.top = e.clientY+'px'; }
+items.addEventListener('pointerdown', e=>{
+  const it = e.target.closest('.off'); if(!it) return;
+  e.preventDefault(); e.stopPropagation();
+  dragType = it.dataset.type;
+  ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.innerHTML = OFFERINGS[dragType].svg;
+  document.body.appendChild(ghost); moveGhost(e);
+  try { it.setPointerCapture(e.pointerId); } catch(_){}
+});
+addEventListener('pointermove', e=>{
+  if(!ghost) return; moveGhost(e);
+  glowEl.classList.toggle('on', overAltar(e));
+});
+addEventListener('pointerup', e=>{
+  if(!ghost) return;
+  if(overAltar(e)){
+    const r = altarEl.getBoundingClientRect();
+    placeOffering(dragType, Math.max(.08, Math.min(.92, (e.clientX - r.left)/r.width)));
+  }
+  endDrag();
+});
+addEventListener('pointercancel', endDrag);
+function endDrag(){ if(ghost) ghost.remove(); ghost = null; glowEl.classList.remove('on'); }
+function overAltar(e){
+  const r = altarEl.getBoundingClientRect();
+  return e.clientX > r.left-25 && e.clientX < r.right+25 && e.clientY > r.top-70 && e.clientY < r.bottom+15;
+}
+function placeOffering(type, f){
+  placed.push({t:type, f, ts:Date.now()});
+  if(placed.length > 14) placed.shift();
+  save(); render(true); toast(OFFERINGS[type].msg);
+  glowEl.classList.add('on'); setTimeout(()=>glowEl.classList.remove('on'), 900);
+}
+document.getElementById('clear').addEventListener('click', ()=>{
+  placed = []; save(); render(); toast("The altar is cleansed.");
+});
+tray.addEventListener('pointerdown', e=>e.stopPropagation());
+card.addEventListener('pointerdown', e=>e.stopPropagation());
+document.getElementById('topbar').addEventListener('pointerdown', e=>e.stopPropagation());
+
+const toastEl = document.getElementById('toast'); let toastT;
+function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>toastEl.classList.remove('show'), 3200); }
+
+const hintEl = document.getElementById('hint'); let hintGone = false;
+function hideHint(){ if(hintGone) return; hintGone = true; setTimeout(()=>hintEl.style.opacity = 0, 2500); }
+</script>
+</body>
+</html>
