@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Garden of Lilith</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#d8b46a; --ember:#e0592f; --violet:#5b2a86;
+  --night:#0b0710; --ink:#ece2d0; --panel:rgba(18,10,24,.92);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
+  font-family:'Cormorant Garamond',serif;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ---------- WORLD ---------- */
+#viewport{position:fixed;inset:0;overflow:hidden;cursor:pointer}
+#world{position:absolute;left:0;top:0;width:1400px;height:1400px;will-change:transform;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(130,20,55,.32) 0, rgba(130,20,55,0) 35%),
+    repeating-radial-gradient(circle at 13px 17px, rgba(40,70,45,.25) 0 2px, transparent 2px 23px),
+    repeating-radial-gradient(circle at 5px 9px, rgba(20,40,25,.4) 0 1.5px, transparent 1.5px 17px),
+    radial-gradient(circle at 50% 48%, #1d2a20 0, #111c15 55%, #070d09 100%);}
+.ground{position:absolute;pointer-events:none}
+.ring{border-radius:50%;border:44px solid rgba(130,110,95,.22);box-shadow:inset 0 0 30px rgba(0,0,0,.5),0 0 30px rgba(0,0,0,.4)}
+.plaza{border-radius:50%;background:
+  repeating-conic-gradient(from 0deg at 50% 50%, rgba(140,125,115,.22) 0 15deg, rgba(110,95,90,.22) 15deg 30deg);
+  box-shadow:0 0 60px rgba(216,180,106,.12), inset 0 0 40px rgba(0,0,0,.6)}
+.walk{background:rgba(130,110,95,.22);box-shadow:inset 0 0 14px rgba(0,0,0,.5)}
+
+.sprite{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
+.flip{display:block;transition:transform .15s}
+
+/* player */
+#player .body{animation:none}
+#player.moving .body{animation:bob .35s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.lantern{filter:drop-shadow(0 0 6px #ffb347)}
+#player::after{content:"";position:absolute;left:50%;top:60%;width:140px;height:140px;transform:translate(-50%,-50%);
+  background:radial-gradient(circle, rgba(255,190,110,.18), transparent 70%);pointer-events:none}
+
+/* statue + altar */
+.halo{animation:pulse 4s ease-in-out infinite;transform-origin:120px 34px}
+@keyframes pulse{50%{opacity:.55;transform:scale(1.15)}}
+.flame{animation:flick .25s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes flick{to{transform:scaleY(1.12) scaleX(.9)}}
+#altar{position:relative}
+#offerings{position:absolute;left:14px;right:14px;top:-18px;height:40px}
+.placed{position:absolute;bottom:0;transform:translateX(-50%);width:30px;height:30px}
+.placed svg{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.placed.new{animation:land .6s ease-out}
+@keyframes land{0%{transform:translate(-50%,-40px) scale(1.4);opacity:0}100%{transform:translate(-50%,0) scale(1);opacity:1}}
+.altar-glow{position:absolute;inset:-30px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,140,60,.45), transparent 65%);opacity:0;transition:opacity .4s}
+.altar-glow.on{opacity:1}
+
+/* symbol stones */
+.symbol{display:flex;flex-direction:column;align-items:center}
+.glyph{width:44px;height:44px;color:var(--gold);filter:drop-shadow(0 0 6px rgba(216,180,106,.85));animation:float 3.2s ease-in-out infinite}
+.glyph svg{width:100%;height:100%}
+.stone{width:46px;height:44px;margin-top:6px;border-radius:4px 4px 2px 2px;
+  background:linear-gradient(90deg,#3d3745,#6e6578 50%,#3a3442);box-shadow:0 8px 10px rgba(0,0,0,.5);
+  border-top:4px solid #7c7388}
+.symbol.near .glyph{color:#fff1c8;filter:drop-shadow(0 0 12px rgba(255,220,150,1))}
+@keyframes float{50%{transform:translateY(-6px)}}
+
+.fly{position:absolute;width:4px;height:4px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 8px 2px rgba(255,220,120,.7);
+  pointer-events:none;animation:drift linear infinite}
+@keyframes drift{0%{transform:translate(0,0);opacity:0}20%{opacity:1}50%{transform:translate(30px,-40px)}80%{opacity:1}100%{transform:translate(-20px,-80px);opacity:0}}
+.orb{width:10px;height:10px;border-radius:50%;background:#ffcf8a;box-shadow:0 0 14px 5px rgba(255,170,80,.45);animation:float 4s ease-in-out infinite}
+
+/* ---------- UI ---------- */
+.ui{position:fixed;z-index:5000}
+#topbar{top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;
+  background:linear-gradient(rgba(11,7,16,.95),rgba(11,7,16,0))}
+#topbar h1{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.12em;color:var(--gold);font-weight:400;text-align:center;flex:1}
+.btn{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:var(--ink);background:rgba(91,42,134,.35);
+  border:1px solid rgba(216,180,106,.45);border-radius:20px;padding:6px 12px;text-decoration:none;cursor:pointer}
+#hint{top:50px;left:50%;transform:translateX(-50%);font-style:italic;font-size:15px;color:rgba(236,226,208,.75);
+  text-align:center;padding:0 16px;transition:opacity 1s;pointer-events:none;width:100%}
+
+#card{left:12px;right:12px;bottom:12px;max-width:520px;margin:0 auto;max-height:46vh;overflow-y:auto;
+  background:var(--panel);border:1px solid rgba(216,180,106,.4);border-radius:14px;padding:16px 18px 18px;
+  box-shadow:0 0 40px rgba(91,42,134,.5);transform:translateY(130%);transition:transform .35s ease}
+#card.show{transform:translateY(0)}
+#card .head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+#card .icon{width:40px;height:40px;color:var(--gold);flex:none}
+#card h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);font-weight:400}
+#card .sub{font-style:italic;font-size:14px;opacity:.7}
+#card{z-index:5100}
+#card p{font-size:17px;line-height:1.45;margin-bottom:10px}
+#card h3{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;color:var(--gold);font-weight:400;
+  margin:14px 0 4px;padding-top:10px;border-top:1px solid rgba(216,180,106,.2)}
+#card.lore{max-height:62vh}
+.figs{display:flex;justify-content:center;gap:24px;margin:4px 0 12px}
+.fig{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--gold)}
+.fig svg{width:96px;height:96px;filter:drop-shadow(0 0 6px rgba(216,180,106,.6))}
+.fig span{font-size:13px;font-style:italic;opacity:.75;color:var(--ink)}
+#loreBtn{margin:8px 6px 0 0;font-size:10px}
+#card .x{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--ink);font-size:22px;cursor:pointer;opacity:.7}
+
+#tray{left:0;right:0;bottom:0;padding:10px 10px 14px;background:linear-gradient(rgba(11,7,16,0),rgba(11,7,16,.96) 30%);
+  transform:translateY(110%);transition:transform .35s ease;text-align:center}
+#tray.show{transform:translateY(0)}
+#tray .label{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:var(--gold);margin:14px 0 8px}
+#items{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.off{width:54px;cursor:grab;touch-action:none;display:flex;flex-direction:column;align-items:center;gap:2px}
+.off .pic{width:46px;height:46px;border-radius:50%;background:rgba(91,42,134,.3);border:1px solid rgba(216,180,106,.35);
+  display:flex;align-items:center;justify-content:center}
+.off .pic svg{width:32px;height:32px;pointer-events:none}
+.off span{font-size:12px;line-height:1.1;opacity:.85}
+#clear{margin-top:8px;font-size:10px;opacity:.7}
+
+.ghost{position:fixed;z-index:9000;width:48px;height:48px;transform:translate(-50%,-50%) scale(1.2);pointer-events:none;
+  filter:drop-shadow(0 0 10px rgba(255,200,120,.9))}
+.ghost svg{width:100%;height:100%}
+#toast{left:50%;top:90px;transform:translate(-50%,-20px);max-width:90%;width:max-content;background:var(--panel);
+  border:1px solid rgba(216,180,106,.5);border-radius:12px;padding:10px 16px;font-size:16px;font-style:italic;text-align:center;
+  opacity:0;transition:all .4s;pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<div id="viewport"><div id="world"></div></div>
+
+<div id="topbar" class="ui">
+  <a class="btn" href="gardens.html">← Gardens</a>
+  <h1>Garden of Lilith</h1>
+  <span style="width:70px"></span>
+</div>
+<div id="hint" class="ui">Tap anywhere to walk (or use arrow keys / WASD).<br>Visit her symbols, then bring offerings to the altar.</div>
+
+<div id="card" class="ui">
+  <button class="x" aria-label="Close">×</button>
+  <div class="head"><div class="icon"></div><div><h2></h2><div class="sub"></div></div></div>
+  <div class="body"></div>
+</div>
+
+<div id="tray" class="ui">
+  <div class="label">Drag an offering onto the altar</div>
+  <div id="items"></div>
+  <button id="loreBtn" class="btn">✦ Her lore</button>
+  <button id="clear" class="btn">Clear the altar</button>
+</div>
+<div id="toast" class="ui"></div>
+
+<script>
+/* =========================================================
+   EDIT HERE: deity, symbols and offerings
+   ========================================================= */
+const DEITY = "LILITH";
+const STORAGE_KEY = "garden-offerings-lilith";
+
+const SYMBOLS = [
+  { name:"The Black Moon", sub:"Black Moon Lilith",
+    text:"In astrology, Black Moon Lilith marks the point where the Moon's orbit lies farthest from the Earth. It is read as the wild, untamed and rejected part of the self: the shadow that refuses to be silenced.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M36 5 A17 17 0 1 0 36 39 A12 17 0 1 1 36 5Z" fill="currentColor"/><path d="M28 39 V57 M20 49 H36" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>` },
+  { name:"The Night Owl", sub:"Creature of the dark",
+    text:"The owl has been linked with Lilith since the verse in Isaiah that names her among the creatures of the night. It sees in darkness, flies in silence, and carries the wisdom found where no light reaches.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M14 14 L20 20 C24 17 36 17 40 20 L46 14 L46 30 C46 46 38 55 30 55 C22 55 14 46 14 30Z" fill="currentColor"/><circle cx="23" cy="28" r="6" fill="#0b0710"/><circle cx="37" cy="28" r="6" fill="#0b0710"/><circle cx="23" cy="28" r="2.6" fill="#ffcf70"/><circle cx="37" cy="28" r="2.6" fill="#ffcf70"/><path d="M28 34 L30 38 L32 34Z" fill="#0b0710"/></svg>` },
+  { name:"The Serpent of Eden", sub:"The woman in the tree",
+    text:"Some medieval and Renaissance artists painted the serpent in Eden with a woman's face and body. Many readers see Lilith in her, returning to the garden to offer Eve the knowledge she had claimed for herself.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M16 55 C44 50 46 38 30 33 C14 28 18 14 32 12"/><circle cx="36" cy="11" r="4" fill="currentColor" stroke="none"/><path d="M33 6 C36 3 41 3 43 7" stroke-width="2"/></svg>` },
+  { name:"Wings of the Night", sub:"Freedom",
+    text:"Lilith flies. She rose from Eden by her own power and rides the night wind. Her wings are freedom: the refusal to be held anywhere she has not chosen to be.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 26 C22 12 10 8 3 12 C8 16 9 20 6 24 C12 25 13 29 10 33 C17 33 19 37 17 42 C24 39 28 33 30 26Z" fill="currentColor"/><path d="M30 26 C38 12 50 8 57 12 C52 16 51 20 54 24 C48 25 47 29 50 33 C43 33 41 37 43 42 C36 39 32 33 30 26Z" fill="currentColor"/></svg>` },
+  { name:"The Red Sea", sub:"Her refuge",
+    text:"After leaving Eden she made her home by the Red Sea, in the wild places beyond the reach of any law. It is her refuge and her kingdom, where she answers to no one.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke-width="3.5" stroke-linecap="round"><path d="M5 22 C12 16 18 28 25 22 C32 16 38 28 45 22 C50 18 53 20 55 22" stroke="#c21f30"/><path d="M5 34 C12 28 18 40 25 34 C32 28 38 40 45 34 C50 30 53 32 55 34" stroke="currentColor"/><path d="M5 46 C12 40 18 52 25 46 C32 40 38 52 45 46 C50 42 53 44 55 46" stroke="#c21f30"/></svg>` },
+  { name:"The Secret Name", sub:"Power through knowledge",
+    text:"Lilith escaped by speaking the hidden name of God. To her followers this is power through knowledge: whoever knows the true names of things cannot be bound by them.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><circle cx="14" cy="30" r="4" fill="currentColor" stroke="none"/><path d="M24 22 C28 27 28 33 24 38 M32 15 C39 24 39 36 32 45 M40 8 C50 21 50 39 40 52"/></svg>` },
+  { name:"The Crown of Night", sub:"Queen of the demons",
+    text:"As queen of the demons, Lilith wears a crown of night. She rules over the spirits of the dark, a sovereign who bows to no throne but her own.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M8 46 L12 22 L22 34 L30 16 L38 34 L48 22 L52 46Z" fill="currentColor"/><rect x="8" y="46" width="44" height="6" fill="currentColor"/><path d="M33 4 A7 7 0 1 0 33 16 A5 7 0 1 1 33 4Z" fill="#c21f30"/></svg>` }
+];
+
+const LORE = {
+  name:"Lilith", sub:"Queen of the Night · The First Woman",
+  sections:[
+    { title:"Her Name",
+      text:"Lilith may come from the Akkadian lilītu, night spirits of wind and storm feared in ancient Mesopotamia. In the Hebrew Bible the word appears only once, in Isaiah 34:14, among the wild creatures haunting a ruined land. It has been translated as “night creature” or “screech owl”." },
+    { title:"The First Woman",
+      text:"The Alphabet of Ben Sira, a medieval Jewish text from around the 8th to 10th century CE, tells that Lilith was Adam's first wife, made from the same earth as he was. She refused to lie beneath him, saying they were equals. When he would not listen, she spoke the secret name of God, rose into the air and flew away to the Red Sea." },
+    { title:"The Three Angels",
+      text:"God sent three angels, Senoy, Sansenoy and Semangelof, to bring her back, and she refused. For centuries afterwards, amulets bearing the three angels' names were hung over cradles and birthing beds to keep her away from mothers and newborns." },
+    { title:"Queen of the Night",
+      text:"In Kabbalah, especially in the Zohar, she becomes the queen of the demons and the consort of Samael. She was feared as a seductress of men in their sleep and as the mother of night spirits." },
+    { title:"The Queen of the Night Relief",
+      text:"A Babylonian clay plaque from around 1800 BCE, known as the Burney Relief, shows a winged woman with owl's feet standing on lions between two owls. It was once thought to show Lilith. Most scholars now see Ishtar or Ereshkigal in it, but the image remains closely tied to her." },
+    { title:"The Rebel Reborn",
+      text:"From the 1970s she became a symbol of women's independence, and a Jewish feminist magazine took her name. In the left-hand path and Luciferian traditions she is the Dark Mother: a goddess of freedom, sexuality, shadow and self-sovereignty, often honoured alongside Lucifer and Samael." },
+    { title:"Correspondences",
+      text:"Moon: the dark moon, and Black Moon Lilith in astrology. Colours: black and red. Animals: the owl, the serpent and night birds. Places: the wilderness, the Red Sea and the night. Offerings: red wine, pomegranates, apples, dark chocolate, myrrh, and black or red candles." }
+  ]
+};
+
+const OFFERINGS = {
+  wine:{ label:"Red wine", msg:"A cup of red wine, poured for the Queen of the Night.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M11 5 H29 C29 16 25 21 20 21 C15 21 11 16 11 5Z" fill="#6d0f1f" stroke="#d8b46a" stroke-width="1.5"/><path d="M20 21 V33 M13 35 H27" stroke="#d8b46a" stroke-width="2"/></svg>` },
+  candle:{ label:"Black candle", msg:"A black candle burns in her honour, a flame that belongs to the dark.",
+    svg:`<svg viewBox="0 0 40 40"><rect x="15" y="16" width="10" height="21" rx="2" fill="#141014" stroke="#9a8fb0" stroke-width="1"/><path class="flame" d="M20 4 C25 9 25 13 20 15 C15 13 15 9 20 4Z" fill="#ffb347"/></svg>` },
+  pomegranate:{ label:"Pomegranate", msg:"A pomegranate full of seeds, for desire, fertility and the dark below.",
+    svg:`<svg viewBox="0 0 40 40"><circle cx="20" cy="24" r="13" fill="#9b1b2a"/><path d="M15 12 L17 6 L20 10 L23 6 L25 12Z" fill="#7a1220"/><circle cx="15" cy="22" r="1.6" fill="#f2a0a8"/><circle cx="21" cy="27" r="1.6" fill="#f2a0a8"/><circle cx="25" cy="20" r="1.6" fill="#f2a0a8"/></svg>` },
+  chocolate:{ label:"Dark chocolate", msg:"Dark chocolate, bitter and sweet, offered for pleasure.",
+    svg:`<svg viewBox="0 0 40 40"><rect x="7" y="9" width="26" height="22" rx="2" fill="#3b1f14"/><path d="M7 16 H33 M7 23 H33 M16 9 V31 M24 9 V31" stroke="#5a3222" stroke-width="1.5"/><path d="M7 31 L33 31 L33 27 L24 34 L7 34Z" fill="#8a1424"/></svg>` },
+  myrrh:{ label:"Myrrh", msg:"Myrrh smoke rises, ancient and bitter, carrying your words into the night.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M8 34 H32 L29 26 H11Z" fill="#6e6578"/><circle cx="16" cy="24" r="3" fill="#b5652a"/><circle cx="22" cy="23" r="3.5" fill="#c97a35"/><path d="M20 20 C15 15 25 12 19 4" stroke="#cfc3d6" stroke-width="1.5" fill="none" opacity=".8"/></svg>` },
+  apple:{ label:"Apple", msg:"An apple, the fruit of knowing, for the one who chose knowledge over obedience.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M20 13 C11 7 4 16 7 26 C10 36 17 38 20 35 C23 38 30 36 33 26 C36 16 29 7 20 13Z" fill="#b3202e"/><path d="M20 13 C20 9 21 6 24 4" stroke="#4a2c14" stroke-width="2" fill="none"/><path d="M22 8 C26 4 31 5 31 6 C27 10 23 10 22 8Z" fill="#2f6b3a"/></svg>` }
+};
+
+/* =========================================================
+   WORLD SETUP
+   ========================================================= */
+const W = 1400, H = 1400, CX = 700, CY = 680;
+const world = document.getElementById('world');
+const vp = document.getElementById('viewport');
+const obstacles = [];
+
+function el(cls, x, y, html, z){
+  const d = document.createElement('div');
+  d.className = 'sprite ' + (cls||'');
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  d.style.zIndex = z !== undefined ? z : Math.round(y);
+  d.innerHTML = html; world.appendChild(d); return d;
+}
+function ground(cls, x, y, w, h){
+  const d = document.createElement('div');
+  d.className = 'ground ' + cls;
+  Object.assign(d.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+  world.appendChild(d); return d;
+}
+
+// paths
+ground('walk', CX-24, CY+180, 48, H-(CY+180));
+ground('ring', CX-442, CY-442, 884, 884);
+ground('plaza', CX-200, CY-200, 400, 400);
+
+// statue
+const statueSVG = `<svg viewBox="0 0 240 320" width="240" height="320">
+<defs>
+ <linearGradient id="st" x1="0" x2="1"><stop offset="0" stop-color="#3a3240"/><stop offset=".5" stop-color="#6a5f72"/><stop offset="1" stop-color="#332c38"/></linearGradient>
+ <radialGradient id="hl"><stop offset="0" stop-color="#ff5a6e" stop-opacity=".55"/><stop offset=".45" stop-color="#8a1430" stop-opacity=".3"/><stop offset="1" stop-color="#8a1430" stop-opacity="0"/></radialGradient>
+</defs>
+<circle class="halo" cx="120" cy="34" r="40" fill="url(#hl)"/>
+<path d="M128 16 A17 17 0 1 0 128 50 A12 17 0 1 1 128 16Z" fill="#0b0710" stroke="#e7c4cc" stroke-width="1.5"/>
+<!-- owl-like wings sweeping downwards -->
+<path d="M106 108 C72 88 34 96 14 136 C30 134 34 148 24 168 C40 160 46 174 40 194 C56 184 66 196 64 216 C80 202 92 182 100 160Z" fill="url(#st)" stroke="#1e1922"/>
+<path d="M134 108 C168 88 206 96 226 136 C210 134 206 148 216 168 C200 160 194 174 200 194 C184 184 174 196 176 216 C160 202 148 182 140 160Z" fill="url(#st)" stroke="#1e1922"/>
+<path d="M40 140 C60 136 80 140 98 150 M50 172 C66 168 82 172 98 178 M220 140 M200 140 C180 136 160 140 142 150 M190 172 C174 168 158 172 142 178" stroke="#1e1922" stroke-opacity=".6" fill="none"/>
+<!-- long hair -->
+<path d="M104 80 C98 110 96 150 102 180 L138 180 C144 150 142 110 136 80Z" fill="#17131b"/>
+<!-- body -->
+<path d="M106 102 Q120 95 134 102 L146 252 Q120 258 94 252Z" fill="url(#st)" stroke="#1e1922"/>
+<path d="M114 112 L108 250 M126 112 L132 250" stroke="#1e1922" stroke-opacity=".4" fill="none"/>
+<!-- serpent coiling up the body -->
+<path d="M96 236 C120 228 144 220 140 206 C136 192 104 196 102 180 C100 164 138 166 140 150 C142 136 118 132 116 120" stroke="#5c7a5e" stroke-width="6" stroke-linecap="round" fill="none"/>
+<circle cx="117" cy="117" r="5" fill="#5c7a5e"/><circle cx="115.5" cy="116" r="1.2" fill="#ffcf70"/>
+<!-- head -->
+<circle cx="120" cy="82" r="14" fill="#7a6f84" stroke="#1e1922"/>
+<path d="M106 82 C104 66 112 60 120 60 C128 60 136 66 134 82 C130 72 126 70 120 70 C114 70 110 72 106 82Z" fill="#17131b"/>
+<circle cx="115" cy="84" r="1.8" fill="#ff8a9a"/><circle cx="125" cy="84" r="1.8" fill="#ff8a9a"/>
+<!-- pedestal -->
+<rect x="70" y="250" width="100" height="14" fill="#4b4050"/>
+<rect x="78" y="264" width="84" height="46" fill="#3a3240"/>
+<rect x="64" y="308" width="112" height="12" fill="#2a2430"/>
+<text x="120" y="292" text-anchor="middle" font-family="Cinzel,serif" font-size="12" letter-spacing="2" fill="#d8b46a">${DEITY}</text>
+</svg>`;
+el('', CX, CY-30, statueSVG);
+obstacles.push({x:CX, y:CY-60, r:70});
+
+// altar
+const altarSVG = `<div id="altar"><div class="altar-glow"></div>
+<svg viewBox="0 0 220 90" width="220" height="90">
+ <rect x="4" y="18" width="212" height="16" rx="2" fill="#5d5566"/>
+ <rect x="4" y="18" width="212" height="3" fill="#d8b46a" opacity=".55"/>
+ <rect x="14" y="34" width="192" height="52" fill="#3b3543"/>
+ <g opacity=".75"><path d="M115 44 A11 11 0 1 0 115 66 A8 11 0 1 1 115 44Z" fill="#d8b46a"/><path d="M110 66 V80 M104 74 H116" stroke="#d8b46a" stroke-width="1.8" stroke-linecap="round"/></g>
+ <rect x="12" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M15 -6 C19 -2 19 1 15 3 C11 1 11 -2 15 -6Z" fill="#ffb347"/>
+ <rect x="202" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M205 -6 C209 -2 209 1 205 3 C201 1 201 -2 205 -6Z" fill="#ffb347"/>
+</svg><div id="offerings"></div></div>`;
+const ALTAR = {x:CX, y:CY+100};
+el('', ALTAR.x, ALTAR.y, altarSVG);
+[-70,-25,25,70].forEach(dx=>obstacles.push({x:CX+dx, y:ALTAR.y-25, r:26}));
+const altarEl = document.getElementById('altar');
+const offEl = document.getElementById('offerings');
+const glowEl = document.querySelector('.altar-glow');
+
+// symbols around the garden
+const ANGLES = [-90,-38,14,62,118,166,218];
+const symbolEls = SYMBOLS.map((s,i)=>{
+  const a = ANGLES[i]*Math.PI/180, r = 480;
+  s.x = CX + Math.cos(a)*r; s.y = CY + Math.sin(a)*r + 30;
+  obstacles.push({x:s.x, y:s.y-15, r:24});
+  return el('symbol', s.x, s.y, `<div class="glyph">${s.svg}</div><div class="stone"></div>`);
+});
+
+// floating lights along the ring
+for(let i=0;i<16;i++){
+  const a = i/16*Math.PI*2 + .2;
+  if (Math.abs(Math.cos(a)) < .1 && Math.sin(a) > 0) continue;
+  el('', CX+Math.cos(a)*372, CY+Math.sin(a)*372, '<div class="orb"></div>');
+}
+
+// seeded trees and rose bushes
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rand = rng(666);
+const cypress = `<svg viewBox="0 0 40 110" width="40" height="110"><ellipse cx="20" cy="106" rx="14" ry="4" fill="rgba(0,0,0,.45)"/><rect x="18" y="92" width="4" height="14" fill="#2b1d14"/><path d="M20 2 C34 30 32 70 20 96 C8 70 6 30 20 2Z" fill="#10241a" stroke="#1f3d2b"/></svg>`;
+const bush = `<svg viewBox="0 0 60 40" width="60" height="40"><ellipse cx="30" cy="36" rx="26" ry="4" fill="rgba(0,0,0,.4)"/><ellipse cx="30" cy="22" rx="26" ry="15" fill="#15301f"/><circle cx="17" cy="16" r="3.5" fill="#5e0c1c"/><circle cx="34" cy="12" r="3.5" fill="#6d0f22"/><circle cx="44" cy="22" r="3.5" fill="#5e0c1c"/><circle cx="25" cy="26" r="3.5" fill="#4a0916"/></svg>`;
+let placedTrees = 0, tries = 0;
+while(placedTrees < 70 && tries < 2000){
+  tries++;
+  const x = 40 + rand()*(W-80), y = 60 + rand()*(H-100);
+  const d = Math.hypot(x-CX, y-CY);
+  const okZone = (d > 545) || (d > 235 && d < 345);
+  const onSouthPath = Math.abs(x-CX) < 70 && y > CY;
+  const tooClose = obstacles.some(o=>Math.hypot(o.x-x,o.y-y) < o.r+40);
+  if(!okZone || onSouthPath || tooClose) continue;
+  const isBush = rand() < .5; // black-red roses
+  el('', x, y, isBush ? bush : cypress);
+  obstacles.push({x, y:y-6, r:isBush?22:13});
+  placedTrees++;
+}
+
+// fireflies
+for(let i=0;i<34;i++){
+  const f = document.createElement('div'); f.className='fly';
+  f.style.left = (rand()*W)+'px'; f.style.top = (rand()*H)+'px';
+  f.style.animationDuration = (5+rand()*7)+'s'; f.style.animationDelay = (-rand()*10)+'s';
+  f.style.zIndex = 3000; world.appendChild(f);
+}
+
+// player
+const player = el('', 0, 0, `<div class="flip"><div class="body"><svg viewBox="0 0 40 52" width="38" height="50">
+<ellipse cx="20" cy="49" rx="12" ry="3" fill="rgba(0,0,0,.5)"/>
+<path d="M20 5 C11 5 9 16 10 22 L5 48 H35 L30 22 C31 16 29 5 20 5Z" fill="#2b1f3a" stroke="#7a5a9c"/>
+<path d="M14 18 C14 12 26 12 26 18 C26 23 14 23 14 18Z" fill="#0b0710"/>
+<circle cx="17.5" cy="18" r="1.3" fill="#ffcf70"/><circle cx="22.5" cy="18" r="1.3" fill="#ffcf70"/>
+<path d="M30 27 L33 30" stroke="#999"/><circle class="lantern" cx="33" cy="34" r="4" fill="#ffb347"/>
+</svg></div></div>`);
+player.id = 'player';
+const flipEl = player.querySelector('.flip');
+
+/* =========================================================
+   MOVEMENT + CAMERA
+   ========================================================= */
+let px = CX, py = H-90, tx = null, ty = null, facing = 1;
+let camX = 0, camY = 0;
+const SPEED = 190, keys = {};
+const KEYMAP = {ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',ArrowUp:'u',w:'u',W:'u',ArrowDown:'d',s:'d',S:'d'};
+addEventListener('keydown',e=>{ if(KEYMAP[e.key]){keys[KEYMAP[e.key]]=true; e.preventDefault(); hideHint();} });
+addEventListener('keyup',e=>{ if(KEYMAP[e.key]) keys[KEYMAP[e.key]]=false; });
+
+vp.addEventListener('pointerdown', e=>{
+  tx = e.clientX + camX; ty = e.clientY + camY; hideHint();
+});
+
+function collide(){
+  for(const o of obstacles){
+    const dx = px-o.x, dy = py-o.y, d = Math.hypot(dx,dy), min = o.r + 12;
+    if(d < min && d > 0.01){ px = o.x + dx/d*min; py = o.y + dy/d*min; }
+  }
+  px = Math.max(20, Math.min(W-20, px)); py = Math.max(40, Math.min(H-10, py));
+}
+
+function step(dt){
+  let vx = (keys.r?1:0)-(keys.l?1:0), vy = (keys.d?1:0)-(keys.u?1:0);
+  if(vx||vy) tx = null;
+  else if(tx !== null){
+    const dx = tx-px, dy = ty-py, d = Math.hypot(dx,dy);
+    if(d < 5) tx = null; else { vx = dx/d; vy = dy/d; }
+  }
+  const m = Math.hypot(vx,vy), moving = m > 0;
+  if(moving){
+    vx/=m; vy/=m;
+    const ox = px, oy = py;
+    px += vx*SPEED*dt; py += vy*SPEED*dt; collide();
+    if(tx !== null && Math.hypot(px-ox,py-oy) < SPEED*dt*0.25) tx = null; // stuck
+    if(Math.abs(vx) > .2) facing = vx < 0 ? -1 : 1;
+  }
+  player.classList.toggle('moving', moving);
+  flipEl.style.transform = `scaleX(${facing})`;
+  player.style.left = px+'px'; player.style.top = py+'px'; player.style.zIndex = Math.round(py);
+
+  const vw = innerWidth, vh = innerHeight;
+  const goalX = vw >= W ? (W-vw)/2 : Math.max(0, Math.min(W-vw, px - vw/2));
+  const goalY = vh >= H ? (H-vh)/2 : Math.max(0, Math.min(H-vh, py - vh*0.45));
+  camX += (goalX-camX)*Math.min(1, dt*6); camY += (goalY-camY)*Math.min(1, dt*6);
+  world.style.transform = `translate(${-camX}px,${-camY}px)`;
+
+  checkNearby();
+}
+
+let last = performance.now();
+camX = Math.max(0, Math.min(W-innerWidth, px-innerWidth/2));
+camY = Math.max(0, Math.min(H-innerHeight, py-innerHeight*0.45));
+function loop(t){ const dt = Math.min(.05,(t-last)/1000); last = t; step(dt); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+
+/* =========================================================
+   SYMBOL CARDS + ALTAR TRAY
+   ========================================================= */
+const card = document.getElementById('card'), tray = document.getElementById('tray');
+let current = -1, dismissed = -1, loreOpen = false;
+card.querySelector('.x').addEventListener('click', ()=>{ dismissed = current; loreOpen = false; showCard(-1); });
+document.getElementById('loreBtn').addEventListener('click', ()=>{ loreOpen = true; dismissed = -1; });
+
+function showCard(i){
+  if(i === current) return;
+  current = i;
+  symbolEls.forEach((s,k)=>s.classList.toggle('near', k===i));
+  if(i === -1){ card.classList.remove('show'); return; }
+  const isLore = i === 'lore';
+  const s = isLore ? LORE : SYMBOLS[i];
+  card.classList.toggle('lore', isLore);
+  card.querySelector('.icon').innerHTML = SYMBOLS[isLore ? 0 : i].svg;
+  card.querySelector('h2').textContent = s.name;
+  card.querySelector('.sub').textContent = s.sub;
+  const body = card.querySelector('.body'); body.innerHTML = '';
+  if(!isLore && s.figures){
+    const row = document.createElement('div'); row.className = 'figs';
+    s.figures.forEach(f=>{
+      const fig = document.createElement('div'); fig.className = 'fig';
+      fig.innerHTML = f.svg; const c = document.createElement('span'); c.textContent = f.caption;
+      fig.appendChild(c); row.appendChild(fig);
+    });
+    body.appendChild(row);
+  }
+  (isLore ? s.sections : [{text:s.text}]).forEach(sec=>{
+    if(sec.title){ const h = document.createElement('h3'); h.textContent = sec.title; body.appendChild(h); }
+    const p = document.createElement('p'); p.textContent = sec.text; body.appendChild(p);
+  });
+  card.scrollTop = 0; card.classList.add('show');
+}
+function checkNearby(){
+  let best = -1, bd = 110;
+  SYMBOLS.forEach((s,i)=>{ const d = Math.hypot(px-s.x, py-s.y); if(d < bd){ bd = d; best = i; } });
+  const nearAltar = Math.hypot(px-ALTAR.x, py-ALTAR.y) < 170;
+  if(!nearAltar) loreOpen = false;
+  if(best === -1 && (loreOpen || Math.hypot(px-CX, py-(CY-60)) < 150)) best = 'lore';
+  if(best !== dismissed) showCard(best);
+  if(best === -1) dismissed = -1;
+  tray.classList.toggle('show', nearAltar);
+}
+
+/* =========================================================
+   OFFERINGS (drag & drop, saved in this browser)
+   ========================================================= */
+let placed = [];
+try { placed = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e){ placed = []; }
+function save(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(placed)); } catch(e){} }
+function render(animateLast){
+  offEl.innerHTML = placed.map(o=>`<div class="placed" style="left:${o.f*100}%">${OFFERINGS[o.t].svg}</div>`).join('');
+  if(animateLast && offEl.lastElementChild) offEl.lastElementChild.classList.add('new');
+}
+render();
+
+const items = document.getElementById('items');
+Object.entries(OFFERINGS).forEach(([key,o])=>{
+  const d = document.createElement('div'); d.className='off'; d.dataset.type = key;
+  d.innerHTML = `<div class="pic">${o.svg}</div><span>${o.label}</span>`;
+  items.appendChild(d);
+});
+
+let ghost = null, dragType = null;
+function moveGhost(e){ ghost.style.left = e.clientX+'px'; ghost.style.top = e.clientY+'px'; }
+items.addEventListener('pointerdown', e=>{
+  const it = e.target.closest('.off'); if(!it) return;
+  e.preventDefault(); e.stopPropagation();
+  dragType = it.dataset.type;
+  ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.innerHTML = OFFERINGS[dragType].svg;
+  document.body.appendChild(ghost); moveGhost(e);
+  try { it.setPointerCapture(e.pointerId); } catch(_){}
+});
+addEventListener('pointermove', e=>{
+  if(!ghost) return; moveGhost(e);
+  glowEl.classList.toggle('on', overAltar(e));
+});
+addEventListener('pointerup', e=>{
+  if(!ghost) return;
+  if(overAltar(e)){
+    const r = altarEl.getBoundingClientRect();
+    placeOffering(dragType, Math.max(.08, Math.min(.92, (e.clientX - r.left)/r.width)));
+  }
+  endDrag();
+});
+addEventListener('pointercancel', endDrag);
+function endDrag(){ if(ghost) ghost.remove(); ghost = null; glowEl.classList.remove('on'); }
+function overAltar(e){
+  const r = altarEl.getBoundingClientRect();
+  return e.clientX > r.left-25 && e.clientX < r.right+25 && e.clientY > r.top-70 && e.clientY < r.bottom+15;
+}
+function placeOffering(type, f){
+  placed.push({t:type, f, ts:Date.now()});
+  if(placed.length > 14) placed.shift();
+  save(); render(true); toast(OFFERINGS[type].msg);
+  glowEl.classList.add('on'); setTimeout(()=>glowEl.classList.remove('on'), 900);
+}
+document.getElementById('clear').addEventListener('click', ()=>{
+  placed = []; save(); render(); toast("The altar is cleansed.");
+});
+tray.addEventListener('pointerdown', e=>e.stopPropagation());
+card.addEventListener('pointerdown', e=>e.stopPropagation());
+document.getElementById('topbar').addEventListener('pointerdown', e=>e.stopPropagation());
+
+const toastEl = document.getElementById('toast'); let toastT;
+function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>toastEl.classList.remove('show'), 3200); }
+
+const hintEl = document.getElementById('hint'); let hintGone = false;
+function hideHint(){ if(hintGone) return; hintGone = true; setTimeout(()=>hintEl.style.opacity = 0, 2500); }
+</script>
+</body>
+</html>
