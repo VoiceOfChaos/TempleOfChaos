@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Garden of Aphrodite</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#d8b46a; --ember:#e0592f; --violet:#5b2a86;
+  --night:#0b0710; --ink:#ece2d0; --panel:rgba(18,10,24,.92);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
+  font-family:'Cormorant Garamond',serif;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ---------- WORLD ---------- */
+#viewport{position:fixed;inset:0;overflow:hidden;cursor:pointer}
+#world{position:absolute;left:0;top:0;width:1400px;height:1400px;will-change:transform;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(230,120,160,.3) 0, rgba(230,120,160,0) 38%),
+    repeating-radial-gradient(circle at 13px 17px, rgba(40,70,45,.25) 0 2px, transparent 2px 23px),
+    repeating-radial-gradient(circle at 5px 9px, rgba(20,40,25,.4) 0 1.5px, transparent 1.5px 17px),
+    radial-gradient(circle at 50% 48%, #1d2a20 0, #111c15 55%, #070d09 100%);}
+.ground{position:absolute;pointer-events:none}
+.ring{border-radius:50%;border:44px solid rgba(130,110,95,.22);box-shadow:inset 0 0 30px rgba(0,0,0,.5),0 0 30px rgba(0,0,0,.4)}
+.plaza{border-radius:50%;background:
+  repeating-conic-gradient(from 0deg at 50% 50%, rgba(140,125,115,.22) 0 15deg, rgba(110,95,90,.22) 15deg 30deg);
+  box-shadow:0 0 60px rgba(216,180,106,.12), inset 0 0 40px rgba(0,0,0,.6)}
+.walk{background:rgba(130,110,95,.22);box-shadow:inset 0 0 14px rgba(0,0,0,.5)}
+
+.sprite{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
+.flip{display:block;transition:transform .15s}
+
+/* player */
+#player .body{animation:none}
+#player.moving .body{animation:bob .35s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.lantern{filter:drop-shadow(0 0 6px #ffb347)}
+#player::after{content:"";position:absolute;left:50%;top:60%;width:140px;height:140px;transform:translate(-50%,-50%);
+  background:radial-gradient(circle, rgba(255,190,110,.18), transparent 70%);pointer-events:none}
+
+/* statue + altar */
+.halo{animation:pulse 4s ease-in-out infinite;transform-origin:120px 34px}
+@keyframes pulse{50%{opacity:.55;transform:scale(1.15)}}
+.flame{animation:flick .25s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes flick{to{transform:scaleY(1.12) scaleX(.9)}}
+#altar{position:relative}
+#offerings{position:absolute;left:14px;right:14px;top:-18px;height:40px}
+.placed{position:absolute;bottom:0;transform:translateX(-50%);width:30px;height:30px}
+.placed svg{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.placed.new{animation:land .6s ease-out}
+@keyframes land{0%{transform:translate(-50%,-40px) scale(1.4);opacity:0}100%{transform:translate(-50%,0) scale(1);opacity:1}}
+.altar-glow{position:absolute;inset:-30px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,140,60,.45), transparent 65%);opacity:0;transition:opacity .4s}
+.altar-glow.on{opacity:1}
+
+/* symbol stones */
+.symbol{display:flex;flex-direction:column;align-items:center}
+.glyph{width:44px;height:44px;color:var(--gold);filter:drop-shadow(0 0 6px rgba(216,180,106,.85));animation:float 3.2s ease-in-out infinite}
+.glyph svg{width:100%;height:100%}
+.stone{width:46px;height:44px;margin-top:6px;border-radius:4px 4px 2px 2px;
+  background:linear-gradient(90deg,#3d3745,#6e6578 50%,#3a3442);box-shadow:0 8px 10px rgba(0,0,0,.5);
+  border-top:4px solid #7c7388}
+.symbol.near .glyph{color:#fff1c8;filter:drop-shadow(0 0 12px rgba(255,220,150,1))}
+@keyframes float{50%{transform:translateY(-6px)}}
+
+.fly{position:absolute;width:4px;height:4px;border-radius:50%;background:#ffe0ea;box-shadow:0 0 8px 2px rgba(255,170,200,.7);
+  pointer-events:none;animation:drift linear infinite}
+@keyframes drift{0%{transform:translate(0,0);opacity:0}20%{opacity:1}50%{transform:translate(30px,-40px)}80%{opacity:1}100%{transform:translate(-20px,-80px);opacity:0}}
+.orb{width:10px;height:10px;border-radius:50%;background:#ffcf8a;box-shadow:0 0 14px 5px rgba(255,170,80,.45);animation:float 4s ease-in-out infinite}
+
+/* ---------- UI ---------- */
+.ui{position:fixed;z-index:5000}
+#topbar{top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;
+  background:linear-gradient(rgba(11,7,16,.95),rgba(11,7,16,0))}
+#topbar h1{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.12em;color:var(--gold);font-weight:400;text-align:center;flex:1}
+.btn{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:var(--ink);background:rgba(91,42,134,.35);
+  border:1px solid rgba(216,180,106,.45);border-radius:20px;padding:6px 12px;text-decoration:none;cursor:pointer}
+#hint{top:50px;left:50%;transform:translateX(-50%);font-style:italic;font-size:15px;color:rgba(236,226,208,.75);
+  text-align:center;padding:0 16px;transition:opacity 1s;pointer-events:none;width:100%}
+
+#card{left:12px;right:12px;bottom:12px;max-width:520px;margin:0 auto;max-height:46vh;overflow-y:auto;
+  background:var(--panel);border:1px solid rgba(216,180,106,.4);border-radius:14px;padding:16px 18px 18px;
+  box-shadow:0 0 40px rgba(91,42,134,.5);transform:translateY(130%);transition:transform .35s ease}
+#card.show{transform:translateY(0)}
+#card .head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+#card .icon{width:40px;height:40px;color:var(--gold);flex:none}
+#card h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);font-weight:400}
+#card .sub{font-style:italic;font-size:14px;opacity:.7}
+#card{z-index:5100}
+#card p{font-size:17px;line-height:1.45;margin-bottom:10px}
+#card h3{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;color:var(--gold);font-weight:400;
+  margin:14px 0 4px;padding-top:10px;border-top:1px solid rgba(216,180,106,.2)}
+#card.lore{max-height:62vh}
+.figs{display:flex;justify-content:center;gap:24px;margin:4px 0 12px}
+.fig{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--gold)}
+.fig svg{width:96px;height:96px;filter:drop-shadow(0 0 6px rgba(216,180,106,.6))}
+.fig span{font-size:13px;font-style:italic;opacity:.75;color:var(--ink)}
+#loreBtn{margin:8px 6px 0 0;font-size:10px}
+#card .x{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--ink);font-size:22px;cursor:pointer;opacity:.7}
+
+#tray{left:0;right:0;bottom:0;padding:10px 10px 14px;background:linear-gradient(rgba(11,7,16,0),rgba(11,7,16,.96) 30%);
+  transform:translateY(110%);transition:transform .35s ease;text-align:center}
+#tray.show{transform:translateY(0)}
+#tray .label{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:var(--gold);margin:14px 0 8px}
+#items{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.off{width:54px;cursor:grab;touch-action:none;display:flex;flex-direction:column;align-items:center;gap:2px}
+.off .pic{width:46px;height:46px;border-radius:50%;background:rgba(91,42,134,.3);border:1px solid rgba(216,180,106,.35);
+  display:flex;align-items:center;justify-content:center}
+.off .pic svg{width:32px;height:32px;pointer-events:none}
+.off span{font-size:12px;line-height:1.1;opacity:.85}
+#clear{margin-top:8px;font-size:10px;opacity:.7}
+
+.ghost{position:fixed;z-index:9000;width:48px;height:48px;transform:translate(-50%,-50%) scale(1.2);pointer-events:none;
+  filter:drop-shadow(0 0 10px rgba(255,200,120,.9))}
+.ghost svg{width:100%;height:100%}
+#toast{left:50%;top:90px;transform:translate(-50%,-20px);max-width:90%;width:max-content;background:var(--panel);
+  border:1px solid rgba(216,180,106,.5);border-radius:12px;padding:10px 16px;font-size:16px;font-style:italic;text-align:center;
+  opacity:0;transition:all .4s;pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<div id="viewport"><div id="world"></div></div>
+
+<div id="topbar" class="ui">
+  <a class="btn" href="gardens.html">← Gardens</a>
+  <h1>Garden of Aphrodite</h1>
+  <span style="width:70px"></span>
+</div>
+<div id="hint" class="ui">Tap anywhere to walk (or use arrow keys / WASD).<br>Visit her symbols, then bring offerings to the altar.</div>
+
+<div id="card" class="ui">
+  <button class="x" aria-label="Close">×</button>
+  <div class="head"><div class="icon"></div><div><h2></h2><div class="sub"></div></div></div>
+  <div class="body"></div>
+</div>
+
+<div id="tray" class="ui">
+  <div class="label">Drag an offering onto the altar</div>
+  <div id="items"></div>
+  <button id="loreBtn" class="btn">✦ Her lore</button>
+  <button id="clear" class="btn">Clear the altar</button>
+</div>
+<div id="toast" class="ui"></div>
+
+<script>
+/* =========================================================
+   EDIT HERE: deity, symbols and offerings
+   ========================================================= */
+const DEITY = "APHRODITE";
+const STORAGE_KEY = "garden-offerings-aphrodite";
+
+const SYMBOLS = [
+  { name:"The Scallop Shell", sub:"Born of the sea",
+    text:"Aphrodite rose from the sea, and the scallop shell became her sign. It holds the memory of her birth from the foam: beauty emerging fully formed from the waves.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 52 L6 30 C6 14 18 6 30 6 C42 6 54 14 54 30Z" fill="currentColor"/><path d="M30 52 L10 22 M30 52 L18 11 M30 52 L30 7 M30 52 L42 11 M30 52 L50 22" stroke="#0b0710" stroke-width="1.5"/><path d="M23 52 H37 L34 57 H26Z" fill="currentColor"/></svg>` },
+  { name:"The Dove", sub:"Her sacred bird",
+    text:"Doves were sacred to Aphrodite and gathered around her temples, and some poets say doves drew her chariot. They stand for love, tenderness and devotion between partners.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M8 36 C14 28 24 26 32 29 L42 21 C44 20 47 21 46 23 L41 31 C43 35 43 41 37 45 C29 49 19 47 13 45 L3 49 L7 41Z" fill="currentColor"/><path d="M20 33 C26 19 38 11 52 10 C46 17 41 25 32 31Z" fill="currentColor" opacity=".7"/><circle cx="42" cy="24" r="1.3" fill="#0b0710"/></svg>` },
+  { name:"The Rose", sub:"Flower of love",
+    text:"In a later tale, white roses turned red when Aphrodite pricked her foot on a thorn as she rushed to the dying Adonis. The rose is love in all its forms: beauty, passion, and the thorns that come with them.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 35 V57" stroke="#2f6b3a" stroke-width="2.5"/><path d="M30 46 C22 40 18 44 20 48 C24 50 28 48 30 46Z" fill="#2f6b3a"/><circle cx="30" cy="22" r="14" fill="#d64a6e"/><path d="M23 21 C25 14 37 14 37 22 C37 29 26 31 25 25 C25 20 31 19 31 23" stroke="#8a1a3a" stroke-width="1.6" fill="none"/></svg>` },
+  { name:"The Golden Apple", sub:"The prize of beauty",
+    text:"At a divine wedding, Eris threw a golden apple marked “for the fairest”. Paris had to choose between Hera, Athena and Aphrodite. He gave it to Aphrodite, who promised him Helen, and the Trojan War followed. Desire is a power that moves the world.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 18 C18 10 7 22 11 36 C15 50 25 55 30 50 C35 55 45 50 49 36 C53 22 42 10 30 18Z" fill="currentColor"/><path d="M30 18 C30 12 32 8 36 5" stroke="#6b4a1e" stroke-width="2.5" fill="none"/><path d="M33 11 C39 5 47 7 47 9 C41 14 35 14 33 11Z" fill="#2f6b3a"/><path d="M20 34 H40" stroke="#0b0710" stroke-width="1.2" stroke-dasharray="2 2"/></svg>` },
+  { name:"The Mirror", sub:"The sign of Venus",
+    text:"The ♀ symbol, used for the planet Venus and for women, is often read as her hand mirror. It stands for self-love and self-knowledge: seeing your own beauty truly.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><circle cx="30" cy="21" r="14"/><path d="M30 35 V57 M21 47 H39"/></svg>` },
+  { name:"The Girdle", sub:"The Kestos",
+    text:"In the Iliad, Aphrodite owns an embroidered band that holds all the powers of love, desire and persuasion. Even Hera borrowed it to charm Zeus. It is the magic of attraction itself.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M5 24 C17 33 43 33 55 24 L55 33 C43 42 17 42 5 33Z" fill="currentColor"/><path d="M12 30 L16 34 M20 33 L23 37 M37 37 L40 33 M44 34 L48 30" stroke="#0b0710" stroke-width="1.2"/><circle cx="30" cy="36" r="5" fill="#d64a6e"/><path d="M28 40 L23 55 M32 40 L37 55" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>` },
+  { name:"The Myrtle", sub:"Her evergreen",
+    text:"Myrtle was sacred to Aphrodite, and brides wore it in their wreaths. Always green and fragrant, it stands for lasting love, marriage, and beauty that does not fade.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M10 54 C22 40 34 26 50 8" stroke="#6b4a2a" stroke-width="2.4" fill="none"/><g fill="#3f8a4e"><ellipse cx="18" cy="40" rx="3" ry="7" transform="rotate(-50 18 40)"/><ellipse cx="22" cy="48" rx="3" ry="7" transform="rotate(40 22 48)"/><ellipse cx="28" cy="27" rx="3" ry="7" transform="rotate(-50 28 27)"/><ellipse cx="34" cy="35" rx="3" ry="7" transform="rotate(40 34 35)"/><ellipse cx="40" cy="15" rx="3" ry="7" transform="rotate(-50 40 15)"/></g><g fill="currentColor"><circle cx="46" cy="22" r="3.5"/><circle cx="12" cy="30" r="3"/></g></svg>` }
+];
+
+const LORE = {
+  name:"Aphrodite", sub:"Goddess of Love · Foam-born",
+  sections:[
+    { title:"Her Name",
+      text:"The Greeks linked Aphrodite with aphros, “sea-foam”, though the true origin of her name is uncertain and may come from the Near East. To the Romans she was Venus, and her planet still carries that name." },
+    { title:"Born of the Foam",
+      text:"Hesiod tells that Cronus cut off the genitals of the sky god Uranus and threw them into the sea. White foam gathered around them, and from it rose Aphrodite, who came ashore at Cyprus. Homer gives a gentler story, in which she is the daughter of Zeus and Dione." },
+    { title:"Two Aphrodites",
+      text:"In Plato's Symposium, one speaker describes two Aphrodites. Ourania, the heavenly one born of Uranus, inspires love of the soul. Pandemos, the common one, rules over physical desire. Together they cover every kind of love." },
+    { title:"Her Loves",
+      text:"She was married to Hephaestus, the lame smith god, but she loved Ares, the god of war. In the Odyssey, Hephaestus catches the two of them in an invisible net while the gods laugh. With Ares she had Harmonia, Phobos and Deimos. She also loved the hunter Adonis, whose death she mourned, and the mortal Anchises, father of Aeneas." },
+    { title:"Goddess at War",
+      text:"Her victory in the Judgement of Paris, won by promising him Helen, set the Trojan War in motion. In the Iliad she even enters the battlefield to save her son Aeneas, and is wounded by the hero Diomedes." },
+    { title:"Her Worship",
+      text:"Her greatest sanctuary stood at Paphos on Cyprus, and she was also honoured on Cythera and at Corinth. Scholars see in her traces of older Near Eastern goddesses of love and war, such as Inanna, Ishtar and Astarte. Her festival, the Aphrodisia, was celebrated in many Greek cities." },
+    { title:"Today",
+      text:"She is honoured in Hellenic polytheism, witchcraft and many modern pagan paths for love and self-love, beauty, sensuality, confidence and harmony." },
+    { title:"Correspondences",
+      text:"Planet: Venus. Day: Friday. Metal: copper, the metal of Cyprus. Colours: pink, red, white, gold and sea green. Animals: doves, sparrows and swans. Plants: roses, myrtle and apple trees. Offerings: roses, honey, apples, perfume, seashells, pearls and sweet wine." }
+  ]
+};
+
+const OFFERINGS = {
+  rose:{ label:"Pink rose", msg:"A rose for the goddess of love: beauty laid before beauty.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M20 18 V37" stroke="#2f6b3a" stroke-width="2"/><path d="M20 28 C14 24 12 28 14 30" fill="#2f6b3a"/><circle cx="20" cy="13" r="8" fill="#e06a8c"/><path d="M15 12 C18 8 24 9 24 13 C24 16 19 17 18 14" stroke="#9a2a4e" stroke-width="1.4" fill="none"/></svg>` },
+  honey:{ label:"Honey", msg:"Honey, as sweet as love's first kiss.",
+    svg:`<svg viewBox="0 0 40 40"><rect x="10" y="14" width="20" height="22" rx="4" fill="#e0a12a"/><rect x="11" y="8" width="18" height="7" rx="1.5" fill="#8a5a2b"/><path d="M14 21 H26" stroke="#fff3c4" stroke-width="1.5" opacity=".6"/></svg>` },
+  apple:{ label:"Golden apple", msg:"A golden apple, the prize she won as the fairest of all.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M20 13 C11 7 4 16 7 26 C10 36 17 38 20 35 C23 38 30 36 33 26 C36 16 29 7 20 13Z" fill="#e0b040"/><path d="M20 13 C20 9 21 6 24 4" stroke="#6b4a1e" stroke-width="2" fill="none"/><path d="M22 8 C26 4 31 5 31 6 C27 10 23 10 22 8Z" fill="#2f6b3a"/></svg>` },
+  perfume:{ label:"Perfume", msg:"Fragrant rose oil, for the goddess of beauty and the senses.",
+    svg:`<svg viewBox="0 0 40 40"><rect x="17" y="4" width="6" height="6" rx="1" fill="#d8b46a"/><path d="M14 12 H26 C31 16 32 22 32 26 C32 33 27 37 20 37 C13 37 8 33 8 26 C8 22 9 16 14 12Z" fill="#f2a7bd" opacity=".9"/><path d="M12 24 C16 21 24 21 28 24" stroke="#fff" stroke-width="1.2" opacity=".6" fill="none"/></svg>` },
+  pearl:{ label:"Shell & pearl", msg:"A seashell holding a pearl, a gift from the sea that gave her birth.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M20 34 L4 20 C4 10 12 5 20 5 C28 5 36 10 36 20Z" fill="#f0d7cf"/><path d="M20 34 L8 14 M20 34 L14 7 M20 34 L20 5 M20 34 L26 7 M20 34 L32 14" stroke="#c9a49a" stroke-width="1"/><circle cx="20" cy="30" r="5" fill="#fbf7f2" stroke="#d8cfc6"/></svg>` },
+  wine:{ label:"Sweet wine", msg:"Sweet wine, poured for the joy and pleasure she brings.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M11 5 H29 C29 16 25 21 20 21 C15 21 11 16 11 5Z" fill="#b8325a" stroke="#d8b46a" stroke-width="1.5"/><path d="M20 21 V33 M13 35 H27" stroke="#d8b46a" stroke-width="2"/></svg>` }
+};
+
+/* =========================================================
+   WORLD SETUP
+   ========================================================= */
+const W = 1400, H = 1400, CX = 700, CY = 680;
+const world = document.getElementById('world');
+const vp = document.getElementById('viewport');
+const obstacles = [];
+
+function el(cls, x, y, html, z){
+  const d = document.createElement('div');
+  d.className = 'sprite ' + (cls||'');
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  d.style.zIndex = z !== undefined ? z : Math.round(y);
+  d.innerHTML = html; world.appendChild(d); return d;
+}
+function ground(cls, x, y, w, h){
+  const d = document.createElement('div');
+  d.className = 'ground ' + cls;
+  Object.assign(d.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+  world.appendChild(d); return d;
+}
+
+// paths
+ground('walk', CX-24, CY+180, 48, H-(CY+180));
+ground('ring', CX-442, CY-442, 884, 884);
+ground('plaza', CX-200, CY-200, 400, 400);
+
+// statue
+const statueSVG = `<svg viewBox="0 0 240 320" width="240" height="320">
+<defs>
+ <linearGradient id="mb" x1="0" x2="1"><stop offset="0" stop-color="#cfc3be"/><stop offset=".5" stop-color="#f7f1ec"/><stop offset="1" stop-color="#c7bab4"/></linearGradient>
+ <radialGradient id="hl"><stop offset="0" stop-color="#ffd1dc" stop-opacity=".75"/><stop offset=".45" stop-color="#e88aa4" stop-opacity=".3"/><stop offset="1" stop-color="#e88aa4" stop-opacity="0"/></radialGradient>
+</defs>
+<circle class="halo" cx="120" cy="90" r="80" fill="url(#hl)" style="transform-origin:120px 90px"/>
+<!-- scallop shell she rises from -->
+<path d="M56 250 C56 200 88 184 120 184 C152 184 184 200 184 250Z" fill="#f2dcd4" stroke="#b89a90"/>
+<path d="M120 250 L64 222 M120 250 L74 202 M120 250 L94 189 M120 250 L120 184 M120 250 L146 189 M120 250 L166 202 M120 250 L176 222" stroke="#c9a49a" stroke-width="1.4"/>
+<!-- long golden hair -->
+<path d="M106 76 C90 100 92 140 98 172 C104 150 106 128 110 108Z M134 76 C150 100 148 140 142 172 C136 150 134 128 130 108Z" fill="#c9a46a"/>
+<!-- draped marble robe -->
+<path d="M104 104 Q120 96 136 104 L148 236 Q120 244 92 236Z" fill="url(#mb)" stroke="#a8998f"/>
+<path d="M108 112 C116 140 112 180 104 232 M132 112 C126 150 132 190 140 232 M114 120 C124 130 130 128 134 118" stroke="#a8998f" stroke-opacity=".6" fill="none"/>
+<!-- raised arm with a dove -->
+<path d="M105 110 C94 102 86 92 82 74" stroke="#e9e0da" stroke-width="8" stroke-linecap="round" fill="none"/>
+<path d="M66 64 C72 58 82 58 88 62 L96 56 C98 55 100 57 98 59 L94 64 C95 68 93 72 88 73 C80 75 72 72 68 70 L60 72Z" fill="#fbfbfb" stroke="#b9b9c4"/>
+<path d="M72 64 C76 52 86 46 96 46 C90 52 86 58 80 62Z" fill="#ececf2" stroke="#b9b9c4"/>
+<!-- lowered hand holding the golden apple -->
+<path d="M135 112 C146 126 150 142 150 158" stroke="#e9e0da" stroke-width="8" stroke-linecap="round" fill="none"/>
+<circle cx="151" cy="166" r="8" fill="#e0b040" stroke="#9a7420"/>
+<!-- head -->
+<circle cx="120" cy="82" r="14" fill="#f2ebe6" stroke="#a8998f"/>
+<path d="M106 80 C104 66 112 60 120 60 C128 60 136 66 134 80 C130 70 126 68 120 68 C114 68 110 70 106 80Z" fill="#c9a46a"/>
+<path d="M114 72 C118 66 124 66 128 70" stroke="#e06a8c" stroke-width="2" fill="none"/>
+<path d="M114 84 Q116 85 117 84 M123 84 Q125 85 126 84 M117 90 Q120 92 123 90" stroke="#8a6a64" stroke-width="1.1" fill="none"/>
+<!-- pedestal -->
+<rect x="58" y="250" width="124" height="14" fill="#e6dad3"/>
+<rect x="72" y="264" width="96" height="46" fill="#d6c8c0"/>
+<rect x="60" y="308" width="120" height="12" fill="#bfb0a8"/>
+<text x="120" y="292" text-anchor="middle" font-family="Cinzel,serif" font-size="12" letter-spacing="2" fill="#9a6a2a">${DEITY}</text>
+</svg>`;
+el('', CX, CY-30, statueSVG);
+obstacles.push({x:CX, y:CY-60, r:70});
+
+// altar
+const altarSVG = `<div id="altar"><div class="altar-glow"></div>
+<svg viewBox="0 0 220 90" width="220" height="90">
+ <rect x="4" y="18" width="212" height="16" rx="2" fill="#5d5566"/>
+ <rect x="4" y="18" width="212" height="3" fill="#d8b46a" opacity=".55"/>
+ <rect x="14" y="34" width="192" height="52" fill="#3b3543"/>
+ <g stroke="#d8b46a" stroke-width="2" fill="none" opacity=".8" stroke-linecap="round"><circle cx="110" cy="54" r="9"/><path d="M110 63 V80 M103 73 H117"/></g>
+ <rect x="12" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M15 -6 C19 -2 19 1 15 3 C11 1 11 -2 15 -6Z" fill="#ffb347"/>
+ <rect x="202" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M205 -6 C209 -2 209 1 205 3 C201 1 201 -2 205 -6Z" fill="#ffb347"/>
+</svg><div id="offerings"></div></div>`;
+const ALTAR = {x:CX, y:CY+100};
+el('', ALTAR.x, ALTAR.y, altarSVG);
+[-70,-25,25,70].forEach(dx=>obstacles.push({x:CX+dx, y:ALTAR.y-25, r:26}));
+const altarEl = document.getElementById('altar');
+const offEl = document.getElementById('offerings');
+const glowEl = document.querySelector('.altar-glow');
+
+// symbols around the garden
+const ANGLES = [-90,-38,14,62,118,166,218];
+const symbolEls = SYMBOLS.map((s,i)=>{
+  const a = ANGLES[i]*Math.PI/180, r = 480;
+  s.x = CX + Math.cos(a)*r; s.y = CY + Math.sin(a)*r + 30;
+  obstacles.push({x:s.x, y:s.y-15, r:24});
+  return el('symbol', s.x, s.y, `<div class="glyph">${s.svg}</div><div class="stone"></div>`);
+});
+
+// floating lights along the ring
+for(let i=0;i<16;i++){
+  const a = i/16*Math.PI*2 + .2;
+  if (Math.abs(Math.cos(a)) < .1 && Math.sin(a) > 0) continue;
+  el('', CX+Math.cos(a)*372, CY+Math.sin(a)*372, '<div class="orb"></div>');
+}
+
+// seeded trees and rose bushes
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rand = rng(666);
+const cypress = `<svg viewBox="0 0 40 110" width="40" height="110"><ellipse cx="20" cy="106" rx="14" ry="4" fill="rgba(0,0,0,.45)"/><rect x="18" y="92" width="4" height="14" fill="#2b1d14"/><path d="M20 2 C34 30 32 70 20 96 C8 70 6 30 20 2Z" fill="#10241a" stroke="#1f3d2b"/></svg>`;
+const bush = `<svg viewBox="0 0 60 40" width="60" height="40"><ellipse cx="30" cy="36" rx="26" ry="4" fill="rgba(0,0,0,.4)"/><ellipse cx="30" cy="22" rx="26" ry="15" fill="#15301f"/><circle cx="17" cy="16" r="3.5" fill="#e06a8c"/><circle cx="34" cy="12" r="3.5" fill="#f2a7bd"/><circle cx="44" cy="22" r="3.5" fill="#d64a6e"/><circle cx="25" cy="26" r="3.5" fill="#f7c6d4"/></svg>`;
+let placedTrees = 0, tries = 0;
+while(placedTrees < 70 && tries < 2000){
+  tries++;
+  const x = 40 + rand()*(W-80), y = 60 + rand()*(H-100);
+  const d = Math.hypot(x-CX, y-CY);
+  const okZone = (d > 545) || (d > 235 && d < 345);
+  const onSouthPath = Math.abs(x-CX) < 70 && y > CY;
+  const tooClose = obstacles.some(o=>Math.hypot(o.x-x,o.y-y) < o.r+40);
+  if(!okZone || onSouthPath || tooClose) continue;
+  const isBush = rand() < .6; // rose bushes
+  el('', x, y, isBush ? bush : cypress);
+  obstacles.push({x, y:y-6, r:isBush?22:13});
+  placedTrees++;
+}
+
+// fireflies
+for(let i=0;i<34;i++){
+  const f = document.createElement('div'); f.className='fly';
+  f.style.left = (rand()*W)+'px'; f.style.top = (rand()*H)+'px';
+  f.style.animationDuration = (5+rand()*7)+'s'; f.style.animationDelay = (-rand()*10)+'s';
+  f.style.zIndex = 3000; world.appendChild(f);
+}
+
+// player
+const player = el('', 0, 0, `<div class="flip"><div class="body"><svg viewBox="0 0 40 52" width="38" height="50">
+<ellipse cx="20" cy="49" rx="12" ry="3" fill="rgba(0,0,0,.5)"/>
+<path d="M20 5 C11 5 9 16 10 22 L5 48 H35 L30 22 C31 16 29 5 20 5Z" fill="#2b1f3a" stroke="#7a5a9c"/>
+<path d="M14 18 C14 12 26 12 26 18 C26 23 14 23 14 18Z" fill="#0b0710"/>
+<circle cx="17.5" cy="18" r="1.3" fill="#ffcf70"/><circle cx="22.5" cy="18" r="1.3" fill="#ffcf70"/>
+<path d="M30 27 L33 30" stroke="#999"/><circle class="lantern" cx="33" cy="34" r="4" fill="#ffb347"/>
+</svg></div></div>`);
+player.id = 'player';
+const flipEl = player.querySelector('.flip');
+
+/* =========================================================
+   MOVEMENT + CAMERA
+   ========================================================= */
+let px = CX, py = H-90, tx = null, ty = null, facing = 1;
+let camX = 0, camY = 0;
+const SPEED = 190, keys = {};
+const KEYMAP = {ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',ArrowUp:'u',w:'u',W:'u',ArrowDown:'d',s:'d',S:'d'};
+addEventListener('keydown',e=>{ if(KEYMAP[e.key]){keys[KEYMAP[e.key]]=true; e.preventDefault(); hideHint();} });
+addEventListener('keyup',e=>{ if(KEYMAP[e.key]) keys[KEYMAP[e.key]]=false; });
+
+vp.addEventListener('pointerdown', e=>{
+  tx = e.clientX + camX; ty = e.clientY + camY; hideHint();
+});
+
+function collide(){
+  for(const o of obstacles){
+    const dx = px-o.x, dy = py-o.y, d = Math.hypot(dx,dy), min = o.r + 12;
+    if(d < min && d > 0.01){ px = o.x + dx/d*min; py = o.y + dy/d*min; }
+  }
+  px = Math.max(20, Math.min(W-20, px)); py = Math.max(40, Math.min(H-10, py));
+}
+
+function step(dt){
+  let vx = (keys.r?1:0)-(keys.l?1:0), vy = (keys.d?1:0)-(keys.u?1:0);
+  if(vx||vy) tx = null;
+  else if(tx !== null){
+    const dx = tx-px, dy = ty-py, d = Math.hypot(dx,dy);
+    if(d < 5) tx = null; else { vx = dx/d; vy = dy/d; }
+  }
+  const m = Math.hypot(vx,vy), moving = m > 0;
+  if(moving){
+    vx/=m; vy/=m;
+    const ox = px, oy = py;
+    px += vx*SPEED*dt; py += vy*SPEED*dt; collide();
+    if(tx !== null && Math.hypot(px-ox,py-oy) < SPEED*dt*0.25) tx = null; // stuck
+    if(Math.abs(vx) > .2) facing = vx < 0 ? -1 : 1;
+  }
+  player.classList.toggle('moving', moving);
+  flipEl.style.transform = `scaleX(${facing})`;
+  player.style.left = px+'px'; player.style.top = py+'px'; player.style.zIndex = Math.round(py);
+
+  const vw = innerWidth, vh = innerHeight;
+  const goalX = vw >= W ? (W-vw)/2 : Math.max(0, Math.min(W-vw, px - vw/2));
+  const goalY = vh >= H ? (H-vh)/2 : Math.max(0, Math.min(H-vh, py - vh*0.45));
+  camX += (goalX-camX)*Math.min(1, dt*6); camY += (goalY-camY)*Math.min(1, dt*6);
+  world.style.transform = `translate(${-camX}px,${-camY}px)`;
+
+  checkNearby();
+}
+
+let last = performance.now();
+camX = Math.max(0, Math.min(W-innerWidth, px-innerWidth/2));
+camY = Math.max(0, Math.min(H-innerHeight, py-innerHeight*0.45));
+function loop(t){ const dt = Math.min(.05,(t-last)/1000); last = t; step(dt); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+
+/* =========================================================
+   SYMBOL CARDS + ALTAR TRAY
+   ========================================================= */
+const card = document.getElementById('card'), tray = document.getElementById('tray');
+let current = -1, dismissed = -1, loreOpen = false;
+card.querySelector('.x').addEventListener('click', ()=>{ dismissed = current; loreOpen = false; showCard(-1); });
+document.getElementById('loreBtn').addEventListener('click', ()=>{ loreOpen = true; dismissed = -1; });
+
+function showCard(i){
+  if(i === current) return;
+  current = i;
+  symbolEls.forEach((s,k)=>s.classList.toggle('near', k===i));
+  if(i === -1){ card.classList.remove('show'); return; }
+  const isLore = i === 'lore';
+  const s = isLore ? LORE : SYMBOLS[i];
+  card.classList.toggle('lore', isLore);
+  card.querySelector('.icon').innerHTML = SYMBOLS[isLore ? 0 : i].svg;
+  card.querySelector('h2').textContent = s.name;
+  card.querySelector('.sub').textContent = s.sub;
+  const body = card.querySelector('.body'); body.innerHTML = '';
+  if(!isLore && s.figures){
+    const row = document.createElement('div'); row.className = 'figs';
+    s.figures.forEach(f=>{
+      const fig = document.createElement('div'); fig.className = 'fig';
+      fig.innerHTML = f.svg; const c = document.createElement('span'); c.textContent = f.caption;
+      fig.appendChild(c); row.appendChild(fig);
+    });
+    body.appendChild(row);
+  }
+  (isLore ? s.sections : [{text:s.text}]).forEach(sec=>{
+    if(sec.title){ const h = document.createElement('h3'); h.textContent = sec.title; body.appendChild(h); }
+    const p = document.createElement('p'); p.textContent = sec.text; body.appendChild(p);
+  });
+  card.scrollTop = 0; card.classList.add('show');
+}
+function checkNearby(){
+  let best = -1, bd = 110;
+  SYMBOLS.forEach((s,i)=>{ const d = Math.hypot(px-s.x, py-s.y); if(d < bd){ bd = d; best = i; } });
+  const nearAltar = Math.hypot(px-ALTAR.x, py-ALTAR.y) < 170;
+  if(!nearAltar) loreOpen = false;
+  if(best === -1 && (loreOpen || Math.hypot(px-CX, py-(CY-60)) < 150)) best = 'lore';
+  if(best !== dismissed) showCard(best);
+  if(best === -1) dismissed = -1;
+  tray.classList.toggle('show', nearAltar);
+}
+
+/* =========================================================
+   OFFERINGS (drag & drop, saved in this browser)
+   ========================================================= */
+let placed = [];
+try { placed = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e){ placed = []; }
+function save(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(placed)); } catch(e){} }
+function render(animateLast){
+  offEl.innerHTML = placed.map(o=>`<div class="placed" style="left:${o.f*100}%">${OFFERINGS[o.t].svg}</div>`).join('');
+  if(animateLast && offEl.lastElementChild) offEl.lastElementChild.classList.add('new');
+}
+render();
+
+const items = document.getElementById('items');
+Object.entries(OFFERINGS).forEach(([key,o])=>{
+  const d = document.createElement('div'); d.className='off'; d.dataset.type = key;
+  d.innerHTML = `<div class="pic">${o.svg}</div><span>${o.label}</span>`;
+  items.appendChild(d);
+});
+
+let ghost = null, dragType = null;
+function moveGhost(e){ ghost.style.left = e.clientX+'px'; ghost.style.top = e.clientY+'px'; }
+items.addEventListener('pointerdown', e=>{
+  const it = e.target.closest('.off'); if(!it) return;
+  e.preventDefault(); e.stopPropagation();
+  dragType = it.dataset.type;
+  ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.innerHTML = OFFERINGS[dragType].svg;
+  document.body.appendChild(ghost); moveGhost(e);
+  try { it.setPointerCapture(e.pointerId); } catch(_){}
+});
+addEventListener('pointermove', e=>{
+  if(!ghost) return; moveGhost(e);
+  glowEl.classList.toggle('on', overAltar(e));
+});
+addEventListener('pointerup', e=>{
+  if(!ghost) return;
+  if(overAltar(e)){
+    const r = altarEl.getBoundingClientRect();
+    placeOffering(dragType, Math.max(.08, Math.min(.92, (e.clientX - r.left)/r.width)));
+  }
+  endDrag();
+});
+addEventListener('pointercancel', endDrag);
+function endDrag(){ if(ghost) ghost.remove(); ghost = null; glowEl.classList.remove('on'); }
+function overAltar(e){
+  const r = altarEl.getBoundingClientRect();
+  return e.clientX > r.left-25 && e.clientX < r.right+25 && e.clientY > r.top-70 && e.clientY < r.bottom+15;
+}
+function placeOffering(type, f){
+  placed.push({t:type, f, ts:Date.now()});
+  if(placed.length > 14) placed.shift();
+  save(); render(true); toast(OFFERINGS[type].msg);
+  glowEl.classList.add('on'); setTimeout(()=>glowEl.classList.remove('on'), 900);
+}
+document.getElementById('clear').addEventListener('click', ()=>{
+  placed = []; save(); render(); toast("The altar is cleansed.");
+});
+tray.addEventListener('pointerdown', e=>e.stopPropagation());
+card.addEventListener('pointerdown', e=>e.stopPropagation());
+document.getElementById('topbar').addEventListener('pointerdown', e=>e.stopPropagation());
+
+const toastEl = document.getElementById('toast'); let toastT;
+function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>toastEl.classList.remove('show'), 3200); }
+
+const hintEl = document.getElementById('hint'); let hintGone = false;
+function hideHint(){ if(hintGone) return; hintGone = true; setTimeout(()=>hintEl.style.opacity = 0, 2500); }
+</script>
+</body>
+</html>
