@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Garden of Aphrodite</title>
+<title>Garden of Nyx</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -18,7 +18,7 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
 #viewport{position:fixed;inset:0;overflow:hidden;cursor:pointer}
 #world{position:absolute;left:0;top:0;width:1400px;height:1400px;will-change:transform;
   background:
-    radial-gradient(circle at 50% 48%, rgba(230,120,160,.3) 0, rgba(230,120,160,0) 38%),
+    radial-gradient(circle at 50% 48%, rgba(40,60,160,.35) 0, rgba(40,60,160,0) 38%),
     repeating-radial-gradient(circle at 13px 17px, rgba(40,70,45,.25) 0 2px, transparent 2px 23px),
     repeating-radial-gradient(circle at 5px 9px, rgba(20,40,25,.4) 0 1.5px, transparent 1.5px 17px),
     radial-gradient(circle at 50% 48%, #1d2a20 0, #111c15 55%, #070d09 100%);}
@@ -65,7 +65,7 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
 .symbol.near .glyph{color:#fff1c8;filter:drop-shadow(0 0 12px rgba(255,220,150,1))}
 @keyframes float{50%{transform:translateY(-6px)}}
 
-.fly{position:absolute;width:4px;height:4px;border-radius:50%;background:#ffe0ea;box-shadow:0 0 8px 2px rgba(255,170,200,.7);
+.fly{position:absolute;width:3px;height:3px;border-radius:50%;background:#eef0ff;box-shadow:0 0 8px 2px rgba(170,190,255,.7);
   pointer-events:none;animation:drift linear infinite}
 @keyframes drift{0%{transform:translate(0,0);opacity:0}20%{opacity:1}50%{transform:translate(30px,-40px)}80%{opacity:1}100%{transform:translate(-20px,-80px);opacity:0}}
 .orb{width:10px;height:10px;border-radius:50%;background:#ffcf8a;box-shadow:0 0 14px 5px rgba(255,170,80,.45);animation:float 4s ease-in-out infinite}
@@ -132,6 +132,19 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
 .cl:hover{transform:scale(1.1)}
 .cl.on{border-color:#fff1c8;box-shadow:0 0 12px rgba(255,220,150,.8)}
 #cloakPanel .name{margin-top:12px;text-align:center;font-style:italic;font-size:15px;opacity:.85}
+
+/* day and night */
+#sky{position:fixed;inset:0;pointer-events:none;z-index:4000;transition:background 2s}
+#flies{position:absolute;inset:0;pointer-events:none;z-index:3000;transition:opacity 2s}
+#world{transition:filter 2s}
+
+/* night lights above the darkness */
+#lightsWrap{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:4500}
+#lights{position:absolute;left:0;top:0;width:1400px;height:1400px;will-change:transform}
+#glows{position:absolute;inset:0;transition:opacity 2s}
+.lglow{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none}
+.lglow.pulse{animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.7}}
 </style>
 </head>
 <body>
@@ -140,7 +153,7 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
 
 <div id="topbar" class="ui">
   <a class="btn" href="gardens.html">← Gardens</a>
-  <h1>Garden of Aphrodite</h1>
+  <h1>Garden of Nyx</h1>
   <button id="cloakBtn" class="btn" aria-label="Choose cloak colour"><span class="sw"></span>Cloak</button>
 </div>
 <div id="cloakPanel" class="ui">
@@ -162,74 +175,75 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
   <button id="loreBtn" class="btn">✦ Her lore</button>
   <button id="clear" class="btn">Clear the altar</button>
 </div>
+<div id="sky"></div>
 <div id="toast" class="ui"></div>
 
 <script>
 /* =========================================================
    EDIT HERE: deity, symbols and offerings
    ========================================================= */
-const DEITY = "APHRODITE";
-const STORAGE_KEY = "garden-offerings-aphrodite";
+const DEITY = "NYX";
+const STORAGE_KEY = "garden-offerings-nyx";
 
 const SYMBOLS = [
-  { name:"The Scallop Shell", sub:"Born of the sea",
-    text:"Aphrodite rose from the sea, and the scallop shell became her sign. It holds the memory of her birth from the foam: beauty emerging fully formed from the waves.",
-    svg:`<svg viewBox="0 0 60 60"><path d="M30 52 L6 30 C6 14 18 6 30 6 C42 6 54 14 54 30Z" fill="currentColor"/><path d="M30 52 L10 22 M30 52 L18 11 M30 52 L30 7 M30 52 L42 11 M30 52 L50 22" stroke="#0b0710" stroke-width="1.5"/><path d="M23 52 H37 L34 57 H26Z" fill="currentColor"/></svg>` },
-  { name:"The Dove", sub:"Her sacred bird",
-    text:"Doves were sacred to Aphrodite and gathered around her temples, and some poets say doves drew her chariot. They stand for love, tenderness and devotion between partners.",
-    svg:`<svg viewBox="0 0 60 60"><path d="M8 36 C14 28 24 26 32 29 L42 21 C44 20 47 21 46 23 L41 31 C43 35 43 41 37 45 C29 49 19 47 13 45 L3 49 L7 41Z" fill="currentColor"/><path d="M20 33 C26 19 38 11 52 10 C46 17 41 25 32 31Z" fill="currentColor" opacity=".7"/><circle cx="42" cy="24" r="1.3" fill="#0b0710"/></svg>` },
-  { name:"The Rose", sub:"Flower of love",
-    text:"In a later tale, white roses turned red when Aphrodite pricked her foot on a thorn as she rushed to the dying Adonis. The rose is love in all its forms: beauty, passion, and the thorns that come with them.",
-    svg:`<svg viewBox="0 0 60 60"><path d="M30 35 V57" stroke="#2f6b3a" stroke-width="2.5"/><path d="M30 46 C22 40 18 44 20 48 C24 50 28 48 30 46Z" fill="#2f6b3a"/><circle cx="30" cy="22" r="14" fill="#d64a6e"/><path d="M23 21 C25 14 37 14 37 22 C37 29 26 31 25 25 C25 20 31 19 31 23" stroke="#8a1a3a" stroke-width="1.6" fill="none"/></svg>` },
-  { name:"The Golden Apple", sub:"The prize of beauty",
-    text:"At a divine wedding, Eris threw a golden apple marked “for the fairest”. Paris had to choose between Hera, Athena and Aphrodite. He gave it to Aphrodite, who promised him Helen, and the Trojan War followed. Desire is a power that moves the world.",
-    svg:`<svg viewBox="0 0 60 60"><path d="M30 18 C18 10 7 22 11 36 C15 50 25 55 30 50 C35 55 45 50 49 36 C53 22 42 10 30 18Z" fill="currentColor"/><path d="M30 18 C30 12 32 8 36 5" stroke="#6b4a1e" stroke-width="2.5" fill="none"/><path d="M33 11 C39 5 47 7 47 9 C41 14 35 14 33 11Z" fill="#2f6b3a"/><path d="M20 34 H40" stroke="#0b0710" stroke-width="1.2" stroke-dasharray="2 2"/></svg>` },
-  { name:"The Mirror", sub:"The sign of Venus",
-    text:"The ♀ symbol, used for the planet Venus and for women, is often read as her hand mirror. It stands for self-love and self-knowledge: seeing your own beauty truly.",
-    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><circle cx="30" cy="21" r="14"/><path d="M30 35 V57 M21 47 H39"/></svg>` },
-  { name:"The Girdle", sub:"The Kestos",
-    text:"In the Iliad, Aphrodite owns an embroidered band that holds all the powers of love, desire and persuasion. Even Hera borrowed it to charm Zeus. It is the magic of attraction itself.",
-    svg:`<svg viewBox="0 0 60 60"><path d="M5 24 C17 33 43 33 55 24 L55 33 C43 42 17 42 5 33Z" fill="currentColor"/><path d="M12 30 L16 34 M20 33 L23 37 M37 37 L40 33 M44 34 L48 30" stroke="#0b0710" stroke-width="1.2"/><circle cx="30" cy="36" r="5" fill="#d64a6e"/><path d="M28 40 L23 55 M32 40 L37 55" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>` },
-  { name:"The Myrtle", sub:"Her evergreen",
-    text:"Myrtle was sacred to Aphrodite, and brides wore it in their wreaths. Always green and fragrant, it stands for lasting love, marriage, and beauty that does not fade.",
-    svg:`<svg viewBox="0 0 60 60"><path d="M10 54 C22 40 34 26 50 8" stroke="#6b4a2a" stroke-width="2.4" fill="none"/><g fill="#3f8a4e"><ellipse cx="18" cy="40" rx="3" ry="7" transform="rotate(-50 18 40)"/><ellipse cx="22" cy="48" rx="3" ry="7" transform="rotate(40 22 48)"/><ellipse cx="28" cy="27" rx="3" ry="7" transform="rotate(-50 28 27)"/><ellipse cx="34" cy="35" rx="3" ry="7" transform="rotate(40 34 35)"/><ellipse cx="40" cy="15" rx="3" ry="7" transform="rotate(-50 40 15)"/></g><g fill="currentColor"><circle cx="46" cy="22" r="3.5"/><circle cx="12" cy="30" r="3"/></g></svg>` }
+  { name:"The Primordial Void", sub:"Born of Chaos",
+    text:"Nyx is one of the very first beings, born straight out of Chaos. She is the darkness that came before light, and of all the gods she stands closest to the original void.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M30 30 a3 3 0 1 1 3 3 a6 6 0 1 1 -6 -6 a10 10 0 1 1 10 10 a15 15 0 1 1 -15 -15 a20 20 0 1 1 20 20"/></svg>` },
+  { name:"The Starry Veil", sub:"Mantle of the sky",
+    text:"Each evening Nyx draws her dark mantle across the sky, and the stars shine from its folds. It is the veil of mystery that hides and shelters all things until morning.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M5 48 C9 16 51 16 55 48 C47 39 39 37 30 41 C21 37 13 39 5 48Z" fill="currentColor"/><g fill="#0b0710"><circle cx="20" cy="30" r="1.6"/><circle cx="30" cy="24" r="2"/><circle cx="40" cy="31" r="1.6"/><circle cx="25" cy="36" r="1.2"/><circle cx="36" cy="38" r="1.2"/></g></svg>` },
+  { name:"The Black Wings", sub:"Black-winged Night",
+    text:"Poets call her black-winged Night as she sweeps over the earth. Her wings bring rest to the living and cover the world in the softness of the dark.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 30 C22 16 10 10 3 13 C8 17 9 21 6 25 C12 26 13 30 10 34 C17 34 19 38 17 44 C24 41 28 36 30 30Z M30 30 C38 16 50 10 57 13 C52 17 51 21 54 25 C48 26 47 30 50 34 C43 34 41 38 43 44 C36 41 32 36 30 30Z" fill="currentColor"/></svg>` },
+  { name:"The Cosmic Egg", sub:"Where love was born",
+    text:"In the old stories, Night laid an egg in the endless dark, and from it came Eros, the first love, the force that joins all things together. Creation begins in her darkness.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><ellipse cx="30" cy="33" rx="16" ry="21"/><path d="M14 33 L20 28 L25 35 L30 27 L35 35 L40 28 L46 33"/><path d="M30 6 L31.5 11 L36 12 L31.5 13 L30 18 L28.5 13 L24 12 L28.5 11Z" fill="currentColor" stroke="none"/></svg>` },
+  { name:"The Chariot of Night", sub:"Across the heavens",
+    text:"Later writers picture her driving a chariot drawn by dark horses across the heavens, with the stars following behind her. When her journey ends, Day begins hers.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="30" cy="34" r="16"/><circle cx="30" cy="34" r="3" fill="currentColor"/><path d="M30 18 V50 M14 34 H46 M18.7 22.7 L41.3 45.3 M41.3 22.7 L18.7 45.3"/><path d="M38 4 A6 6 0 1 0 38 14 A4.5 6 0 1 1 38 4Z" fill="currentColor" stroke="none"/></svg>` },
+  { name:"The Bronze Threshold", sub:"Where Night meets Day",
+    text:"At the bronze threshold of her house, Night and Day meet and pass each other, one leaving as the other enters. It is the eternal turning of dark and light, where neither can stay forever.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 8 A16 16 0 0 0 14 24 V54 H30Z" fill="#0b0710" stroke="currentColor" stroke-width="2"/><path d="M30 8 A16 16 0 0 1 46 24 V54 H30Z" fill="currentColor"/><path d="M8 55 H52" stroke="#b5803a" stroke-width="4" stroke-linecap="round"/></svg>` },
+  { name:"The Poppy", sub:"Sleep and Death, her sons",
+    text:"The poppy belongs to her twin sons, Hypnos (Sleep) and Thanatos (Death). It is the flower of sleep and dreams, and of the gentle crossing from one world into another.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 34 C30 44 28 50 26 57" stroke="#2f6b3a" stroke-width="2.5" fill="none"/><g fill="#b3202e"><ellipse cx="22" cy="20" rx="10" ry="9"/><ellipse cx="38" cy="20" rx="10" ry="9"/><ellipse cx="22" cy="30" rx="10" ry="8"/><ellipse cx="38" cy="30" rx="10" ry="8"/></g><circle cx="30" cy="25" r="5" fill="#140c12"/><circle cx="30" cy="25" r="2" fill="currentColor"/></svg>` }
 ];
 
 const LORE = {
-  name:"Aphrodite", sub:"Goddess of Love · Foam-born",
+  name:"Nyx", sub:"Primordial Night · Daughter of Chaos",
   sections:[
     { title:"Her Name",
-      text:"The Greeks linked Aphrodite with aphros, “sea-foam”, though the true origin of her name is uncertain and may come from the Near East. To the Romans she was Venus, and her planet still carries that name." },
-    { title:"Born of the Foam",
-      text:"Hesiod tells that Cronus cut off the genitals of the sky god Uranus and threw them into the sea. White foam gathered around them, and from it rose Aphrodite, who came ashore at Cyprus. Homer gives a gentler story, in which she is the daughter of Zeus and Dione." },
-    { title:"Two Aphrodites",
-      text:"In Plato's Symposium, one speaker describes two Aphrodites. Ourania, the heavenly one born of Uranus, inspires love of the soul. Pandemos, the common one, rules over physical desire. Together they cover every kind of love." },
-    { title:"Her Loves",
-      text:"She was married to Hephaestus, the lame smith god, but she loved Ares, the god of war. In the Odyssey, Hephaestus catches the two of them in an invisible net while the gods laugh. With Ares she had Harmonia, Phobos and Deimos. She also loved the hunter Adonis, whose death she mourned, and the mortal Anchises, father of Aeneas." },
-    { title:"Goddess at War",
-      text:"Her victory in the Judgement of Paris, won by promising him Helen, set the Trojan War in motion. In the Iliad she even enters the battlefield to save her son Aeneas, and is wounded by the hero Diomedes." },
+      text:"Nyx is simply the Greek word for night; her Roman counterpart is Nox. She is less a goddess of the night than Night herself: the darkness that existed before the world was ever lit." },
+    { title:"Daughter of Chaos",
+      text:"In Hesiod's Theogony, Chaos, the yawning void, came first. From Chaos came Erebus, the deep darkness, and Nyx, black Night. Joined with Erebus, she gave birth to their opposites: Aether, the bright upper air, and Hemera, the Day." },
+    { title:"Mother of Powers",
+      text:"On her own she brought forth many of the forces that shape mortal life: Hypnos (Sleep) and Thanatos (Death), the Dreams, Moros (Doom), the Keres, the Fates, Nemesis, Eris (Strife), Geras (Old Age), Apate (Deceit) and the Hesperides of the sunset." },
+    { title:"Feared by Zeus",
+      text:"In Homer's Iliad, Hypnos runs to Nyx for protection from the anger of Zeus. The king of the gods holds back, unwilling to offend swift Night. Even the highest of the Olympians respects her." },
+    { title:"The House of Night",
+      text:"Hesiod places her house at the edge of the world, near Tartarus, wrapped in dark clouds. There Night and Day pass each other at a great bronze threshold and greet each other, one going in as the other comes out. They are never at home together." },
+    { title:"The First Egg",
+      text:"In Aristophanes' comedy The Birds (414 BCE), black-winged Night lays an egg in the depths of Erebus, and golden-winged Eros springs from it. In Orphic tradition she is a primordial goddess of prophecy who counsels even Zeus from her cave." },
     { title:"Her Worship",
-      text:"Her greatest sanctuary stood at Paphos on Cyprus, and she was also honoured on Cythera and at Corinth. Scholars see in her traces of older Near Eastern goddesses of love and war, such as Inanna, Ishtar and Astarte. Her festival, the Aphrodisia, was celebrated in many Greek cities." },
-    { title:"Today",
-      text:"She is honoured in Hellenic polytheism, witchcraft and many modern pagan paths for love and self-love, beauty, sensuality, confidence and harmony." },
+      text:"She had few temples, but Pausanias mentions an oracle of Night at Megara, and the Orphic Hymn to Night asks for an offering of torches. Today she is honoured in Hellenic polytheism, witchcraft and chaos traditions as the primordial mother of darkness, dreams and mystery." },
     { title:"Correspondences",
-      text:"Planet: Venus. Day: Friday. Metal: copper, the metal of Cyprus. Colours: pink, red, white, gold and sea green. Animals: doves, sparrows and swans. Plants: roses, myrtle and apple trees. Offerings: roses, honey, apples, perfume, seashells, pearls and sweet wine." }
+      text:"Time: deep night and the dark moon. Colours: black, deep blue and silver. Symbols: stars, the veil, wings and the egg. Animals: owls and black horses. Plants: the poppy and night-blooming flowers. Offerings: torches and candles, dark wine, honey, milk, poppies and incense." }
   ]
 };
 
 const OFFERINGS = {
-  rose:{ label:"Pink rose", msg:"A rose for the goddess of love: beauty laid before beauty.",
-    svg:`<svg viewBox="0 0 40 40"><path d="M20 18 V37" stroke="#2f6b3a" stroke-width="2"/><path d="M20 28 C14 24 12 28 14 30" fill="#2f6b3a"/><circle cx="20" cy="13" r="8" fill="#e06a8c"/><path d="M15 12 C18 8 24 9 24 13 C24 16 19 17 18 14" stroke="#9a2a4e" stroke-width="1.4" fill="none"/></svg>` },
-  honey:{ label:"Honey", msg:"Honey, as sweet as love's first kiss.",
+  torch:{ label:"Torch", msg:"A torch is lit for her, the offering the Orphic hymn asks of Night.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M18 37 L20 20 L22 37Z" fill="#8a6a46"/><path d="M14 18 H26 L23 22 H17Z" fill="#6e5236"/><path class="flame" d="M20 2 C27 8 28 13 20 17 C12 13 13 8 20 2Z" fill="#ff8a3d"/><path d="M20 8 C23 11 23 14 20 16 C17 14 17 11 20 8Z" fill="#ffe08a"/></svg>` },
+  wine:{ label:"Dark wine", msg:"Dark wine, poured out for the mother of the gods of night.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M11 5 H29 C29 16 25 21 20 21 C15 21 11 16 11 5Z" fill="#3a0a24" stroke="#c9cde6" stroke-width="1.5"/><path d="M20 21 V33 M13 35 H27" stroke="#c9cde6" stroke-width="2"/></svg>` },
+  honey:{ label:"Honey", msg:"Honey, sweet as the sleep she brings to all living things.",
     svg:`<svg viewBox="0 0 40 40"><rect x="10" y="14" width="20" height="22" rx="4" fill="#e0a12a"/><rect x="11" y="8" width="18" height="7" rx="1.5" fill="#8a5a2b"/><path d="M14 21 H26" stroke="#fff3c4" stroke-width="1.5" opacity=".6"/></svg>` },
-  apple:{ label:"Golden apple", msg:"A golden apple, the prize she won as the fairest of all.",
-    svg:`<svg viewBox="0 0 40 40"><path d="M20 13 C11 7 4 16 7 26 C10 36 17 38 20 35 C23 38 30 36 33 26 C36 16 29 7 20 13Z" fill="#e0b040"/><path d="M20 13 C20 9 21 6 24 4" stroke="#6b4a1e" stroke-width="2" fill="none"/><path d="M22 8 C26 4 31 5 31 6 C27 10 23 10 22 8Z" fill="#2f6b3a"/></svg>` },
-  perfume:{ label:"Perfume", msg:"Fragrant rose oil, for the goddess of beauty and the senses.",
-    svg:`<svg viewBox="0 0 40 40"><rect x="17" y="4" width="6" height="6" rx="1" fill="#d8b46a"/><path d="M14 12 H26 C31 16 32 22 32 26 C32 33 27 37 20 37 C13 37 8 33 8 26 C8 22 9 16 14 12Z" fill="#f2a7bd" opacity=".9"/><path d="M12 24 C16 21 24 21 28 24" stroke="#fff" stroke-width="1.2" opacity=".6" fill="none"/></svg>` },
-  pearl:{ label:"Shell & pearl", msg:"A seashell holding a pearl, a gift from the sea that gave her birth.",
-    svg:`<svg viewBox="0 0 40 40"><path d="M20 34 L4 20 C4 10 12 5 20 5 C28 5 36 10 36 20Z" fill="#f0d7cf"/><path d="M20 34 L8 14 M20 34 L14 7 M20 34 L20 5 M20 34 L26 7 M20 34 L32 14" stroke="#c9a49a" stroke-width="1"/><circle cx="20" cy="30" r="5" fill="#fbf7f2" stroke="#d8cfc6"/></svg>` },
-  wine:{ label:"Sweet wine", msg:"Sweet wine, poured for the joy and pleasure she brings.",
-    svg:`<svg viewBox="0 0 40 40"><path d="M11 5 H29 C29 16 25 21 20 21 C15 21 11 16 11 5Z" fill="#b8325a" stroke="#d8b46a" stroke-width="1.5"/><path d="M20 21 V33 M13 35 H27" stroke="#d8b46a" stroke-width="2"/></svg>` }
+  milk:{ label:"Milk", msg:"A bowl of milk, pale as starlight, given to the Mother of Night.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M5 20 H35 C34 30 28 35 20 35 C12 35 6 30 5 20Z" fill="#6b5a7a"/><ellipse cx="20" cy="20" rx="15" ry="4" fill="#f4f1ea"/></svg>` },
+  poppy:{ label:"Poppy", msg:"A poppy for her sons, Sleep and Death, and for every dream she sends.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M20 22 V38" stroke="#2f6b3a" stroke-width="2"/><g fill="#b3202e"><ellipse cx="14" cy="12" rx="7" ry="6"/><ellipse cx="26" cy="12" rx="7" ry="6"/><ellipse cx="14" cy="19" rx="7" ry="6"/><ellipse cx="26" cy="19" rx="7" ry="6"/></g><circle cx="20" cy="16" r="3.5" fill="#140c12"/></svg>` },
+  incense:{ label:"Incense", msg:"Incense smoke drifts upward, vanishing into her darkness.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M8 36 H32" stroke="#6e6578" stroke-width="4" stroke-linecap="round"/><path d="M20 34 L22 14" stroke="#7a2b1d" stroke-width="2"/><path d="M22 13 C17 9 26 7 21 2" stroke="#cfc3d6" stroke-width="1.5" fill="none" opacity=".8"/></svg>` }
 };
 
 /* =========================================================
@@ -262,35 +276,32 @@ ground('plaza', CX-200, CY-200, 400, 400);
 // statue
 const statueSVG = `<svg viewBox="0 0 240 320" width="240" height="320">
 <defs>
- <linearGradient id="mb" x1="0" x2="1"><stop offset="0" stop-color="#cfc3be"/><stop offset=".5" stop-color="#f7f1ec"/><stop offset="1" stop-color="#c7bab4"/></linearGradient>
- <radialGradient id="hl"><stop offset="0" stop-color="#ffd1dc" stop-opacity=".75"/><stop offset=".45" stop-color="#e88aa4" stop-opacity=".3"/><stop offset="1" stop-color="#e88aa4" stop-opacity="0"/></radialGradient>
+ <linearGradient id="st" x1="0" x2="1"><stop offset="0" stop-color="#1f2340"/><stop offset=".5" stop-color="#3c4370"/><stop offset="1" stop-color="#1b1f38"/></linearGradient>
+ <radialGradient id="hl"><stop offset="0" stop-color="#8fa2ff" stop-opacity=".55"/><stop offset=".45" stop-color="#2a3a9a" stop-opacity=".3"/><stop offset="1" stop-color="#2a3a9a" stop-opacity="0"/></radialGradient>
 </defs>
-<circle class="halo" cx="120" cy="90" r="80" fill="url(#hl)" style="transform-origin:120px 90px"/>
-<!-- scallop shell she rises from -->
-<path d="M56 250 C56 200 88 184 120 184 C152 184 184 200 184 250Z" fill="#f2dcd4" stroke="#b89a90"/>
-<path d="M120 250 L64 222 M120 250 L74 202 M120 250 L94 189 M120 250 L120 184 M120 250 L146 189 M120 250 L166 202 M120 250 L176 222" stroke="#c9a49a" stroke-width="1.4"/>
-<!-- long golden hair -->
-<path d="M106 76 C90 100 92 140 98 172 C104 150 106 128 110 108Z M134 76 C150 100 148 140 142 172 C136 150 134 128 130 108Z" fill="#c9a46a"/>
-<!-- draped marble robe -->
-<path d="M104 104 Q120 96 136 104 L148 236 Q120 244 92 236Z" fill="url(#mb)" stroke="#a8998f"/>
-<path d="M108 112 C116 140 112 180 104 232 M132 112 C126 150 132 190 140 232 M114 120 C124 130 130 128 134 118" stroke="#a8998f" stroke-opacity=".6" fill="none"/>
-<!-- raised arm with a dove -->
-<path d="M105 110 C94 102 86 92 82 74" stroke="#e9e0da" stroke-width="8" stroke-linecap="round" fill="none"/>
-<path d="M66 64 C72 58 82 58 88 62 L96 56 C98 55 100 57 98 59 L94 64 C95 68 93 72 88 73 C80 75 72 72 68 70 L60 72Z" fill="#fbfbfb" stroke="#b9b9c4"/>
-<path d="M72 64 C76 52 86 46 96 46 C90 52 86 58 80 62Z" fill="#ececf2" stroke="#b9b9c4"/>
-<!-- lowered hand holding the golden apple -->
-<path d="M135 112 C146 126 150 142 150 158" stroke="#e9e0da" stroke-width="8" stroke-linecap="round" fill="none"/>
-<circle cx="151" cy="166" r="8" fill="#e0b040" stroke="#9a7420"/>
-<!-- head -->
-<circle cx="120" cy="82" r="14" fill="#f2ebe6" stroke="#a8998f"/>
-<path d="M106 80 C104 66 112 60 120 60 C128 60 136 66 134 80 C130 70 126 68 120 68 C114 68 110 70 106 80Z" fill="#c9a46a"/>
-<path d="M114 72 C118 66 124 66 128 70" stroke="#e06a8c" stroke-width="2" fill="none"/>
-<path d="M114 84 Q116 85 117 84 M123 84 Q125 85 126 84 M117 90 Q120 92 123 90" stroke="#8a6a64" stroke-width="1.1" fill="none"/>
+<circle class="halo" cx="120" cy="70" r="90" fill="url(#hl)" style="transform-origin:120px 70px"/>
+<g fill="#eef0ff"><circle cx="40" cy="20" r="1.5"/><circle cx="76" cy="10" r="1"/><circle cx="160" cy="14" r="1.4"/><circle cx="204" cy="26" r="1"/><circle cx="120" cy="6" r="1.6"/><circle cx="24" cy="60" r="1"/><circle cx="220" cy="64" r="1.3"/></g>
+<!-- great black wings, raised -->
+<path d="M108 112 C82 70 44 40 6 38 C20 50 22 58 14 68 C30 70 34 80 26 90 C42 90 46 102 40 114 C58 110 70 118 72 134 C84 124 96 118 108 112Z" fill="#14172a" stroke="#3c4370"/>
+<path d="M132 112 C158 70 196 40 234 38 C220 50 218 58 226 68 C210 70 206 80 214 90 C198 90 194 102 200 114 C182 110 170 118 168 134 C156 124 144 118 132 112Z" fill="#14172a" stroke="#3c4370"/>
+<!-- starry veil billowing over the head -->
+<path d="M86 124 C76 72 94 44 120 42 C146 44 164 72 154 124 C146 104 134 96 120 96 C106 96 94 104 86 124Z" fill="#262c55" stroke="#11142a"/>
+<g fill="#eef0ff"><circle cx="104" cy="62" r="1.4"/><circle cx="120" cy="52" r="1.8"/><circle cx="136" cy="62" r="1.4"/><circle cx="96" cy="88" r="1.1"/><circle cx="144" cy="88" r="1.1"/><circle cx="112" cy="74" r="1"/><circle cx="130" cy="76" r="1"/></g>
+<!-- robe -->
+<path d="M102 104 Q120 96 138 104 L150 252 Q120 258 90 252Z" fill="url(#st)" stroke="#11142a"/>
+<path d="M112 112 L104 250 M128 112 L136 250 M120 114 V253" stroke="#11142a" stroke-opacity=".5" fill="none"/>
+<g fill="#cfd5ff" opacity=".8"><circle cx="110" cy="150" r="1.2"/><circle cx="128" cy="180" r="1.2"/><circle cx="116" cy="214" r="1.2"/><circle cx="134" cy="232" r="1"/><circle cx="104" cy="200" r="1"/></g>
+<!-- arms holding a star -->
+<path d="M104 112 C96 128 104 142 114 146 M136 112 C144 128 136 142 126 146" stroke="#3c4370" stroke-width="8" stroke-linecap="round" fill="none"/>
+<path d="M120 134 L123 143 L132 146 L123 149 L120 158 L117 149 L108 146 L117 143Z" fill="#eef0ff"/>
+<!-- head, eyes closed in sleep -->
+<circle cx="120" cy="82" r="14" fill="#7c84ad" stroke="#11142a"/>
+<path d="M113 84 Q115 86 117 84 M123 84 Q125 86 127 84" stroke="#11142a" stroke-width="1.4" fill="none"/>
 <!-- pedestal -->
-<rect x="58" y="250" width="124" height="14" fill="#e6dad3"/>
-<rect x="72" y="264" width="96" height="46" fill="#d6c8c0"/>
-<rect x="60" y="308" width="120" height="12" fill="#bfb0a8"/>
-<text x="120" y="292" text-anchor="middle" font-family="Cinzel,serif" font-size="12" letter-spacing="2" fill="#9a6a2a">${DEITY}</text>
+<rect x="70" y="250" width="100" height="14" fill="#2d3254"/>
+<rect x="78" y="264" width="84" height="46" fill="#1f2340"/>
+<rect x="64" y="308" width="112" height="12" fill="#15182c"/>
+<text x="120" y="292" text-anchor="middle" font-family="Cinzel,serif" font-size="12" letter-spacing="2" fill="#c9cde6">${DEITY}</text>
 </svg>`;
 el('', CX, CY-30, statueSVG);
 obstacles.push({x:CX, y:CY-60, r:70});
@@ -301,7 +312,7 @@ const altarSVG = `<div id="altar"><div class="altar-glow"></div>
  <rect x="4" y="18" width="212" height="16" rx="2" fill="#5d5566"/>
  <rect x="4" y="18" width="212" height="3" fill="#d8b46a" opacity=".55"/>
  <rect x="14" y="34" width="192" height="52" fill="#3b3543"/>
- <g stroke="#d8b46a" stroke-width="2" fill="none" opacity=".8" stroke-linecap="round"><circle cx="110" cy="54" r="9"/><path d="M110 63 V80 M103 73 H117"/></g>
+ <g opacity=".8"><circle cx="110" cy="60" r="16" fill="none" stroke="#c9cde6" stroke-width="1.5"/><path d="M110 48 L113 57 L122 60 L113 63 L110 72 L107 63 L98 60 L107 57Z" fill="#c9cde6"/></g>
  <rect x="12" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M15 -6 C19 -2 19 1 15 3 C11 1 11 -2 15 -6Z" fill="#ffb347"/>
  <rect x="202" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M205 -6 C209 -2 209 1 205 3 C201 1 201 -2 205 -6Z" fill="#ffb347"/>
 </svg><div id="offerings"></div></div>`;
@@ -332,7 +343,7 @@ for(let i=0;i<16;i++){
 function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const rand = rng(666);
 const cypress = `<svg viewBox="0 0 40 110" width="40" height="110"><ellipse cx="20" cy="106" rx="14" ry="4" fill="rgba(0,0,0,.45)"/><rect x="18" y="92" width="4" height="14" fill="#2b1d14"/><path d="M20 2 C34 30 32 70 20 96 C8 70 6 30 20 2Z" fill="#10241a" stroke="#1f3d2b"/></svg>`;
-const bush = `<svg viewBox="0 0 60 40" width="60" height="40"><ellipse cx="30" cy="36" rx="26" ry="4" fill="rgba(0,0,0,.4)"/><ellipse cx="30" cy="22" rx="26" ry="15" fill="#15301f"/><circle cx="17" cy="16" r="3.5" fill="#e06a8c"/><circle cx="34" cy="12" r="3.5" fill="#f2a7bd"/><circle cx="44" cy="22" r="3.5" fill="#d64a6e"/><circle cx="25" cy="26" r="3.5" fill="#f7c6d4"/></svg>`;
+const bush = `<svg viewBox="0 0 60 40" width="60" height="40"><ellipse cx="30" cy="36" rx="26" ry="4" fill="rgba(0,0,0,.4)"/><ellipse cx="30" cy="22" rx="26" ry="15" fill="#15301f"/><circle cx="17" cy="16" r="3.5" fill="#e6eaff"/><circle cx="34" cy="12" r="3.5" fill="#cfd6ff"/><circle cx="44" cy="22" r="3.5" fill="#e6eaff"/><circle cx="25" cy="26" r="3.5" fill="#b9c2f0"/></svg>`;
 let placedTrees = 0, tries = 0;
 while(placedTrees < 70 && tries < 2000){
   tries++;
@@ -342,14 +353,14 @@ while(placedTrees < 70 && tries < 2000){
   const onSouthPath = Math.abs(x-CX) < 70 && y > CY;
   const tooClose = obstacles.some(o=>Math.hypot(o.x-x,o.y-y) < o.r+40);
   if(!okZone || onSouthPath || tooClose) continue;
-  const isBush = rand() < .6; // rose bushes
+  const isBush = rand() < .35;
   el('', x, y, isBush ? bush : cypress);
   obstacles.push({x, y:y-6, r:isBush?22:13});
   placedTrees++;
 }
 
 // fireflies
-for(let i=0;i<34;i++){
+for(let i=0;i<70;i++){ // stars of the night
   const f = document.createElement('div'); f.className='fly';
   f.style.left = (rand()*W)+'px'; f.style.top = (rand()*H)+'px';
   f.style.animationDuration = (5+rand()*7)+'s'; f.style.animationDelay = (-rand()*10)+'s';
@@ -413,6 +424,7 @@ function step(dt){
   const goalY = vh >= H ? (H-vh)/2 : Math.max(0, Math.min(H-vh, py - vh*0.45));
   camX += (goalX-camX)*Math.min(1, dt*6); camY += (goalY-camY)*Math.min(1, dt*6);
   world.style.transform = `translate(${-camX}px,${-camY}px)`;
+  if(window.__lights){ window.__lights.style.transform = world.style.transform; window.__onFrame(); }
 
   checkNearby();
 }
@@ -572,6 +584,71 @@ setCloak(savedCloak, false);
 document.getElementById('cloakBtn').addEventListener('click', ()=>cloakPanel.classList.toggle('show'));
 cloakPanel.addEventListener('pointerdown', e=>e.stopPropagation());
 vp.addEventListener('pointerdown', ()=>cloakPanel.classList.remove('show'));
+
+/* =========================================================
+   DAY AND NIGHT (follows the visitor's local time)
+   ========================================================= */
+const flies = document.createElement('div'); flies.id = 'flies'; world.appendChild(flies);
+world.querySelectorAll('.fly').forEach(f=>flies.appendChild(f));
+const sky = document.getElementById('sky');
+const PHASES = {
+  night:{ b:.72, s:.9,  t:[10,20,70,.38],    f:1,   icon:'☾', name:'Night' },
+  dawn: { b:.95, s:1,   t:[255,140,130,.16], f:.45, icon:'◐', name:'Dawn'  },
+  day:  { b:1.3, s:1.15,t:[255,240,200,.07], f:0,   icon:'☀', name:'Day'   },
+  dusk: { b:.92, s:1.05,t:[255,105,60,.2],   f:.6,  icon:'◑', name:'Dusk'  }
+};
+const SKY_HOURS = [[0,'night'],[5,'night'],[6.5,'dawn'],[8,'day'],[17.5,'day'],[19.5,'dusk'],[21,'night'],[24,'night']];
+function mixN(a,b,t){ return a+(b-a)*t; }
+function skyAt(h){
+  for(let i=0;i<SKY_HOURS.length-1;i++){
+    const [h0,p0] = SKY_HOURS[i], [h1,p1] = SKY_HOURS[i+1];
+    if(h >= h0 && h <= h1){
+      const t = h1 === h0 ? 0 : (h-h0)/(h1-h0), A = PHASES[p0], B = PHASES[p1];
+      return { b:mixN(A.b,B.b,t), s:mixN(A.s,B.s,t), t:A.t.map((v,k)=>mixN(v,B.t[k],t)), f:mixN(A.f,B.f,t), p:t<.5?p0:p1 };
+    }
+  }
+  return { ...PHASES.night, p:'night' };
+}
+function applySky(){
+  const now = new Date();
+  const st = skyAt(now.getHours() + now.getMinutes()/60);
+  world.style.filter = `brightness(${st.b.toFixed(2)}) saturate(${st.s.toFixed(2)})`;
+  sky.style.background = `rgba(${Math.round(st.t[0])},${Math.round(st.t[1])},${Math.round(st.t[2])},${st.t[3].toFixed(2)})`;
+  flies.style.opacity = st.f.toFixed(2);
+  if(window.__glows) window.__glows.style.opacity = (st.f*0.95).toFixed(2);
+}
+applySky(); setInterval(applySky, 60000);
+
+/* =========================================================
+   NIGHT LIGHTS: fireflies, lamps, altar candles and your
+   lantern shine above the darkness and glow brighter at night
+   ========================================================= */
+const lightsWrap = document.createElement('div'); lightsWrap.id = 'lightsWrap';
+const lights = document.createElement('div'); lights.id = 'lights';
+lightsWrap.appendChild(lights); document.body.insertBefore(lightsWrap, document.getElementById('topbar'));
+lights.appendChild(flies);
+// lamps
+world.querySelectorAll('.orb').forEach(o=>lights.appendChild(o.parentElement));
+const glows = document.createElement('div'); glows.id = 'glows'; lights.appendChild(glows);
+function glowAt(x, y, size, color){
+  const g = document.createElement('div'); g.className = 'lglow';
+  Object.assign(g.style,{ left:x+'px', top:y+'px', width:size+'px', height:size+'px',
+    background:`radial-gradient(circle, ${color}, transparent 70%)` });
+  glows.appendChild(g); return g;
+}
+lights.querySelectorAll('.orb').forEach(o=>{
+  const sp = o.parentElement; glowAt(parseFloat(sp.style.left), parseFloat(sp.style.top)-6, 140, 'rgba(255,180,90,.75)').classList.add('pulse');
+});
+glowAt(ALTAR.x-95, ALTAR.y-92, 90, 'rgba(255,170,80,.65)');
+glowAt(ALTAR.x+95, ALTAR.y-92, 90, 'rgba(255,170,80,.65)');
+// the statue's own lights (torches, stars, halos)
+const STATUE_LIGHTS = [[120,60,230,'rgba(140,160,255,.35)'],[120,146,100,'rgba(230,235,255,.6)']];
+STATUE_LIGHTS.forEach(([x,y,size,color])=>glowAt(CX-120+x, CY-350+y, size, color).classList.add('pulse'));
+const lanternGlow = glowAt(0, 0, 200, 'rgba(255,190,110,.5)');
+window.__onFrame = ()=>{ lanternGlow.style.left = (px + 12*facing)+'px'; lanternGlow.style.top = (py-18)+'px'; };
+window.__glows = glows;
+window.__lights = lights;
+applySky();
 </script>
 </body>
 </html>
