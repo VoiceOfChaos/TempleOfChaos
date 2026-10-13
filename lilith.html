@@ -119,6 +119,19 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
   border:1px solid rgba(216,180,106,.5);border-radius:12px;padding:10px 16px;font-size:16px;font-style:italic;text-align:center;
   opacity:0;transition:all .4s;pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* cloak colour picker */
+#cloakBtn{display:flex;align-items:center;gap:6px;width:auto}
+#cloakBtn .sw{width:13px;height:13px;border-radius:50%;border:1px solid rgba(255,255,255,.5)}
+#cloakPanel{top:54px;right:12px;width:232px;background:var(--panel);border:1px solid rgba(216,180,106,.4);border-radius:14px;
+  padding:14px 12px 12px;box-shadow:0 0 40px rgba(0,0,0,.6);display:none}
+#cloakPanel.show{display:block}
+#cloakPanel .t{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;color:var(--gold);text-align:center;margin-bottom:12px}
+#cloakPanel .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 8px;justify-items:center}
+.cl{width:36px;height:36px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,.15);transition:transform .15s}
+.cl:hover{transform:scale(1.1)}
+.cl.on{border-color:#fff1c8;box-shadow:0 0 12px rgba(255,220,150,.8)}
+#cloakPanel .name{margin-top:12px;text-align:center;font-style:italic;font-size:15px;opacity:.85}
 </style>
 </head>
 <body>
@@ -128,7 +141,12 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
 <div id="topbar" class="ui">
   <a class="btn" href="gardens.html">← Gardens</a>
   <h1>Garden of Lilith</h1>
-  <span style="width:70px"></span>
+  <button id="cloakBtn" class="btn" aria-label="Choose cloak colour"><span class="sw"></span>Cloak</button>
+</div>
+<div id="cloakPanel" class="ui">
+  <div class="t">CHOOSE YOUR CLOAK</div>
+  <div class="grid"></div>
+  <div class="name"></div>
 </div>
 <div id="hint" class="ui">Tap anywhere to walk (or use arrow keys / WASD).<br>Visit her symbols, then bring offerings to the altar.</div>
 
@@ -336,7 +354,7 @@ for(let i=0;i<34;i++){
 // player
 const player = el('', 0, 0, `<div class="flip"><div class="body"><svg viewBox="0 0 40 52" width="38" height="50">
 <ellipse cx="20" cy="49" rx="12" ry="3" fill="rgba(0,0,0,.5)"/>
-<path d="M20 5 C11 5 9 16 10 22 L5 48 H35 L30 22 C31 16 29 5 20 5Z" fill="#2b1f3a" stroke="#7a5a9c"/>
+<path class="cloak" d="M20 5 C11 5 9 16 10 22 L5 48 H35 L30 22 C31 16 29 5 20 5Z" fill="#2b1f3a" stroke="#7a5a9c"/>
 <path d="M14 18 C14 12 26 12 26 18 C26 23 14 23 14 18Z" fill="#0b0710"/>
 <circle cx="17.5" cy="18" r="1.3" fill="#ffcf70"/><circle cx="22.5" cy="18" r="1.3" fill="#ffcf70"/>
 <path d="M30 27 L33 30" stroke="#999"/><circle class="lantern" cx="33" cy="34" r="4" fill="#ffb347"/>
@@ -511,6 +529,44 @@ function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); c
 
 const hintEl = document.getElementById('hint'); let hintGone = false;
 function hideHint(){ if(hintGone) return; hintGone = true; setTimeout(()=>hintEl.style.opacity = 0, 2500); }
+
+/* =========================================================
+   CLOAK COLOURS (remembered across all gardens)
+   ========================================================= */
+const CLOAKS = [
+  { name:"Midnight Violet", fill:"#2b1f3a", edge:"#7a5a9c" },
+  { name:"Blood Crimson",   fill:"#5a1020", edge:"#c0404f" },
+  { name:"Void Black",      fill:"#121014", edge:"#4a4450" },
+  { name:"Deep Forest",     fill:"#183222", edge:"#4f8a5e" },
+  { name:"Abyssal Sea",     fill:"#132a40", edge:"#4a7eaa" },
+  { name:"Bone White",      fill:"#cfc6b8", edge:"#f2ece0" },
+  { name:"Ancient Gold",    fill:"#5a4614", edge:"#d8b46a" },
+  { name:"Wild Rose",       fill:"#5a2236", edge:"#e06a8c" }
+];
+const cloakPath = player.querySelector('.cloak');
+const cloakPanel = document.getElementById('cloakPanel');
+const cloakGrid = cloakPanel.querySelector('.grid');
+const cloakSw = document.querySelector('#cloakBtn .sw');
+CLOAKS.forEach((c,i)=>{
+  const b = document.createElement('div'); b.className = 'cl'; b.title = c.name;
+  b.style.background = `radial-gradient(circle at 35% 35%, ${c.edge}, ${c.fill} 70%)`;
+  b.addEventListener('click', ()=>setCloak(i, true));
+  cloakGrid.appendChild(b);
+});
+function setCloak(i, save){
+  const c = CLOAKS[i] || CLOAKS[0];
+  cloakPath.setAttribute('fill', c.fill); cloakPath.setAttribute('stroke', c.edge);
+  cloakSw.style.background = c.fill; cloakSw.style.borderColor = c.edge;
+  [...cloakGrid.children].forEach((b,k)=>b.classList.toggle('on', k===i));
+  cloakPanel.querySelector('.name').textContent = c.name;
+  if(save){ try { localStorage.setItem('temple-cloak', String(i)); } catch(e){} }
+}
+let savedCloak = 0;
+try { savedCloak = parseInt(localStorage.getItem('temple-cloak'), 10) || 0; } catch(e){}
+setCloak(savedCloak, false);
+document.getElementById('cloakBtn').addEventListener('click', ()=>cloakPanel.classList.toggle('show'));
+cloakPanel.addEventListener('pointerdown', e=>e.stopPropagation());
+vp.addEventListener('pointerdown', ()=>cloakPanel.classList.remove('show'));
 </script>
 </body>
 </html>
