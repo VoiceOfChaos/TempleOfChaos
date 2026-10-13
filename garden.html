@@ -143,6 +143,8 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
 #lights{position:absolute;left:0;top:0;width:1400px;height:1400px;will-change:transform}
 #glows{position:absolute;inset:0;transition:opacity 2s}
 .lglow{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none}
+.lglow.pulse{animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.7}}
 </style>
 </head>
 <body>
@@ -624,6 +626,7 @@ const lightsWrap = document.createElement('div'); lightsWrap.id = 'lightsWrap';
 const lights = document.createElement('div'); lights.id = 'lights';
 lightsWrap.appendChild(lights); document.body.insertBefore(lightsWrap, document.getElementById('topbar'));
 lights.appendChild(flies);
+// lamps
 world.querySelectorAll('.orb').forEach(o=>lights.appendChild(o.parentElement));
 const glows = document.createElement('div'); glows.id = 'glows'; lights.appendChild(glows);
 function glowAt(x, y, size, color){
@@ -633,11 +636,14 @@ function glowAt(x, y, size, color){
   glows.appendChild(g); return g;
 }
 lights.querySelectorAll('.orb').forEach(o=>{
-  const sp = o.parentElement; glowAt(parseFloat(sp.style.left), parseFloat(sp.style.top)-6, 100, 'rgba(255,180,90,.55)');
+  const sp = o.parentElement; glowAt(parseFloat(sp.style.left), parseFloat(sp.style.top)-6, 140, 'rgba(255,180,90,.75)').classList.add('pulse');
 });
 glowAt(ALTAR.x-95, ALTAR.y-92, 90, 'rgba(255,170,80,.65)');
 glowAt(ALTAR.x+95, ALTAR.y-92, 90, 'rgba(255,170,80,.65)');
-const lanternGlow = glowAt(0, 0, 180, 'rgba(255,190,110,.42)');
+// the statue's own lights (torches, stars, halos)
+const STATUE_LIGHTS = [[120,34,170,'rgba(255,230,160,.6)'],[162,28,130,'rgba(255,150,60,.7)']];
+STATUE_LIGHTS.forEach(([x,y,size,color])=>glowAt(CX-120+x, CY-350+y, size, color).classList.add('pulse'));
+const lanternGlow = glowAt(0, 0, 200, 'rgba(255,190,110,.5)');
 window.__onFrame = ()=>{ lanternGlow.style.left = (px + 12*facing)+'px'; lanternGlow.style.top = (py-18)+'px'; };
 window.__glows = glows;
 window.__lights = lights;
