@@ -145,6 +145,27 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
 .lglow{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none}
 .lglow.pulse{animation:breathe 4s ease-in-out infinite}
 @keyframes breathe{50%{opacity:.7}}
+
+/* meditation bench */
+#sitBtn{bottom:22px;left:50%;transform:translateX(-50%) translateY(140%);transition:transform .35s ease;font-size:12px;padding:10px 20px;z-index:5050}
+#sitBtn.show{transform:translateX(-50%) translateY(0)}
+#medi{position:fixed;inset:0;z-index:7000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;
+  background:radial-gradient(circle at 50% 45%, var(--mc), rgba(5,3,8,.97) 68%)}
+#medi.show{display:flex}
+#medi .close{position:absolute;top:12px;right:18px;background:none;border:0;color:var(--ink);font-size:30px;opacity:.7;cursor:pointer}
+#medi .deity{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;opacity:.6}
+#medi h2{margin-top:8px;font-family:'Cinzel',serif;font-weight:400;font-size:21px;letter-spacing:.12em;color:var(--mcol)}
+#medi .intro{max-width:420px;margin:14px auto 24px;font-size:18px;line-height:1.5;font-style:italic;opacity:.85}
+#medi .mdur{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#medi .stage{display:none;flex-direction:column;align-items:center}
+#medi .stage.on{display:flex}
+.morb{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--mcol);
+  background:radial-gradient(circle, var(--mc2), transparent 70%);box-shadow:0 0 70px var(--mc2);transform:scale(.7);transition:transform 4s ease-in-out}
+.morb svg{width:84px;height:84px;filter:drop-shadow(0 0 12px currentColor)}
+#mPhase{margin-top:30px;font-family:'Cinzel',serif;letter-spacing:.22em;font-size:13px;color:var(--mcol)}
+#mLine{margin-top:14px;max-width:440px;min-height:62px;font-size:20px;line-height:1.5;transition:opacity 1.2s}
+#mTime{margin-top:16px;font-size:13px;opacity:.5}
+#medi .closing{max-width:420px;margin:22px auto 26px;font-size:21px;line-height:1.5;font-style:italic}
 </style>
 </head>
 <body>
@@ -668,6 +689,114 @@ window.__onFrame = ()=>{ lanternGlow.style.left = (px + 12*facing)+'px'; lantern
 window.__glows = glows;
 window.__lights = lights;
 applySky();
+
+/* =========================================================
+   MEDITATION BENCH (edit the bench look and the meditation here)
+   ========================================================= */
+const BENCH = {"angle": 192, "stone": "#2b2330", "dark": "#1e1822", "trim": "#d8b46a", "cushion": "#a3172b", "emblem": 0};
+const MEDITATION = {
+  "deity": "Kali",
+  "title": "Into the Mother's Darkness",
+  "symbol": 0,
+  "mc": "rgba(150,15,35,.42)",
+  "mc2": "rgba(255,80,60,.35)",
+  "color": "#e8c77a",
+  "intro": "Sit before the Dark Mother, the one who is Time itself.",
+  "lines": [
+    "Feel each breath arise, and pass away.",
+    "Every thought that comes, let it return to the dark.",
+    "Name one fear you carry. Offer it to her sword.",
+    "What is cut away was never truly you.",
+    "Beneath all change, something remains still.",
+    "Rest in her darkness, as a child rests with its mother."
+  ],
+  "closing": "Jai Ma. Go without fear."
+};
+
+const ba = BENCH.angle*Math.PI/180, BX = CX + Math.cos(ba)*420, BY = CY + Math.sin(ba)*420;
+const benchEmblem = SYMBOLS[BENCH.emblem].svg.replace('<svg ', `<svg x="51" y="21" width="18" height="18" style="color:${BENCH.trim}" `);
+el('', BX, BY, `<svg viewBox="0 0 120 64" width="110" height="59">
+  <ellipse cx="60" cy="60" rx="54" ry="5" fill="rgba(0,0,0,.45)"/>
+  <rect x="14" y="34" width="14" height="24" fill="${BENCH.dark}"/><rect x="92" y="34" width="14" height="24" fill="${BENCH.dark}"/>
+  <rect x="4" y="20" width="112" height="16" rx="3" fill="${BENCH.stone}" stroke="${BENCH.trim}" stroke-width="1.5"/>
+  <rect x="16" y="13" width="88" height="8" rx="4" fill="${BENCH.cushion}"/>
+  ${benchEmblem}</svg>`);
+obstacles.push({ x:BX, y:BY-12, r:30 });
+
+document.body.insertAdjacentHTML('beforeend', `
+<button id="sitBtn" class="btn ui">✦ Sit and meditate</button>
+<div id="medi" style="--mc:${MEDITATION.mc};--mc2:${MEDITATION.mc2};--mcol:${MEDITATION.color}">
+  <button class="close" aria-label="Close">×</button>
+  <div class="stage on" data-s="start">
+    <div class="deity">MEDITATION WITH ${MEDITATION.deity.toUpperCase()}</div>
+    <h2></h2><p class="intro"></p>
+    <div class="mdur"><button class="btn" data-m="1">1 minute</button><button class="btn" data-m="3">3 minutes</button><button class="btn" data-m="5">5 minutes</button></div>
+  </div>
+  <div class="stage" data-s="run">
+    <div class="morb"></div><div id="mPhase"></div><div id="mLine"></div><div id="mTime"></div>
+  </div>
+  <div class="stage" data-s="end">
+    <div class="morb" style="transform:scale(1)"></div><p class="closing"></p>
+    <button class="btn" data-a="back">Return to the garden</button>
+  </div>
+</div>`);
+const sitBtn = document.getElementById('sitBtn'), medi = document.getElementById('medi');
+medi.querySelector('h2').textContent = MEDITATION.title;
+medi.querySelector('.intro').textContent = MEDITATION.intro;
+medi.querySelector('.closing').textContent = MEDITATION.closing;
+medi.querySelectorAll('.morb').forEach(o=>o.innerHTML = SYMBOLS[MEDITATION.symbol].svg);
+const mOrb = medi.querySelector('[data-s="run"] .morb'), mPhase = document.getElementById('mPhase'),
+      mLine = document.getElementById('mLine'), mTime = document.getElementById('mTime');
+let meditating = false, mTimer = null, mClock = null, mAudio = null;
+function mStage(n){ medi.querySelectorAll('.stage').forEach(s=>s.classList.toggle('on', s.dataset.s===n)); }
+function bell(){
+  try {
+    if(!mAudio) mAudio = new (window.AudioContext||window.webkitAudioContext)();
+    const t = mAudio.currentTime;
+    [528, 792].forEach((f,i)=>{
+      const o = mAudio.createOscillator(), g = mAudio.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(i?0.06:0.18, t+0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+4.5);
+      o.connect(g); g.connect(mAudio.destination); o.start(t); o.stop(t+4.6);
+    });
+  } catch(e){}
+}
+const BREATH = [['BREATHE IN',4000,1.15],['HOLD',2000,1.15],['BREATHE OUT',6000,.7]];
+function startMeditation(mins){
+  mStage('run'); bell();
+  const end = Date.now() + mins*60000; let pi = 0, li = 0;
+  const tick = ()=>{ const r = Math.max(0, end-Date.now()), m = Math.floor(r/60000), s = Math.floor(r%60000/1000);
+    mTime.textContent = `${m}:${String(s).padStart(2,'0')}`; };
+  tick(); mClock = setInterval(tick, 500);
+  (function phase(){
+    if(Date.now() >= end){ finishMeditation(); return; }
+    const [name, dur, sc] = BREATH[pi];
+    mPhase.textContent = name; mOrb.style.transitionDuration = dur+'ms'; mOrb.style.transform = `scale(${sc})`;
+    if(pi === 0){
+      mLine.style.opacity = 0;
+      setTimeout(()=>{ mLine.textContent = MEDITATION.lines[li % MEDITATION.lines.length]; mLine.style.opacity = 1; li++; }, 600);
+    }
+    pi = (pi+1) % BREATH.length; mTimer = setTimeout(phase, dur);
+  })();
+}
+function finishMeditation(){ clearTimeout(mTimer); clearInterval(mClock); bell(); mStage('end'); }
+function closeMeditation(){
+  clearTimeout(mTimer); clearInterval(mClock); medi.classList.remove('show'); meditating = false;
+  mOrb.style.transitionDuration = '0ms'; mOrb.style.transform = 'scale(.7)'; mLine.textContent = ''; mStage('start');
+}
+sitBtn.addEventListener('pointerdown', e=>e.stopPropagation());
+sitBtn.addEventListener('click', ()=>{ meditating = true; tx = null; medi.classList.add('show'); mStage('start'); });
+medi.addEventListener('pointerdown', e=>e.stopPropagation());
+medi.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click', ()=>startMeditation(+b.dataset.m)));
+medi.querySelector('[data-a="back"]').addEventListener('click', closeMeditation);
+medi.querySelector('.close').addEventListener('click', closeMeditation);
+const prevFrame = window.__onFrame || (()=>{});
+window.__onFrame = ()=>{
+  prevFrame();
+  if(meditating){ for(const k in keys) keys[k] = false; tx = null; }
+  sitBtn.classList.toggle('show', !meditating && Math.hypot(px-BX, py-BY) < 80);
+};
 </script>
 </body>
 </html>
