@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Garden of Kali</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#d8b46a; --ember:#e0592f; --violet:#5b2a86;
+  --night:#0b0710; --ink:#ece2d0; --panel:rgba(18,10,24,.92);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
+  font-family:'Cormorant Garamond',serif;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ---------- WORLD ---------- */
+#viewport{position:fixed;inset:0;overflow:hidden;cursor:pointer}
+#world{position:absolute;left:0;top:0;width:1400px;height:1400px;will-change:transform;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(160,18,40,.32) 0, rgba(160,18,40,0) 35%),
+    repeating-radial-gradient(circle at 13px 17px, rgba(40,70,45,.25) 0 2px, transparent 2px 23px),
+    repeating-radial-gradient(circle at 5px 9px, rgba(20,40,25,.4) 0 1.5px, transparent 1.5px 17px),
+    radial-gradient(circle at 50% 48%, #1d2a20 0, #111c15 55%, #070d09 100%);}
+.ground{position:absolute;pointer-events:none}
+.ring{border-radius:50%;border:44px solid rgba(130,110,95,.22);box-shadow:inset 0 0 30px rgba(0,0,0,.5),0 0 30px rgba(0,0,0,.4)}
+.plaza{border-radius:50%;background:
+  repeating-conic-gradient(from 0deg at 50% 50%, rgba(140,125,115,.22) 0 15deg, rgba(110,95,90,.22) 15deg 30deg);
+  box-shadow:0 0 60px rgba(216,180,106,.12), inset 0 0 40px rgba(0,0,0,.6)}
+.walk{background:rgba(130,110,95,.22);box-shadow:inset 0 0 14px rgba(0,0,0,.5)}
+
+.sprite{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
+.flip{display:block;transition:transform .15s}
+
+/* player */
+#player .body{animation:none}
+#player.moving .body{animation:bob .35s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.lantern{filter:drop-shadow(0 0 6px #ffb347)}
+#player::after{content:"";position:absolute;left:50%;top:60%;width:140px;height:140px;transform:translate(-50%,-50%);
+  background:radial-gradient(circle, rgba(255,190,110,.18), transparent 70%);pointer-events:none}
+
+/* statue + altar */
+.halo{animation:pulse 4s ease-in-out infinite;transform-origin:120px 34px}
+@keyframes pulse{50%{opacity:.55;transform:scale(1.15)}}
+.flame{animation:flick .25s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes flick{to{transform:scaleY(1.12) scaleX(.9)}}
+#altar{position:relative}
+#offerings{position:absolute;left:14px;right:14px;top:-18px;height:40px}
+.placed{position:absolute;bottom:0;transform:translateX(-50%);width:30px;height:30px}
+.placed svg{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.placed.new{animation:land .6s ease-out}
+@keyframes land{0%{transform:translate(-50%,-40px) scale(1.4);opacity:0}100%{transform:translate(-50%,0) scale(1);opacity:1}}
+.altar-glow{position:absolute;inset:-30px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,140,60,.45), transparent 65%);opacity:0;transition:opacity .4s}
+.altar-glow.on{opacity:1}
+
+/* symbol stones */
+.symbol{display:flex;flex-direction:column;align-items:center}
+.glyph{width:44px;height:44px;color:var(--gold);filter:drop-shadow(0 0 6px rgba(216,180,106,.85));animation:float 3.2s ease-in-out infinite}
+.glyph svg{width:100%;height:100%}
+.stone{width:46px;height:44px;margin-top:6px;border-radius:4px 4px 2px 2px;
+  background:linear-gradient(90deg,#3d3745,#6e6578 50%,#3a3442);box-shadow:0 8px 10px rgba(0,0,0,.5);
+  border-top:4px solid #7c7388}
+.symbol.near .glyph{color:#fff1c8;filter:drop-shadow(0 0 12px rgba(255,220,150,1))}
+@keyframes float{50%{transform:translateY(-6px)}}
+
+.fly{position:absolute;width:4px;height:4px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 8px 2px rgba(255,220,120,.7);
+  pointer-events:none;animation:drift linear infinite}
+@keyframes drift{0%{transform:translate(0,0);opacity:0}20%{opacity:1}50%{transform:translate(30px,-40px)}80%{opacity:1}100%{transform:translate(-20px,-80px);opacity:0}}
+.orb{width:10px;height:10px;border-radius:50%;background:#ffcf8a;box-shadow:0 0 14px 5px rgba(255,170,80,.45);animation:float 4s ease-in-out infinite}
+
+/* ---------- UI ---------- */
+.ui{position:fixed;z-index:5000}
+#topbar{top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;
+  background:linear-gradient(rgba(11,7,16,.95),rgba(11,7,16,0))}
+#topbar h1{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.12em;color:var(--gold);font-weight:400;text-align:center;flex:1}
+.btn{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:var(--ink);background:rgba(91,42,134,.35);
+  border:1px solid rgba(216,180,106,.45);border-radius:20px;padding:6px 12px;text-decoration:none;cursor:pointer}
+#hint{top:50px;left:50%;transform:translateX(-50%);font-style:italic;font-size:15px;color:rgba(236,226,208,.75);
+  text-align:center;padding:0 16px;transition:opacity 1s;pointer-events:none;width:100%}
+
+#card{left:12px;right:12px;bottom:12px;max-width:520px;margin:0 auto;max-height:46vh;overflow-y:auto;
+  background:var(--panel);border:1px solid rgba(216,180,106,.4);border-radius:14px;padding:16px 18px 18px;
+  box-shadow:0 0 40px rgba(91,42,134,.5);transform:translateY(130%);transition:transform .35s ease}
+#card.show{transform:translateY(0)}
+#card .head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+#card .icon{width:40px;height:40px;color:var(--gold);flex:none}
+#card h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);font-weight:400}
+#card .sub{font-style:italic;font-size:14px;opacity:.7}
+#card{z-index:5100}
+#card p{font-size:17px;line-height:1.45;margin-bottom:10px}
+#card h3{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;color:var(--gold);font-weight:400;
+  margin:14px 0 4px;padding-top:10px;border-top:1px solid rgba(216,180,106,.2)}
+#card.lore{max-height:62vh}
+.figs{display:flex;justify-content:center;gap:24px;margin:4px 0 12px}
+.fig{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--gold)}
+.fig svg{width:96px;height:96px;filter:drop-shadow(0 0 6px rgba(216,180,106,.6))}
+.fig span{font-size:13px;font-style:italic;opacity:.75;color:var(--ink)}
+#loreBtn{margin:8px 6px 0 0;font-size:10px}
+#card .x{position:absolute;top:8px;right:12px;background:none;border:0;color:var(--ink);font-size:22px;cursor:pointer;opacity:.7}
+
+#tray{left:0;right:0;bottom:0;padding:10px 10px 14px;background:linear-gradient(rgba(11,7,16,0),rgba(11,7,16,.96) 30%);
+  transform:translateY(110%);transition:transform .35s ease;text-align:center}
+#tray.show{transform:translateY(0)}
+#tray .label{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:var(--gold);margin:14px 0 8px}
+#items{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.off{width:54px;cursor:grab;touch-action:none;display:flex;flex-direction:column;align-items:center;gap:2px}
+.off .pic{width:46px;height:46px;border-radius:50%;background:rgba(91,42,134,.3);border:1px solid rgba(216,180,106,.35);
+  display:flex;align-items:center;justify-content:center}
+.off .pic svg{width:32px;height:32px;pointer-events:none}
+.off span{font-size:12px;line-height:1.1;opacity:.85}
+#clear{margin-top:8px;font-size:10px;opacity:.7}
+
+.ghost{position:fixed;z-index:9000;width:48px;height:48px;transform:translate(-50%,-50%) scale(1.2);pointer-events:none;
+  filter:drop-shadow(0 0 10px rgba(255,200,120,.9))}
+.ghost svg{width:100%;height:100%}
+#toast{left:50%;top:90px;transform:translate(-50%,-20px);max-width:90%;width:max-content;background:var(--panel);
+  border:1px solid rgba(216,180,106,.5);border-radius:12px;padding:10px 16px;font-size:16px;font-style:italic;text-align:center;
+  opacity:0;transition:all .4s;pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<div id="viewport"><div id="world"></div></div>
+
+<div id="topbar" class="ui">
+  <a class="btn" href="gardens.html">← Gardens</a>
+  <h1>Garden of Kali Ma</h1>
+  <span style="width:70px"></span>
+</div>
+<div id="hint" class="ui">Tap anywhere to walk (or use arrow keys / WASD).<br>Visit her symbols, then bring offerings to the altar.</div>
+
+<div id="card" class="ui">
+  <button class="x" aria-label="Close">×</button>
+  <div class="head"><div class="icon"></div><div><h2></h2><div class="sub"></div></div></div>
+  <div class="body"></div>
+</div>
+
+<div id="tray" class="ui">
+  <div class="label">Drag an offering onto the altar</div>
+  <div id="items"></div>
+  <button id="loreBtn" class="btn">✦ Her lore</button>
+  <button id="clear" class="btn">Clear the altar</button>
+</div>
+<div id="toast" class="ui"></div>
+
+<script>
+/* =========================================================
+   EDIT HERE: deity, symbols and offerings
+   ========================================================= */
+const DEITY = "KALI";
+const STORAGE_KEY = "garden-offerings-kali";
+
+const SYMBOLS = [
+  { name:"The Kali Yantra", sub:"Her sacred diagram",
+    text:"A sacred geometric diagram used to meditate on Kali and to invoke her. The downward triangles are Shakti, the feminine power. The central point, the bindu, is the source of all creation. The square with four gates is the world, through which the seeker enters.",
+    svg:`<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 5 H24 V9 H36 V5 H55 V24 H51 V36 H55 V55 H36 V51 H24 V55 H5 V36 H9 V24 H5Z"/><circle cx="30" cy="30" r="19"/><path d="M15 21 H45 L30 47Z M19 24 H41 L30 42Z M23 27 H37 L30 38Z"/><circle cx="30" cy="31" r="1.8" fill="currentColor"/></svg>` },
+  { name:"The Sword", sub:"Khadga",
+    text:"Her sword cuts through ignorance and the false self. What it severs is not life but illusion: the attachments and the ego that keep a soul bound.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M22 44 C18 30 22 14 36 5 C34 16 32 30 30 44Z" fill="currentColor"/><path d="M16 44 H36" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M26 46 L25 57" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>` },
+  { name:"The Garland of Heads", sub:"Mundamala",
+    text:"She wears a garland of severed heads, often counted as fifty. In tantric teaching they are the fifty letters of the Sanskrit alphabet: the sounds from which all names and forms are made, gathered back into her.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M9 10 C12 30 20 41 30 41 C40 41 48 30 51 10" stroke="currentColor" stroke-width="1.2" fill="none"/><g fill="currentColor"><circle cx="9" cy="10" r="3.6"/><circle cx="12" cy="21" r="3.6"/><circle cx="17" cy="31" r="3.6"/><circle cx="23" cy="38" r="3.6"/><circle cx="30" cy="41" r="3.6"/><circle cx="37" cy="38" r="3.6"/><circle cx="43" cy="31" r="3.6"/><circle cx="48" cy="21" r="3.6"/><circle cx="51" cy="10" r="3.6"/></g></svg>` },
+  { name:"The Red Tongue", sub:"Victory over Raktabija",
+    text:"Her tongue reaches out, red with the blood of the demon Raktabija. She defeated him by drinking his blood before it could touch the ground. In Bengal, many tell how she bit her tongue on realising she had stepped onto Shiva.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M12 22 C20 30 40 30 48 22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M22 27 C22 44 26 54 30 54 C34 54 38 44 38 27Z" fill="#c21f30"/><path d="M30 33 V47" stroke="#7a0f1c" stroke-width="1.5"/><path d="M17 25 L19.5 32 L22 26.5Z M43 25 L40.5 32 L38 26.5Z" fill="#f2ead8"/></svg>` },
+  { name:"The Third Eye", sub:"Sight beyond time",
+    text:"Her third eye sees past time itself: past, present and future at once. It is the eye of wisdom, and it burns illusion away.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M30 6 C44 18 44 42 30 54 C16 42 16 18 30 6Z" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="30" cy="30" r="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="30" cy="30" r="3" fill="#c21f30"/></svg>` },
+  { name:"The Fearless Hands", sub:"Abhaya and Varada",
+    text:"Two of her hands hold the sword and the severed head. The other two make blessing gestures: abhaya, “do not fear”, and varada, the giving of boons. The Mother who destroys is the same Mother who protects her children.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M21 56 V31 L17 25 C15 21 19 19 21 22 L22 24 V11 C22 8 26 8 26 11 V8 C26 5 30 5 30 8 V10 C30 7 34 7 34 10 V14 C34 11 38 11 38 14 V38 C38 48 35 52 33 56Z" fill="currentColor"/><circle cx="30" cy="34" r="3" fill="#c21f30"/></svg>` },
+  { name:"The Cremation Ground", sub:"Shmashana",
+    text:"Kali dwells in the cremation ground, where bodies return to ash. To her devotees it is the place where every illusion burns away and nothing false survives. Some teachers say the true cremation ground is the heart, once the ego has burned there.",
+    svg:`<svg viewBox="0 0 60 60"><path d="M9 52 L51 44 M9 44 L51 52" stroke="#7a4a2a" stroke-width="5" stroke-linecap="round"/><path d="M30 5 C41 17 45 28 39 41 H21 C15 28 19 17 30 5Z" fill="#e0592f"/><path d="M30 18 C36 25 37 33 34 41 H26 C23 33 24 25 30 18Z" fill="#ffcf70"/><path d="M14 41 C11 34 13 28 17 24 C17 31 20 35 22 41Z M46 41 C49 34 47 28 43 24 C43 31 40 35 38 41Z" fill="currentColor"/></svg>` }
+];
+
+const LORE = {
+  name:"Kali", sub:"The Dark Mother · She Who Is Time",
+  sections:[
+    { title:"Her Name",
+      text:"Kālī comes from the Sanskrit kāla, which means both “time” and “black”. She is the Black One, and she is Time itself, which devours all things. She is the power behind time, death and change." },
+    { title:"Born of Battle",
+      text:"In the Devi Mahatmya, a sacred text from around the 5th or 6th century CE, the goddess Durga grows so furious in battle that Kali bursts from her brow. Kali slays the demon generals Chanda and Munda, and so she is also called Chamunda. She defeated Raktabija, whose every drop of spilled blood became a new demon, by drinking his blood before it could reach the ground." },
+    { title:"Upon Shiva",
+      text:"Her victory dance grew so wild that it threatened to shake the worlds apart. Shiva lay down in her path, and when she stepped onto him she stopped, tongue out. Tantric teachers read this image as Shakti, the active power, dancing on Shiva, pure consciousness. Neither is complete without the other." },
+    { title:"Her Form",
+      text:"Her skin is black or deep blue, the colour of the infinite void from which everything arises and to which it returns. She is naked, clothed only in space and beyond every illusion. She wears a skirt of severed arms, standing for actions and karma. Of her four arms, two destroy and two bless." },
+    { title:"The Mother",
+      text:"To millions of Hindus, especially in Bengal, she is Ma, the loving Mother. The 18th-century poet Ramprasad Sen sang to her the way a child sings to its mother. The 19th-century mystic Ramakrishna worshipped her at the Dakshineswar temple near Kolkata. Kali Puja is celebrated on the new-moon night of the month of Kartika, at the time of Diwali." },
+    { title:"In Tantra",
+      text:"She is the first of the ten Mahavidyas, the great wisdom goddesses of Tantra. Her forms include Dakshina Kali, the most widely worshipped; Shmashana Kali, of the cremation ground; and Adya Kali, the primordial one, who existed before creation itself." },
+    { title:"With Respect",
+      text:"Kali is a living goddess, worshipped today in Hindu temples and homes. Approaching her through her own traditions, mantras and teachers honours both her and the people who have kept her worship alive." },
+    { title:"Correspondences",
+      text:"Night: the new moon (Amavasya). Colours: black and red. Flower: red hibiscus. Bija mantra: Krīm. Mantra: Om Krīm Kālikāyai Namaḥ. Great temples: Kalighat and Dakshineswar in Kolkata. Offerings: red hibiscus, lamps, incense, sweets, kumkum and coconut." }
+  ]
+};
+
+const OFFERINGS = {
+  hibiscus:{ label:"Hibiscus", msg:"A red hibiscus, her most beloved flower, red as her tongue and as the blood of life.",
+    svg:`<svg viewBox="0 0 40 40"><g fill="#c8102e"><ellipse cx="20" cy="10" rx="7" ry="9"/><ellipse cx="30" cy="17" rx="7" ry="9" transform="rotate(72 30 17)"/><ellipse cx="26" cy="29" rx="7" ry="9" transform="rotate(144 26 29)"/><ellipse cx="14" cy="29" rx="7" ry="9" transform="rotate(216 14 29)"/><ellipse cx="10" cy="17" rx="7" ry="9" transform="rotate(288 10 17)"/></g><circle cx="20" cy="20" r="4" fill="#7a0a1c"/><path d="M20 20 L29 9" stroke="#ffd34a" stroke-width="1.5"/><circle cx="29" cy="9" r="2" fill="#ffd34a"/></svg>` },
+  diya:{ label:"Lamp", msg:"A lamp is lit for her: light offered to the Dark Mother, who holds all light within her.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M5 24 C9 35 31 35 35 24 C28 27 12 27 5 24Z" fill="#b4602e"/><path d="M5 24 Q20 19 35 24 Q20 27 5 24Z" fill="#6e3818"/><path class="flame" d="M31 10 C35 14 35 19 31 21 C27 19 27 14 31 10Z" fill="#ffb347"/></svg>` },
+  incense:{ label:"Incense", msg:"Incense rises, its smoke carrying your devotion to her.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M8 36 H32" stroke="#6e6578" stroke-width="4" stroke-linecap="round"/><path d="M20 34 L22 14" stroke="#7a2b1d" stroke-width="2"/><path d="M22 13 C17 9 26 7 21 2" stroke="#cfc3d6" stroke-width="1.5" fill="none" opacity=".8"/></svg>` },
+  sweets:{ label:"Sweets", msg:"Sweets offered as prasad, blessed by the Mother and shared out again.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M3 32 C11 24 29 24 37 32 C29 37 11 37 3 32Z" fill="#2f6b3a"/><circle cx="14" cy="27" r="6" fill="#f0a030"/><circle cx="26" cy="27" r="6" fill="#e8962a"/><circle cx="20" cy="19" r="6" fill="#f5ae3f"/><circle cx="19" cy="17" r="1" fill="#fff3c4"/><circle cx="13" cy="25" r="1" fill="#fff3c4"/></svg>` },
+  kumkum:{ label:"Kumkum", msg:"Red kumkum, the colour of Shakti, the living power of the goddess.",
+    svg:`<svg viewBox="0 0 40 40"><path d="M10 22 Q20 10 30 22Z" fill="#d1122e"/><path d="M6 22 H34 C33 31 27 35 20 35 C13 35 7 31 6 22Z" fill="#c9a24a"/><path d="M6 22 H34" stroke="#8a6a26" stroke-width="1.5"/></svg>` },
+  coconut:{ label:"Coconut", msg:"A coconut broken open: the hard shell of the ego cracked, its sweet heart offered.",
+    svg:`<svg viewBox="0 0 40 40"><circle cx="20" cy="22" r="13" fill="#6b4226"/><path d="M10 18 C14 16 16 20 20 18 M22 28 C26 26 28 30 31 27" stroke="#4a2c18" stroke-width="1.2" fill="none"/><circle cx="17" cy="13" r="1.8" fill="#2a170c"/><circle cx="23" cy="13" r="1.8" fill="#2a170c"/><circle cx="20" cy="17" r="1.8" fill="#2a170c"/></svg>` }
+};
+
+/* =========================================================
+   WORLD SETUP
+   ========================================================= */
+const W = 1400, H = 1400, CX = 700, CY = 680;
+const world = document.getElementById('world');
+const vp = document.getElementById('viewport');
+const obstacles = [];
+
+function el(cls, x, y, html, z){
+  const d = document.createElement('div');
+  d.className = 'sprite ' + (cls||'');
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  d.style.zIndex = z !== undefined ? z : Math.round(y);
+  d.innerHTML = html; world.appendChild(d); return d;
+}
+function ground(cls, x, y, w, h){
+  const d = document.createElement('div');
+  d.className = 'ground ' + cls;
+  Object.assign(d.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+  world.appendChild(d); return d;
+}
+
+// paths
+ground('walk', CX-24, CY+180, 48, H-(CY+180));
+ground('ring', CX-442, CY-442, 884, 884);
+ground('plaza', CX-200, CY-200, 400, 400);
+
+// statue
+const statueSVG = `<svg viewBox="0 0 240 320" width="240" height="320">
+<defs>
+ <linearGradient id="sk" x1="0" x2="1"><stop offset="0" stop-color="#22253d"/><stop offset=".5" stop-color="#3e4470"/><stop offset="1" stop-color="#1e2136"/></linearGradient>
+ <radialGradient id="hl"><stop offset="0" stop-color="#ff6a3d" stop-opacity=".75"/><stop offset=".45" stop-color="#b3122a" stop-opacity=".35"/><stop offset="1" stop-color="#b3122a" stop-opacity="0"/></radialGradient>
+</defs>
+<circle class="halo" cx="120" cy="88" r="78" fill="url(#hl)" style="transform-origin:120px 88px"/>
+<!-- wild hair -->
+<path d="M120 58 C96 56 80 70 78 94 C70 120 76 150 70 176 C84 166 88 150 92 136 C96 150 98 160 104 168 L136 168 C142 160 144 150 148 136 C152 150 156 166 170 176 C164 150 170 120 162 94 C160 70 144 56 120 58Z" fill="#12131f"/>
+<!-- Shiva lying on the pedestal -->
+<path d="M66 246 C90 238 150 238 182 244 C184 250 180 253 176 253 C150 254 92 255 70 254 C62 253 60 249 66 246Z" fill="#c4c8d8" stroke="#6f748a"/>
+<circle cx="62" cy="244" r="8" fill="#c4c8d8" stroke="#6f748a"/>
+<!-- legs -->
+<path d="M110 212 L104 244 M130 212 L140 243" stroke="#2e3256" stroke-width="9" stroke-linecap="round"/>
+<!-- skirt of arms -->
+<path d="M100 166 L140 166 L152 216 L88 216Z" fill="#2b2330" stroke="#151018"/>
+<path d="M96 180 V214 M104 172 V216 M112 170 V216 M120 170 V216 M128 170 V216 M136 172 V216 M144 180 V214" stroke="#4a3a44" stroke-width="2.5" stroke-linecap="round"/>
+<!-- torso -->
+<path d="M102 104 Q120 97 138 104 L136 168 L104 168Z" fill="url(#sk)" stroke="#121420"/>
+<!-- upper arm with sword -->
+<path d="M103 112 C90 100 76 90 70 66" stroke="#2e3256" stroke-width="8" stroke-linecap="round" fill="none"/>
+<path d="M66 68 L64 22 C64 12 74 8 76 15 L72 68Z" fill="#c9cdd8" stroke="#6f748a"/>
+<path d="M60 70 H78" stroke="#d8b46a" stroke-width="4" stroke-linecap="round"/>
+<!-- lower arm holding a head -->
+<path d="M103 124 C92 136 82 146 76 162" stroke="#2e3256" stroke-width="8" stroke-linecap="round" fill="none"/>
+<path d="M76 164 V170" stroke="#12131f" stroke-width="3"/>
+<circle cx="76" cy="178" r="8" fill="#7d8296" stroke="#3a3e52"/>
+<!-- upper hand: abhaya -->
+<path d="M137 112 C150 104 160 96 166 82" stroke="#2e3256" stroke-width="8" stroke-linecap="round" fill="none"/>
+<rect x="160" y="60" width="13" height="22" rx="5" fill="#2e3256" stroke="#121420"/>
+<!-- lower hand: varada -->
+<path d="M137 124 C150 136 160 146 164 160" stroke="#2e3256" stroke-width="8" stroke-linecap="round" fill="none"/>
+<rect x="158" y="160" width="13" height="20" rx="5" fill="#2e3256" stroke="#121420"/>
+<!-- garland of heads -->
+<path d="M104 108 C108 140 114 158 120 158 C126 158 132 140 136 108" stroke="#8a7a64" stroke-width="1" fill="none"/>
+<g fill="#d9cfc0" stroke="#5a5048" stroke-width=".8"><circle cx="104" cy="110" r="4"/><circle cx="107" cy="124" r="4"/><circle cx="111" cy="138" r="4"/><circle cx="115" cy="150" r="4"/><circle cx="120" cy="157" r="4"/><circle cx="125" cy="150" r="4"/><circle cx="129" cy="138" r="4"/><circle cx="133" cy="124" r="4"/><circle cx="136" cy="110" r="4"/></g>
+<!-- head -->
+<circle cx="120" cy="84" r="15" fill="#3e4470" stroke="#121420"/>
+<path d="M104 70 L108 58 L113 66 L120 54 L127 66 L132 58 L136 70Z" fill="#d8b46a"/>
+<ellipse cx="120" cy="76" rx="1.8" ry="3" fill="#ffcf70"/>
+<circle cx="114" cy="84" r="2.2" fill="#f2ead8"/><circle cx="126" cy="84" r="2.2" fill="#f2ead8"/>
+<circle cx="114" cy="84" r="1" fill="#b3122a"/><circle cx="126" cy="84" r="1" fill="#b3122a"/>
+<path d="M115 92 C115 102 118 108 120 108 C122 108 125 102 125 92Z" fill="#d1122e"/>
+<!-- pedestal -->
+<rect x="56" y="252" width="132" height="12" fill="#3a2f3f"/>
+<rect x="70" y="264" width="100" height="46" fill="#2b2330"/>
+<rect x="58" y="308" width="124" height="12" fill="#1e1822"/>
+<text x="120" y="292" text-anchor="middle" font-family="Cinzel,serif" font-size="12" letter-spacing="2" fill="#d8b46a">${DEITY}</text>
+</svg>`;
+el('', CX, CY-30, statueSVG);
+obstacles.push({x:CX, y:CY-60, r:70});
+
+// altar
+const altarSVG = `<div id="altar"><div class="altar-glow"></div>
+<svg viewBox="0 0 220 90" width="220" height="90">
+ <rect x="4" y="18" width="212" height="16" rx="2" fill="#5d5566"/>
+ <rect x="4" y="18" width="212" height="3" fill="#d8b46a" opacity=".55"/>
+ <rect x="14" y="34" width="192" height="52" fill="#3b3543"/>
+ <g stroke="#d8b46a" stroke-width="1.5" fill="none" opacity=".75" stroke-linejoin="round"><rect x="92" y="42" width="36" height="36"/><circle cx="110" cy="60" r="15"/><path d="M98 53 H122 L110 73Z M102 56 H118 L110 68Z"/><circle cx="110" cy="60" r="1.5" fill="#d8b46a"/></g>
+ <rect x="12" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M15 -6 C19 -2 19 1 15 3 C11 1 11 -2 15 -6Z" fill="#ffb347"/>
+ <rect x="202" y="4" width="6" height="14" fill="#1a1a1a"/><path class="flame" d="M205 -6 C209 -2 209 1 205 3 C201 1 201 -2 205 -6Z" fill="#ffb347"/>
+</svg><div id="offerings"></div></div>`;
+const ALTAR = {x:CX, y:CY+100};
+el('', ALTAR.x, ALTAR.y, altarSVG);
+[-70,-25,25,70].forEach(dx=>obstacles.push({x:CX+dx, y:ALTAR.y-25, r:26}));
+const altarEl = document.getElementById('altar');
+const offEl = document.getElementById('offerings');
+const glowEl = document.querySelector('.altar-glow');
+
+// symbols around the garden
+const ANGLES = [-90,-38,14,62,118,166,218];
+const symbolEls = SYMBOLS.map((s,i)=>{
+  const a = ANGLES[i]*Math.PI/180, r = 480;
+  s.x = CX + Math.cos(a)*r; s.y = CY + Math.sin(a)*r + 30;
+  obstacles.push({x:s.x, y:s.y-15, r:24});
+  return el('symbol', s.x, s.y, `<div class="glyph">${s.svg}</div><div class="stone"></div>`);
+});
+
+// floating lights along the ring
+for(let i=0;i<16;i++){
+  const a = i/16*Math.PI*2 + .2;
+  if (Math.abs(Math.cos(a)) < .1 && Math.sin(a) > 0) continue;
+  el('', CX+Math.cos(a)*372, CY+Math.sin(a)*372, '<div class="orb"></div>');
+}
+
+// seeded trees and rose bushes
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rand = rng(666);
+const cypress = `<svg viewBox="0 0 40 110" width="40" height="110"><ellipse cx="20" cy="106" rx="14" ry="4" fill="rgba(0,0,0,.45)"/><rect x="18" y="92" width="4" height="14" fill="#2b1d14"/><path d="M20 2 C34 30 32 70 20 96 C8 70 6 30 20 2Z" fill="#10241a" stroke="#1f3d2b"/></svg>`;
+const bush = `<svg viewBox="0 0 60 40" width="60" height="40"><ellipse cx="30" cy="36" rx="26" ry="4" fill="rgba(0,0,0,.4)"/><ellipse cx="30" cy="22" rx="26" ry="15" fill="#15301f"/><circle cx="17" cy="16" r="3.5" fill="#a3172b"/><circle cx="34" cy="12" r="3.5" fill="#a3172b"/><circle cx="44" cy="22" r="3.5" fill="#a3172b"/><circle cx="25" cy="26" r="3.5" fill="#8a1424"/></svg>`;
+let placedTrees = 0, tries = 0;
+while(placedTrees < 70 && tries < 2000){
+  tries++;
+  const x = 40 + rand()*(W-80), y = 60 + rand()*(H-100);
+  const d = Math.hypot(x-CX, y-CY);
+  const okZone = (d > 545) || (d > 235 && d < 345);
+  const onSouthPath = Math.abs(x-CX) < 70 && y > CY;
+  const tooClose = obstacles.some(o=>Math.hypot(o.x-x,o.y-y) < o.r+40);
+  if(!okZone || onSouthPath || tooClose) continue;
+  const isBush = rand() < .6; // red hibiscus bushes
+  el('', x, y, isBush ? bush : cypress);
+  obstacles.push({x, y:y-6, r:isBush?22:13});
+  placedTrees++;
+}
+
+// fireflies
+for(let i=0;i<34;i++){
+  const f = document.createElement('div'); f.className='fly';
+  f.style.left = (rand()*W)+'px'; f.style.top = (rand()*H)+'px';
+  f.style.animationDuration = (5+rand()*7)+'s'; f.style.animationDelay = (-rand()*10)+'s';
+  f.style.zIndex = 3000; world.appendChild(f);
+}
+
+// player
+const player = el('', 0, 0, `<div class="flip"><div class="body"><svg viewBox="0 0 40 52" width="38" height="50">
+<ellipse cx="20" cy="49" rx="12" ry="3" fill="rgba(0,0,0,.5)"/>
+<path d="M20 5 C11 5 9 16 10 22 L5 48 H35 L30 22 C31 16 29 5 20 5Z" fill="#2b1f3a" stroke="#7a5a9c"/>
+<path d="M14 18 C14 12 26 12 26 18 C26 23 14 23 14 18Z" fill="#0b0710"/>
+<circle cx="17.5" cy="18" r="1.3" fill="#ffcf70"/><circle cx="22.5" cy="18" r="1.3" fill="#ffcf70"/>
+<path d="M30 27 L33 30" stroke="#999"/><circle class="lantern" cx="33" cy="34" r="4" fill="#ffb347"/>
+</svg></div></div>`);
+player.id = 'player';
+const flipEl = player.querySelector('.flip');
+
+/* =========================================================
+   MOVEMENT + CAMERA
+   ========================================================= */
+let px = CX, py = H-90, tx = null, ty = null, facing = 1;
+let camX = 0, camY = 0;
+const SPEED = 190, keys = {};
+const KEYMAP = {ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',ArrowUp:'u',w:'u',W:'u',ArrowDown:'d',s:'d',S:'d'};
+addEventListener('keydown',e=>{ if(KEYMAP[e.key]){keys[KEYMAP[e.key]]=true; e.preventDefault(); hideHint();} });
+addEventListener('keyup',e=>{ if(KEYMAP[e.key]) keys[KEYMAP[e.key]]=false; });
+
+vp.addEventListener('pointerdown', e=>{
+  tx = e.clientX + camX; ty = e.clientY + camY; hideHint();
+});
+
+function collide(){
+  for(const o of obstacles){
+    const dx = px-o.x, dy = py-o.y, d = Math.hypot(dx,dy), min = o.r + 12;
+    if(d < min && d > 0.01){ px = o.x + dx/d*min; py = o.y + dy/d*min; }
+  }
+  px = Math.max(20, Math.min(W-20, px)); py = Math.max(40, Math.min(H-10, py));
+}
+
+function step(dt){
+  let vx = (keys.r?1:0)-(keys.l?1:0), vy = (keys.d?1:0)-(keys.u?1:0);
+  if(vx||vy) tx = null;
+  else if(tx !== null){
+    const dx = tx-px, dy = ty-py, d = Math.hypot(dx,dy);
+    if(d < 5) tx = null; else { vx = dx/d; vy = dy/d; }
+  }
+  const m = Math.hypot(vx,vy), moving = m > 0;
+  if(moving){
+    vx/=m; vy/=m;
+    const ox = px, oy = py;
+    px += vx*SPEED*dt; py += vy*SPEED*dt; collide();
+    if(tx !== null && Math.hypot(px-ox,py-oy) < SPEED*dt*0.25) tx = null; // stuck
+    if(Math.abs(vx) > .2) facing = vx < 0 ? -1 : 1;
+  }
+  player.classList.toggle('moving', moving);
+  flipEl.style.transform = `scaleX(${facing})`;
+  player.style.left = px+'px'; player.style.top = py+'px'; player.style.zIndex = Math.round(py);
+
+  const vw = innerWidth, vh = innerHeight;
+  const goalX = vw >= W ? (W-vw)/2 : Math.max(0, Math.min(W-vw, px - vw/2));
+  const goalY = vh >= H ? (H-vh)/2 : Math.max(0, Math.min(H-vh, py - vh*0.45));
+  camX += (goalX-camX)*Math.min(1, dt*6); camY += (goalY-camY)*Math.min(1, dt*6);
+  world.style.transform = `translate(${-camX}px,${-camY}px)`;
+
+  checkNearby();
+}
+
+let last = performance.now();
+camX = Math.max(0, Math.min(W-innerWidth, px-innerWidth/2));
+camY = Math.max(0, Math.min(H-innerHeight, py-innerHeight*0.45));
+function loop(t){ const dt = Math.min(.05,(t-last)/1000); last = t; step(dt); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+
+/* =========================================================
+   SYMBOL CARDS + ALTAR TRAY
+   ========================================================= */
+const card = document.getElementById('card'), tray = document.getElementById('tray');
+let current = -1, dismissed = -1, loreOpen = false;
+card.querySelector('.x').addEventListener('click', ()=>{ dismissed = current; loreOpen = false; showCard(-1); });
+document.getElementById('loreBtn').addEventListener('click', ()=>{ loreOpen = true; dismissed = -1; });
+
+function showCard(i){
+  if(i === current) return;
+  current = i;
+  symbolEls.forEach((s,k)=>s.classList.toggle('near', k===i));
+  if(i === -1){ card.classList.remove('show'); return; }
+  const isLore = i === 'lore';
+  const s = isLore ? LORE : SYMBOLS[i];
+  card.classList.toggle('lore', isLore);
+  card.querySelector('.icon').innerHTML = SYMBOLS[isLore ? 0 : i].svg;
+  card.querySelector('h2').textContent = s.name;
+  card.querySelector('.sub').textContent = s.sub;
+  const body = card.querySelector('.body'); body.innerHTML = '';
+  if(!isLore && s.figures){
+    const row = document.createElement('div'); row.className = 'figs';
+    s.figures.forEach(f=>{
+      const fig = document.createElement('div'); fig.className = 'fig';
+      fig.innerHTML = f.svg; const c = document.createElement('span'); c.textContent = f.caption;
+      fig.appendChild(c); row.appendChild(fig);
+    });
+    body.appendChild(row);
+  }
+  (isLore ? s.sections : [{text:s.text}]).forEach(sec=>{
+    if(sec.title){ const h = document.createElement('h3'); h.textContent = sec.title; body.appendChild(h); }
+    const p = document.createElement('p'); p.textContent = sec.text; body.appendChild(p);
+  });
+  card.scrollTop = 0; card.classList.add('show');
+}
+function checkNearby(){
+  let best = -1, bd = 110;
+  SYMBOLS.forEach((s,i)=>{ const d = Math.hypot(px-s.x, py-s.y); if(d < bd){ bd = d; best = i; } });
+  const nearAltar = Math.hypot(px-ALTAR.x, py-ALTAR.y) < 170;
+  if(!nearAltar) loreOpen = false;
+  if(best === -1 && (loreOpen || Math.hypot(px-CX, py-(CY-60)) < 150)) best = 'lore';
+  if(best !== dismissed) showCard(best);
+  if(best === -1) dismissed = -1;
+  tray.classList.toggle('show', nearAltar);
+}
+
+/* =========================================================
+   OFFERINGS (drag & drop, saved in this browser)
+   ========================================================= */
+let placed = [];
+try { placed = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e){ placed = []; }
+function save(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(placed)); } catch(e){} }
+function render(animateLast){
+  offEl.innerHTML = placed.map(o=>`<div class="placed" style="left:${o.f*100}%">${OFFERINGS[o.t].svg}</div>`).join('');
+  if(animateLast && offEl.lastElementChild) offEl.lastElementChild.classList.add('new');
+}
+render();
+
+const items = document.getElementById('items');
+Object.entries(OFFERINGS).forEach(([key,o])=>{
+  const d = document.createElement('div'); d.className='off'; d.dataset.type = key;
+  d.innerHTML = `<div class="pic">${o.svg}</div><span>${o.label}</span>`;
+  items.appendChild(d);
+});
+
+let ghost = null, dragType = null;
+function moveGhost(e){ ghost.style.left = e.clientX+'px'; ghost.style.top = e.clientY+'px'; }
+items.addEventListener('pointerdown', e=>{
+  const it = e.target.closest('.off'); if(!it) return;
+  e.preventDefault(); e.stopPropagation();
+  dragType = it.dataset.type;
+  ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.innerHTML = OFFERINGS[dragType].svg;
+  document.body.appendChild(ghost); moveGhost(e);
+  try { it.setPointerCapture(e.pointerId); } catch(_){}
+});
+addEventListener('pointermove', e=>{
+  if(!ghost) return; moveGhost(e);
+  glowEl.classList.toggle('on', overAltar(e));
+});
+addEventListener('pointerup', e=>{
+  if(!ghost) return;
+  if(overAltar(e)){
+    const r = altarEl.getBoundingClientRect();
+    placeOffering(dragType, Math.max(.08, Math.min(.92, (e.clientX - r.left)/r.width)));
+  }
+  endDrag();
+});
+addEventListener('pointercancel', endDrag);
+function endDrag(){ if(ghost) ghost.remove(); ghost = null; glowEl.classList.remove('on'); }
+function overAltar(e){
+  const r = altarEl.getBoundingClientRect();
+  return e.clientX > r.left-25 && e.clientX < r.right+25 && e.clientY > r.top-70 && e.clientY < r.bottom+15;
+}
+function placeOffering(type, f){
+  placed.push({t:type, f, ts:Date.now()});
+  if(placed.length > 14) placed.shift();
+  save(); render(true); toast(OFFERINGS[type].msg);
+  glowEl.classList.add('on'); setTimeout(()=>glowEl.classList.remove('on'), 900);
+}
+document.getElementById('clear').addEventListener('click', ()=>{
+  placed = []; save(); render(); toast("The altar is cleansed.");
+});
+tray.addEventListener('pointerdown', e=>e.stopPropagation());
+card.addEventListener('pointerdown', e=>e.stopPropagation());
+document.getElementById('topbar').addEventListener('pointerdown', e=>e.stopPropagation());
+
+const toastEl = document.getElementById('toast'); let toastT;
+function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>toastEl.classList.remove('show'), 3200); }
+
+const hintEl = document.getElementById('hint'); let hintGone = false;
+function hideHint(){ if(hintGone) return; hintGone = true; setTimeout(()=>hintEl.style.opacity = 0, 2500); }
+</script>
+</body>
+</html>
