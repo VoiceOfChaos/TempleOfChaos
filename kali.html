@@ -132,6 +132,19 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
 .cl:hover{transform:scale(1.1)}
 .cl.on{border-color:#fff1c8;box-shadow:0 0 12px rgba(255,220,150,.8)}
 #cloakPanel .name{margin-top:12px;text-align:center;font-style:italic;font-size:15px;opacity:.85}
+
+/* day and night */
+#sky{position:fixed;inset:0;pointer-events:none;z-index:4000;transition:background 2s}
+#flies{position:absolute;inset:0;pointer-events:none;z-index:3000;transition:opacity 2s}
+#world{transition:filter 2s}
+
+/* night lights above the darkness */
+#lightsWrap{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:4500}
+#lights{position:absolute;left:0;top:0;width:1400px;height:1400px;will-change:transform}
+#glows{position:absolute;inset:0;transition:opacity 2s}
+.lglow{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none}
+.lglow.pulse{animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.7}}
 </style>
 </head>
 <body>
@@ -162,6 +175,7 @@ html,body{height:100%;overflow:hidden;background:var(--night);color:var(--ink);
   <button id="loreBtn" class="btn">✦ Her lore</button>
   <button id="clear" class="btn">Clear the altar</button>
 </div>
+<div id="sky"></div>
 <div id="toast" class="ui"></div>
 
 <script>
@@ -429,6 +443,7 @@ function step(dt){
   const goalY = vh >= H ? (H-vh)/2 : Math.max(0, Math.min(H-vh, py - vh*0.45));
   camX += (goalX-camX)*Math.min(1, dt*6); camY += (goalY-camY)*Math.min(1, dt*6);
   world.style.transform = `translate(${-camX}px,${-camY}px)`;
+  if(window.__lights){ window.__lights.style.transform = world.style.transform; window.__onFrame(); }
 
   checkNearby();
 }
@@ -588,6 +603,71 @@ setCloak(savedCloak, false);
 document.getElementById('cloakBtn').addEventListener('click', ()=>cloakPanel.classList.toggle('show'));
 cloakPanel.addEventListener('pointerdown', e=>e.stopPropagation());
 vp.addEventListener('pointerdown', ()=>cloakPanel.classList.remove('show'));
+
+/* =========================================================
+   DAY AND NIGHT (follows the visitor's local time)
+   ========================================================= */
+const flies = document.createElement('div'); flies.id = 'flies'; world.appendChild(flies);
+world.querySelectorAll('.fly').forEach(f=>flies.appendChild(f));
+const sky = document.getElementById('sky');
+const PHASES = {
+  night:{ b:.72, s:.9,  t:[10,20,70,.38],    f:1,   icon:'☾', name:'Night' },
+  dawn: { b:.95, s:1,   t:[255,140,130,.16], f:.45, icon:'◐', name:'Dawn'  },
+  day:  { b:1.3, s:1.15,t:[255,240,200,.07], f:0,   icon:'☀', name:'Day'   },
+  dusk: { b:.92, s:1.05,t:[255,105,60,.2],   f:.6,  icon:'◑', name:'Dusk'  }
+};
+const SKY_HOURS = [[0,'night'],[5,'night'],[6.5,'dawn'],[8,'day'],[17.5,'day'],[19.5,'dusk'],[21,'night'],[24,'night']];
+function mixN(a,b,t){ return a+(b-a)*t; }
+function skyAt(h){
+  for(let i=0;i<SKY_HOURS.length-1;i++){
+    const [h0,p0] = SKY_HOURS[i], [h1,p1] = SKY_HOURS[i+1];
+    if(h >= h0 && h <= h1){
+      const t = h1 === h0 ? 0 : (h-h0)/(h1-h0), A = PHASES[p0], B = PHASES[p1];
+      return { b:mixN(A.b,B.b,t), s:mixN(A.s,B.s,t), t:A.t.map((v,k)=>mixN(v,B.t[k],t)), f:mixN(A.f,B.f,t), p:t<.5?p0:p1 };
+    }
+  }
+  return { ...PHASES.night, p:'night' };
+}
+function applySky(){
+  const now = new Date();
+  const st = skyAt(now.getHours() + now.getMinutes()/60);
+  world.style.filter = `brightness(${st.b.toFixed(2)}) saturate(${st.s.toFixed(2)})`;
+  sky.style.background = `rgba(${Math.round(st.t[0])},${Math.round(st.t[1])},${Math.round(st.t[2])},${st.t[3].toFixed(2)})`;
+  flies.style.opacity = st.f.toFixed(2);
+  if(window.__glows) window.__glows.style.opacity = (st.f*0.95).toFixed(2);
+}
+applySky(); setInterval(applySky, 60000);
+
+/* =========================================================
+   NIGHT LIGHTS: fireflies, lamps, altar candles and your
+   lantern shine above the darkness and glow brighter at night
+   ========================================================= */
+const lightsWrap = document.createElement('div'); lightsWrap.id = 'lightsWrap';
+const lights = document.createElement('div'); lights.id = 'lights';
+lightsWrap.appendChild(lights); document.body.insertBefore(lightsWrap, document.getElementById('topbar'));
+lights.appendChild(flies);
+// lamps
+world.querySelectorAll('.orb').forEach(o=>lights.appendChild(o.parentElement));
+const glows = document.createElement('div'); glows.id = 'glows'; lights.appendChild(glows);
+function glowAt(x, y, size, color){
+  const g = document.createElement('div'); g.className = 'lglow';
+  Object.assign(g.style,{ left:x+'px', top:y+'px', width:size+'px', height:size+'px',
+    background:`radial-gradient(circle, ${color}, transparent 70%)` });
+  glows.appendChild(g); return g;
+}
+lights.querySelectorAll('.orb').forEach(o=>{
+  const sp = o.parentElement; glowAt(parseFloat(sp.style.left), parseFloat(sp.style.top)-6, 140, 'rgba(255,180,90,.75)').classList.add('pulse');
+});
+glowAt(ALTAR.x-95, ALTAR.y-92, 90, 'rgba(255,170,80,.65)');
+glowAt(ALTAR.x+95, ALTAR.y-92, 90, 'rgba(255,170,80,.65)');
+// the statue's own lights (torches, stars, halos)
+const STATUE_LIGHTS = [[120,88,230,'rgba(255,70,50,.35)'],[120,76,50,'rgba(255,210,120,.7)']];
+STATUE_LIGHTS.forEach(([x,y,size,color])=>glowAt(CX-120+x, CY-350+y, size, color).classList.add('pulse'));
+const lanternGlow = glowAt(0, 0, 200, 'rgba(255,190,110,.5)');
+window.__onFrame = ()=>{ lanternGlow.style.left = (px + 12*facing)+'px'; lanternGlow.style.top = (py-18)+'px'; };
+window.__glows = glows;
+window.__lights = lights;
+applySky();
 </script>
 </body>
 </html>
