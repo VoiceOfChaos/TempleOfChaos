@@ -48,6 +48,10 @@ header p{margin:16px auto 0;max-width:520px;color:#a89e90;font-size:16px;line-he
 .card p{margin-top:16px;color:#a89e90;font-size:15px;line-height:1.55}
 .card .enter{margin-top:22px;padding:9px 20px;border:1px solid rgba(213,187,140,.38);color:#d9c7a4;font-size:11px;letter-spacing:.2em}
 .card:hover .enter{background:rgba(213,187,140,.08)}
+.langbtn{position:absolute;top:20px;right:20px;z-index:50;padding:10px 14px;border:1px solid rgba(213,187,140,.38);
+  background:rgba(7,7,8,.82);color:#d9c7a4;font-family:Georgia,"Times New Roman",serif;font-size:12px;letter-spacing:.14em;cursor:pointer}
+.langbtn:hover{background:rgba(213,187,140,.08)}
+@media (max-width:600px){ .langbtn{top:14px;right:14px;padding:8px 12px;font-size:11px} }
 </style>
 </head>
 <body>
@@ -110,5 +114,59 @@ header p{margin:16px auto 0;max-width:520px;color:#a89e90;font-size:16px;line-he
   </a>
 </main>
 
+<script>
+/* =========================================================
+   LANGUAGE (EN / LT). The choice is shared by the whole temple.
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+function setTempleLang(l){ try { localStorage.setItem('temple-lang', l); } catch(e){} location.reload(); }
+const T = (en, lt) => LANG === 'lt' ? lt : en;
+document.documentElement.lang = LANG;
+function translatePage(dict, attrs){
+  if(LANG !== 'lt') return;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => { const k = n.nodeValue.trim(); if(k && dict[k]) n.nodeValue = n.nodeValue.replace(k, dict[k]); });
+  (attrs || []).forEach(([sel, attr, val]) => { const el = document.querySelector(sel); if(el) el.setAttribute(attr, val); });
+  if(dict.__title) document.title = dict.__title;
+}
+function addLangButton(){
+  const b = document.createElement('button');
+  b.className = 'langbtn'; b.type = 'button'; b.textContent = LANG === 'lt' ? 'EN' : 'LT';
+  b.setAttribute('aria-label', 'Language / Kalba');
+  b.addEventListener('click', () => setTempleLang(LANG === 'lt' ? 'en' : 'lt'));
+  document.body.appendChild(b);
+}
+
+
+translatePage({
+ "__title": "Šventieji sodai · Chaoso šventykla",
+ "← TEMPLE": "← ŠVENTYKLA",
+ "Temple of Chaos": "Chaoso šventykla",
+ "SACRED GARDENS": "ŠVENTIEJI SODAI",
+ "Walk the gardens of the gods. Learn their symbols, hear their lore, and leave your offerings on their altars.": "Vaikščiok dievų soduose. Pažink jų simbolius, išgirsk jų istorijas ir palik aukas ant jų aukurų.",
+ "GARDEN OF LUCIFER": "LIUCIFERIO SODAS",
+ "The Light-Bringer": "Šviesnešys",
+ "A statue beneath the morning star, surrounded by the torch, serpent, apple and his sigil.": "Statula po ryto žvaigžde, apsupta fakelo, žalčio, obuolio ir jo sigilo.",
+ "CROSSROADS OF HEKATE": "HEKATĖS KRYŽKELĖ",
+ "Queen of Witches": "Raganų karalienė",
+ "Three roads meet beneath the dark moon, before her triple statue, her torches and her keys.": "Po tamsiuoju mėnuliu susitinka trys keliai – prieš jos trilypę statulą, jos fakelus ir raktus.",
+ "GARDEN OF KALI MA": "MOTINOS KALI SODAS",
+ "The Dark Mother": "Tamsioji Motina",
+ "Red hibiscus surrounds the goddess of time, standing upon Shiva at the heart of her yantra.": "Raudoni hibiskai supa laiko deivę, stovinčią ant Šivos jos jantros širdyje.",
+ "GARDEN OF LILITH": "LILITOS SODAS",
+ "Queen of the Night": "Nakties karalienė",
+ "Dark roses and night owls surround the winged first woman, the serpent coiled around her.": "Tamsios rožės ir naktinės pelėdos supa sparnuotą pirmąją moterį, apsivijusią žalčiu.",
+ "GARDEN OF NYX": "NIKTĖS SODAS",
+ "Primordial Night": "Pirmapradė Naktis",
+ "Under a sky full of stars, the black-winged daughter of Chaos sleeps beneath her starry veil.": "Po žvaigždžių pilnu dangumi juodasparnė Chaoso duktė miega po savo žvaigždėtu šydu.",
+ "GARDEN OF APHRODITE": "AFRODITĖS SODAS",
+ "Goddess of Love": "Meilės deivė",
+ "Roses and doves surround the foam-born goddess, rising from her shell with a golden apple in her hand.": "Rožės ir balandžiai supa iš putų gimusią deivę, iškylančią iš kriauklės su auksiniu obuoliu rankoje.",
+ "ENTER": "ĮŽENGTI"
+}, []);
+addLangButton();
+</script>
 </body>
 </html>
