@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sigil Forge · Temple of Chaos</title>
+<!-- Tab icon and link previews -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#050507">
+<meta name="description" content="Forge your own chaos-magic sigil. Write an intention, and the Temple of Chaos turns it into a unique sigil you can download and charge.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Temple of Chaos">
+<meta property="og:title" content="The Sigil Forge · Temple of Chaos">
+<meta property="og:description" content="Write an intention, and the temple turns it into a unique chaos-magic sigil you can download and charge.">
+<meta property="og:url" content="https://voiceofchaos.github.io/TempleOfChaos/sigil.html">
+<meta property="og:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
+<style>
+:root{--bg:#050507;--ink:#e8e3d8;--muted:#a89e90;--dim:#82796e;--gold:#d6bc89;--line:rgba(213,187,140,.28)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(circle at 50% 0%, rgba(91,42,134,.22), transparent 55%),
+                   radial-gradient(circle at 50% 100%, rgba(140,20,35,.12), transparent 50%)}
+a{color:inherit;text-decoration:none}
+button,input{font-family:inherit;color:inherit}
+
+.back{position:absolute;top:20px;left:20px;z-index:50;padding:10px 16px;border:1px solid rgba(213,187,140,.38);
+  background:rgba(7,7,8,.82);color:#d9c7a4;font-size:12px;letter-spacing:.14em}
+.back:hover{background:rgba(213,187,140,.08)}
+
+header{text-align:center;padding:96px 20px 28px}
+.eyebrow{color:var(--dim);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+h1{margin-top:14px;font-weight:normal;font-size:clamp(28px,6vw,44px);letter-spacing:.14em;color:var(--gold)}
+header p{margin:14px auto 0;max-width:540px;color:var(--muted);font-size:16px;line-height:1.6;font-style:italic}
+
+main{max-width:640px;margin:0 auto;padding:0 16px 70px}
+.box{border:1px solid var(--line);background:linear-gradient(145deg,rgba(24,20,18,.92),rgba(7,7,8,.96));padding:22px 20px}
+label{display:block;font-size:11px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
+.row{display:flex;gap:10px}
+input[type=text]{flex:1;min-width:0;padding:13px 14px;background:rgba(0,0,0,.45);border:1px solid rgba(213,187,140,.35);
+  font-size:18px;color:#efe6d4;outline:none}
+input[type=text]:focus{border-color:rgba(213,187,140,.8)}
+.tip{margin-top:10px;color:var(--dim);font-size:14px;font-style:italic;line-height:1.5}
+.btn{padding:12px 20px;border:1px solid rgba(213,187,140,.5);background:rgba(7,7,8,.7);color:#d9c7a4;font-size:12px;letter-spacing:.18em;cursor:pointer;white-space:nowrap}
+.btn:hover{background:rgba(213,187,140,.08)}
+.btn.main{border-color:rgba(213,187,140,.8);color:var(--gold)}
+.err{margin-top:10px;color:#d4848f;font-size:14px;font-style:italic;min-height:1px}
+
+#result{display:none;margin-top:22px}
+#result.on{display:block;animation:fadeUp .7s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}}
+.steps{display:grid;gap:12px}
+.step .k{font-size:11px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.step .v{margin-top:4px;font-size:18px;letter-spacing:.18em;color:#e9dcc2;word-break:break-word}
+.step .v.final{color:var(--gold);font-size:22px;letter-spacing:.32em}
+
+.stage{margin:22px auto 0;width:min(420px,100%);aspect-ratio:1;border:1px solid rgba(213,187,140,.4);background:#0b0710;
+  box-shadow:0 20px 50px rgba(0,0,0,.6),0 0 40px rgba(213,187,140,.08)}
+.stage svg{width:100%;height:100%;display:block}
+.stage .draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:ink 2.4s ease forwards}
+@keyframes ink{to{stroke-dashoffset:0}}
+.opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
+.opt{padding:9px 14px;border:1px solid var(--line);background:rgba(7,7,8,.6);color:var(--muted);font-size:11px;letter-spacing:.16em;cursor:pointer}
+.opt.on{border-color:rgba(213,187,140,.7);color:var(--gold);background:rgba(213,187,140,.08)}
+
+.guide{margin-top:26px}
+.guide h2{font-weight:normal;font-size:17px;letter-spacing:.14em;color:var(--gold);margin-bottom:14px}
+.guide ol{list-style:none;counter-reset:s;display:grid;gap:14px}
+.guide li{counter-increment:s;position:relative;padding-left:40px;font-size:16px;line-height:1.6;color:#d8d0c5}
+.guide li::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;border:1px solid rgba(213,187,140,.5);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--gold)}
+.guide li b{color:#ecdfc3;font-weight:normal;letter-spacing:.04em}
+
+footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:0 20px 40px}
+@media (max-width:600px){
+  .back{top:14px;left:14px;padding:8px 12px;font-size:11px}
+  header{padding-top:78px}
+  .row{flex-direction:column}
+  .box{padding:18px 16px}
+}
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">← TEMPLE</a>
+
+<header>
+  <div class="eyebrow">Temple of Chaos</div>
+  <h1>THE SIGIL FORGE</h1>
+  <p>Speak your intention. The forge strips it to its bones and binds what remains into a single sign, made for you alone.</p>
+</header>
+
+<main>
+  <div class="box">
+    <label for="intent">Your intention</label>
+    <div class="row">
+      <input type="text" id="intent" maxlength="80" placeholder="I am protected" autocomplete="off">
+      <button class="btn main" id="forge">FORGE THE SIGIL</button>
+    </div>
+    <div class="tip">Write it in the present tense, as if it is already true: “I am protected”, not “I want protection”.</div>
+    <div class="err" id="err"></div>
+  </div>
+
+  <div id="result">
+    <div class="box steps">
+      <div class="step"><div class="k">Your intention</div><div class="v" id="s1"></div></div>
+      <div class="step"><div class="k">Vowels removed</div><div class="v" id="s2"></div></div>
+      <div class="step"><div class="k">Repeated letters removed</div><div class="v final" id="s3"></div></div>
+    </div>
+
+    <div class="stage" id="stage"></div>
+
+    <div class="opts">
+      <button class="opt" id="optWheel">SHOW THE WHEEL</button>
+      <button class="opt" id="optLight">LIGHT VERSION</button>
+      <button class="btn main" id="download">DOWNLOAD</button>
+    </div>
+
+    <div class="box guide">
+      <h2>HOW TO USE YOUR SIGIL</h2>
+      <ol>
+        <li><b>Look at it until the letters disappear.</b> Let it stop being words and become a pure shape to you.</li>
+        <li><b>Charge it.</b> Enter a still, focused state through slow breathing, meditation, drumming, dance, or whatever empties your mind. At the peak, gaze at the sigil and pour your will into it.</li>
+        <li><b>Release it.</b> Burn it, bury it, or put it away, and let the intention go from your conscious mind.</li>
+        <li><b>Forget it.</b> Chaos magicians hold that a sigil works best when you stop thinking about it, so your deeper mind can carry it out.</li>
+      </ol>
+    </div>
+  </div>
+</main>
+
+<footer>Forged in the Temple of Chaos. Your intention never leaves your device.</footer>
+
+<script>
+/* =========================================================
+   THE WHEEL: consonants placed on three rings.
+   Each letter of the reduced intention becomes a point,
+   and the sigil is the path that connects them.
+   ========================================================= */
+const RINGS = [
+  { letters:"BCDFG",     r:34, start:-90 },
+  { letters:"HJKLMNP",   r:58, start:-90 + 360/14 },
+  { letters:"QRSTVWXYZ", r:82, start:-90 }
+];
+const POS = {};
+RINGS.forEach(ring=>{
+  const n = ring.letters.length;
+  [...ring.letters].forEach((ch,i)=>{
+    const a = (ring.start + i*360/n) * Math.PI/180;
+    POS[ch] = { x:100 + Math.cos(a)*ring.r, y:100 + Math.sin(a)*ring.r };
+  });
+});
+
+const $ = id => document.getElementById(id);
+let current = null, showWheel = false, light = false;
+
+function reduce(text){
+  // strip accents (so Lithuanian š, ž, č and others work too), keep letters only
+  const plain = text.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z]/g,'');
+  const noVowels = plain.replace(/[AEIOU]/g,'');
+  const unique = [...new Set(noVowels)].join('');
+  return { plain, noVowels, unique };
+}
+
+function buildSVG(letters, opts){
+  const ink = opts.light ? '#1a1418' : '#d6bc89';
+  const bg  = opts.light ? '#f4efe6' : '#0b0710';
+  const faint = opts.light ? 'rgba(26,20,24,.18)' : 'rgba(214,188,137,.16)';
+  const pts = [...letters].map(ch=>POS[ch]);
+  let wheel = '';
+  if(opts.wheel){
+    wheel += RINGS.map(r=>`<circle cx="100" cy="100" r="${r.r}" fill="none" stroke="${faint}" stroke-width=".6"/>`).join('');
+    wheel += Object.entries(POS).map(([ch,p])=>`<text x="${p.x.toFixed(1)}" y="${(p.y+2.4).toFixed(1)}" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="${faint}">${ch}</text>`).join('');
+  }
+  // the path
+  const d = pts.map((p,i)=>`${i?'L':'M'}${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ');
+  let len = 0; for(let i=1;i<pts.length;i++) len += Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y);
+  // start: a small circle. End: a short crossbar, perpendicular to the last line
+  const s = pts[0], e = pts[pts.length-1], pe = pts[pts.length-2];
+  const ang = Math.atan2(e.y-pe.y, e.x-pe.x), nx = -Math.sin(ang)*6, ny = Math.cos(ang)*6;
+  const anim = opts.animate ? ` class="draw" style="--len:${Math.ceil(len)+2}"` : '';
+  const glow = opts.light ? '' : `<filter id="gl"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="1024" height="1024">
+    <defs>${glow}</defs>
+    <rect width="200" height="200" fill="${bg}"/>
+    <circle cx="100" cy="100" r="94" fill="none" stroke="${faint}" stroke-width=".6"/>
+    ${wheel}
+    <g fill="none" stroke="${ink}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" ${opts.light?'':'filter="url(#gl)"'}>
+      <path d="${d}"${anim}/>
+      <circle cx="${s.x.toFixed(2)}" cy="${s.y.toFixed(2)}" r="4.6" fill="${bg}"/>
+      <path d="M${(e.x-nx).toFixed(2)} ${(e.y-ny).toFixed(2)} L${(e.x+nx).toFixed(2)} ${(e.y+ny).toFixed(2)}"/>
+    </g>
+  </svg>`;
+}
+
+function render(animate){
+  $('stage').innerHTML = buildSVG(current, { wheel:showWheel, light, animate });
+  $('stage').style.background = light ? '#f4efe6' : '#0b0710';
+}
+
+function forge(){
+  const text = $('intent').value.trim();
+  $('err').textContent = '';
+  if(!text){ $('err').textContent = 'Write your intention first.'; return; }
+  const r = reduce(text);
+  if(r.unique.length < 2){
+    $('err').textContent = 'Too few consonants remain to form a sigil. Try writing your intention in a few more words.';
+    return;
+  }
+  current = r.unique;
+  $('s1').textContent = text.toUpperCase();
+  $('s2').textContent = r.noVowels.split('').join(' ');
+  $('s3').textContent = r.unique.split('').join(' ');
+  $('result').classList.add('on');
+  render(true);
+  $('result').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+$('forge').addEventListener('click', forge);
+$('intent').addEventListener('keydown', e=>{ if(e.key === 'Enter') forge(); });
+$('optWheel').addEventListener('click', ()=>{ showWheel = !showWheel; $('optWheel').classList.toggle('on', showWheel); render(false); });
+$('optLight').addEventListener('click', ()=>{ light = !light; $('optLight').classList.toggle('on', light); render(false); });
+
+$('download').addEventListener('click', ()=>{
+  if(!current) return;
+  const svg = buildSVG(current, { wheel:showWheel, light, animate:false });
+  const img = new Image();
+  const url = URL.createObjectURL(new Blob([svg], { type:'image/svg+xml' }));
+  img.onload = ()=>{
+    const c = document.createElement('canvas'); c.width = c.height = 1024;
+    c.getContext('2d').drawImage(img, 0, 0, 1024, 1024);
+    URL.revokeObjectURL(url);
+    const a = document.createElement('a');
+    a.download = 'sigil.png'; a.href = c.toDataURL('image/png');
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  img.src = url;
+});
+</script>
+</body>
+</html>
