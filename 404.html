@@ -41,6 +41,10 @@ p{margin-top:16px;color:#a89e90;font-size:17px;line-height:1.65;font-style:itali
 .paths a{padding:11px 20px;border:1px solid rgba(213,187,140,.4);background:rgba(7,7,8,.7);color:#d9c7a4;font-size:12px;letter-spacing:.18em}
 .paths a:hover{background:rgba(213,187,140,.08);border-color:rgba(213,187,140,.7)}
 .paths a.main{border-color:rgba(213,187,140,.75);color:#d6bc89}
+.langbtn{position:fixed;top:20px;right:20px;z-index:50;padding:10px 14px;border:1px solid rgba(213,187,140,.38);
+  background:rgba(7,7,8,.82);color:#d9c7a4;font-family:Georgia,"Times New Roman",serif;font-size:12px;letter-spacing:.14em;cursor:pointer}
+.langbtn:hover{background:rgba(213,187,140,.08)}
+@media (max-width:600px){ .langbtn{top:14px;right:14px;padding:8px 12px;font-size:11px} }
 </style>
 </head>
 <body>
@@ -80,6 +84,44 @@ for(let i=0;i<26;i++){
   m.style.animationDuration = (8+Math.random()*10)+'s'; m.style.animationDelay = (-Math.random()*18)+'s';
   document.body.appendChild(m);
 }
+</script>
+<script>
+/* =========================================================
+   LANGUAGE (EN / LT). The choice is shared by the whole temple.
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+function setTempleLang(l){ try { localStorage.setItem('temple-lang', l); } catch(e){} location.reload(); }
+const T = (en, lt) => LANG === 'lt' ? lt : en;
+document.documentElement.lang = LANG;
+function translatePage(dict, attrs){
+  if(LANG !== 'lt') return;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => { const k = n.nodeValue.trim(); if(k && dict[k]) n.nodeValue = n.nodeValue.replace(k, dict[k]); });
+  (attrs || []).forEach(([sel, attr, val]) => { const el = document.querySelector(sel); if(el) el.setAttribute(attr, val); });
+  if(dict.__title) document.title = dict.__title;
+}
+function addLangButton(){
+  const b = document.createElement('button');
+  b.className = 'langbtn'; b.type = 'button'; b.textContent = LANG === 'lt' ? 'EN' : 'LT';
+  b.setAttribute('aria-label', 'Language / Kalba');
+  b.addEventListener('click', () => setTempleLang(LANG === 'lt' ? 'en' : 'lt'));
+  document.body.appendChild(b);
+}
+
+
+translatePage({
+ "__title": "Pasiklydęs tuštumoje · Chaoso šventykla",
+ "Temple of Chaos · 404": "Chaoso šventykla · 404",
+ "You have wandered into the void": "Tu nuklydai į tuštumą",
+ "This path leads nowhere, or it has already returned to chaos.": "Šis kelias niekur neveda arba jau sugrįžo į chaosą.",
+ "Even here, the way back is never lost.": "Net ir čia kelias atgal niekada neprarandamas.",
+ "RETURN TO THE TEMPLE": "GRĮŽTI Į ŠVENTYKLĄ",
+ "SACRED GARDENS": "ŠVENTIEJI SODAI",
+ "THE TAROT": "TARO"
+}, []);
+addLangButton();
 </script>
 </body>
 </html>
