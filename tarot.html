@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Tarot · Temple of Chaos</title>
+<!-- Tab icon and link previews -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#050507">
+<meta name="description" content="Draw from the 22 cards of the Major Arcana in the Temple of Chaos: a card of the day, or a three-card reading of past, present and future.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Temple of Chaos">
+<meta property="og:title" content="The Tarot · Temple of Chaos">
+<meta property="og:description" content="Draw from the 22 cards of the Major Arcana: a card of the day, or a three-card reading of past, present and future.">
+<meta property="og:url" content="https://voiceofchaos.github.io/TempleOfChaos/tarot.html">
+<meta property="og:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
+<style>
+:root{
+  --bg:#050507; --ink:#e8e3d8; --muted:#a89e90; --dim:#82796e;
+  --gold:#d6bc89; --gold2:#b8955a; --line:rgba(213,187,140,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(circle at 50% 0%, rgba(91,42,134,.22), transparent 55%),
+                   radial-gradient(circle at 50% 100%, rgba(140,20,35,.12), transparent 50%)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;color:inherit}
+
+.back{position:absolute;top:20px;left:20px;z-index:50;padding:10px 16px;border:1px solid rgba(213,187,140,.38);
+  background:rgba(7,7,8,.82);color:#d9c7a4;font-size:12px;letter-spacing:.14em}
+.back:hover{background:rgba(213,187,140,.08)}
+
+header{text-align:center;padding:96px 20px 26px}
+.eyebrow{color:var(--dim);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+h1{margin-top:14px;font-weight:normal;font-size:clamp(30px,6vw,46px);letter-spacing:.14em;color:var(--gold)}
+header p{margin:14px auto 0;max-width:520px;color:var(--muted);font-size:16px;line-height:1.6;font-style:italic}
+
+.tabs{display:flex;justify-content:center;gap:10px;margin:8px auto 30px;padding:0 16px}
+.tab{padding:10px 18px;border:1px solid var(--line);background:rgba(7,7,8,.6);font-size:12px;letter-spacing:.16em;cursor:pointer;color:var(--muted)}
+.tab.on{border-color:rgba(213,187,140,.7);color:var(--gold);background:rgba(213,187,140,.08)}
+
+.mode{display:none;padding:0 16px 70px;text-align:center}
+.mode.on{display:block}
+.note{color:var(--dim);font-size:13px;font-style:italic;margin-bottom:22px;letter-spacing:.03em}
+
+/* ---------- cards ---------- */
+.spread{display:flex;justify-content:center;gap:clamp(10px,3vw,28px);flex-wrap:nowrap}
+.slot{display:flex;flex-direction:column;align-items:center;gap:10px}
+.slot .pos{font-size:11px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
+.card{--w:clamp(96px,26vw,170px);width:var(--w);height:calc(var(--w)*1.72);perspective:1200px;cursor:pointer;background:none;border:0;padding:0}
+.card.big{--w:clamp(150px,46vw,210px)}
+.card .inner{position:relative;width:100%;height:100%;transition:transform .9s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.card.flipped .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.back-face{background:#0d0912;border:1px solid rgba(213,187,140,.5);box-shadow:0 14px 34px rgba(0,0,0,.6)}
+.back-face svg{width:100%;height:100%;display:block}
+.card:not(.flipped):hover .back-face{box-shadow:0 14px 34px rgba(0,0,0,.6),0 0 26px rgba(213,187,140,.25)}
+.front-face{transform:rotateY(180deg);background:linear-gradient(160deg,#1a1420,#0b080e 60%,#140d10);
+  border:1px solid rgba(213,187,140,.65);box-shadow:0 14px 34px rgba(0,0,0,.6),0 0 30px rgba(213,187,140,.12)}
+.front{position:absolute;inset:6%;border:1px solid rgba(213,187,140,.35);border-radius:6px;display:flex;flex-direction:column;
+  align-items:center;justify-content:space-between;padding:9% 6%}
+.front.rev{transform:rotate(180deg)}
+.front .num{font-size:calc(var(--w)*.085);letter-spacing:.18em;color:var(--gold)}
+.front .art{width:72%;color:var(--gold);filter:drop-shadow(0 0 8px rgba(214,188,137,.45))}
+.front .art svg{width:100%;height:auto;display:block}
+.front .name{font-size:calc(var(--w)*.075);letter-spacing:.12em;text-transform:uppercase;color:#ece2cf;text-align:center;line-height:1.25}
+
+.deal{opacity:0;transform:translateY(-30px) scale(.9)}
+.dealt{animation:dealIn .6s ease forwards}
+@keyframes dealIn{to{opacity:1;transform:none}}
+.shuffling{animation:shake .5s ease-in-out 2}
+@keyframes shake{25%{transform:rotate(-4deg) translateX(-6px)}75%{transform:rotate(4deg) translateX(6px)}}
+
+.btn{margin-top:26px;padding:11px 22px;border:1px solid rgba(213,187,140,.45);background:rgba(7,7,8,.7);color:#d9c7a4;
+  font-size:12px;letter-spacing:.2em;cursor:pointer}
+.btn:hover{background:rgba(213,187,140,.08)}
+.hint{margin-top:16px;color:var(--dim);font-size:14px;font-style:italic;min-height:20px}
+
+/* ---------- meanings ---------- */
+.readings{max-width:640px;margin:26px auto 0;text-align:left;display:flex;flex-direction:column;gap:16px}
+.mean{border:1px solid var(--line);background:linear-gradient(145deg,rgba(24,20,18,.92),rgba(7,7,8,.96));padding:20px 20px 18px;
+  animation:fadeUp .6s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}}
+.mean .top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mean .pos{font-size:11px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
+.mean h3{font-weight:normal;font-size:19px;letter-spacing:.1em;color:var(--gold);margin-top:4px}
+.mean .orient{font-size:12px;letter-spacing:.14em;color:#c9a46a;font-style:italic}
+.mean .orient.rv{color:#d4848f}
+.mean .keys{margin-top:10px;font-size:14px;color:#cfc4b2;letter-spacing:.04em}
+.mean p{margin-top:10px;font-size:16px;line-height:1.6;color:#d8d0c5}
+.mean .astro{margin-top:12px;font-size:12px;color:var(--dim);letter-spacing:.08em}
+
+footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:0 20px 40px}
+
+@media (max-width:600px){
+  .back{top:14px;left:14px;padding:8px 12px;font-size:11px}
+  header{padding-top:78px}
+  .tab{padding:9px 12px;font-size:11px}
+  .mean{padding:16px}
+  .mean p{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">← TEMPLE</a>
+
+<header>
+  <div class="eyebrow">Temple of Chaos</div>
+  <h1>THE TAROT</h1>
+  <p>Twenty-two doors of the Major Arcana. Quiet your mind, hold your question, and let the cards speak.</p>
+</header>
+
+<div class="tabs">
+  <button class="tab on" data-mode="day">CARD OF THE DAY</button>
+  <button class="tab" data-mode="three">THREE CARDS</button>
+</div>
+
+<section class="mode on" id="mode-day">
+  <div class="note" id="dayNote"></div>
+  <div class="spread"><div class="slot" id="daySlot"></div></div>
+  <div class="hint" id="dayHint">Tap the card to turn it over.</div>
+  <div class="readings" id="dayReading"></div>
+</section>
+
+<section class="mode" id="mode-three">
+  <div class="note">Hold a question or a situation in your mind, then draw.</div>
+  <div class="spread" id="threeSpread"></div>
+  <div class="hint" id="threeHint"></div>
+  <button class="btn" id="drawBtn">SHUFFLE AND DRAW</button>
+  <div class="readings" id="threeReading"></div>
+</section>
+
+<footer>The cards offer reflection, not certainty. The choice is always yours.</footer>
+
+<script>
+/* =========================================================
+   THE MAJOR ARCANA (edit names, meanings and symbols here)
+   ========================================================= */
+const S = (inner, extra='') => `<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${inner}</svg>`;
+const CARDS = [
+ { n:"0", name:"The Fool", astro:"Element: Air",
+   up:"New beginnings · innocence · spontaneity · a leap of faith",
+   rv:"Recklessness · hesitation · fear of the unknown",
+   upText:"A new road opens and you stand at its very edge. Step forward with an open heart: not everything needs to be planned before it begins.",
+   rvText:"Either you are leaping without looking, or you are frozen at the edge out of fear. Find the balance between trust and care.",
+   art:S('<circle cx="30" cy="30" r="20"/><path d="M30 22 C34 22 37 25 36 29 C35 33 31 34 30 38 C29 34 25 33 24 29 C23 25 26 22 30 22Z" fill="currentColor"/><path d="M30 38 V46"/><circle cx="46" cy="12" r="4" fill="currentColor" stroke="none"/>') },
+ { n:"I", name:"The Magician", astro:"Planet: Mercury",
+   up:"Willpower · manifestation · skill · resourcefulness",
+   rv:"Manipulation · untapped talent · scattered energy",
+   upText:"Everything you need is already in your hands. As above, so below: focus your will, and what you imagine can take form.",
+   rvText:"Your power is scattered or turned toward the wrong end. Beware of tricks, your own or another's, and gather your strength again.",
+   art:S('<path d="M18 14 C18 8 26 8 30 14 C34 20 42 20 42 14 C42 8 34 8 30 14 C26 20 18 20 18 14Z"/><path d="M30 24 V54"/><path d="M26 26 H34"/><circle cx="30" cy="22" r="2" fill="currentColor"/>') },
+ { n:"II", name:"The High Priestess", astro:"Planet: the Moon",
+   up:"Intuition · mystery · the subconscious · hidden knowledge",
+   rv:"Secrets · ignored intuition · withdrawal",
+   upText:"Behind the veil lies a knowing deeper than words. Be still and listen to your intuition: the answer is already within you.",
+   rvText:"You are drowning out your inner voice, or something is being kept hidden. Make silence, and look beneath the surface.",
+   art:S('<path d="M12 54 V14 M8 14 H16 M48 54 V14 M44 14 H52"/><path d="M36 20 A9 9 0 1 0 36 38 A6.5 9 0 1 1 36 20Z" fill="currentColor"/><path d="M20 44 H40"/>') },
+ { n:"III", name:"The Empress", astro:"Planet: Venus",
+   up:"Abundance · fertility · nurturing · beauty · nature",
+   rv:"Creative block · dependence · neglecting yourself",
+   upText:"Life is ripening around you. Nourish what you love, enjoy your senses, and let things grow in their own time.",
+   rvText:"You have been giving without receiving, or your creativity feels dry. Return to your body, to nature, and to care for yourself.",
+   art:S('<circle cx="30" cy="30" r="10"/><path d="M30 40 V54 M23 47 H37"/><g fill="currentColor" stroke="none"><circle cx="16" cy="12" r="2"/><circle cx="23" cy="8" r="2"/><circle cx="30" cy="6" r="2"/><circle cx="37" cy="8" r="2"/><circle cx="44" cy="12" r="2"/></g>') },
+ { n:"IV", name:"The Emperor", astro:"Sign: Aries",
+   up:"Authority · structure · stability · protection",
+   rv:"Rigidity · domination · lack of discipline",
+   upText:"Build firm foundations. Take responsibility, set boundaries, and rule your own life with clarity and strength.",
+   rvText:"Control has turned into rigidity or tyranny, from you or someone around you. Or there is no structure at all. Look for the healthy middle.",
+   art:S('<rect x="17" y="24" width="26" height="28"/><path d="M17 24 L17 14 L30 20 L43 14 L43 24"/><path d="M17 14 C10 10 8 20 14 21 M43 14 C50 10 52 20 46 21"/><path d="M24 38 H36"/>') },
+ { n:"V", name:"The Hierophant", astro:"Sign: Taurus",
+   up:"Tradition · spiritual teaching · mentorship · sacred knowledge",
+   rv:"Rebellion · your own path · questioning dogma",
+   upText:"There is wisdom in what has been handed down. Seek a teacher, a tradition or a ritual that gives your path its form.",
+   rvText:"The old rules no longer fit you. You may need to break with tradition and find a truth that is your own.",
+   art:S('<path d="M30 6 V54 M22 14 H38 M18 22 H42 M14 30 H46"/><circle cx="30" cy="6" r="2" fill="currentColor"/>') },
+ { n:"VI", name:"The Lovers", astro:"Sign: Gemini",
+   up:"Love · union · choices · alignment of values",
+   rv:"Disharmony · imbalance · a hard choice",
+   upText:"A meeting of hearts, or an important choice. Choose what is truly aligned with who you are, and love will follow.",
+   rvText:"Something is out of balance in a relationship, or you are avoiding a choice. Be honest about what you really value.",
+   art:S('<path d="M30 52 C14 40 10 30 16 24 C21 19 27 22 30 27 C33 22 39 19 44 24 C50 30 46 40 30 52Z"/><circle cx="30" cy="10" r="4" fill="currentColor" stroke="none"/><path d="M30 2 V4 M22 10 H20 M40 10 H38 M24 4 L25.5 5.5 M36 4 L34.5 5.5"/>') },
+ { n:"VII", name:"The Chariot", astro:"Sign: Cancer",
+   up:"Determination · victory · willpower · moving forward",
+   rv:"Lack of direction · being pulled apart · lost control",
+   upText:"Take the reins. Two opposing forces can carry you forward if you hold them with a steady will. Victory is near.",
+   rvText:"You are being pulled in two directions, or have lost your sense of direction. Stop, choose a goal, and steer again.",
+   art:S('<path d="M14 18 H46 L42 40 H18Z"/><path d="M14 18 C14 10 46 10 46 18"/><circle cx="20" cy="46" r="6"/><circle cx="40" cy="46" r="6"/><path d="M30 24 L31.5 28 L35.5 28.5 L32.5 31 L33.5 35 L30 33 L26.5 35 L27.5 31 L24.5 28.5 L28.5 28Z" fill="currentColor" stroke="none"/>') },
+ { n:"VIII", name:"Strength", astro:"Sign: Leo",
+   up:"Courage · inner strength · compassion · taming the beast within",
+   rv:"Self-doubt · weakness · raw, untamed emotion",
+   upText:"True strength is gentle. Meet your wildness, and the wildness of others, with patience and love rather than force.",
+   rvText:"Fear or self-doubt has taken hold, or your emotions are ruling you. Return to your quiet inner courage.",
+   art:S('<path d="M18 12 C18 6 26 6 30 12 C34 18 42 18 42 12 C42 6 34 6 30 12 C26 18 18 18 18 12Z"/><circle cx="30" cy="38" r="12"/><path d="M24 36 L26 34 M36 36 L34 34 M27 43 Q30 45 33 43"/><path d="M18 30 C14 34 14 42 18 46 M42 30 C46 34 46 42 42 46"/>') },
+ { n:"IX", name:"The Hermit", astro:"Sign: Virgo",
+   up:"Introspection · solitude · inner guidance · searching",
+   rv:"Isolation · loneliness · withdrawing too far",
+   upText:"Step away from the noise for a while. Carry your own lantern into the dark, and the path will be shown to you.",
+   rvText:"Solitude has turned into isolation. Your light is meant to be shared, so let someone in.",
+   art:S('<path d="M30 6 V12"/><path d="M22 12 H38 L36 16 H24Z"/><rect x="22" y="16" width="16" height="22" rx="2"/><path d="M30 20 L33 25 H27Z M30 34 L27 29 H33Z" fill="currentColor" stroke="none"/><path d="M24 38 H36 L34 42 H26Z"/><path d="M14 54 L20 44"/>') },
+ { n:"X", name:"Wheel of Fortune", astro:"Planet: Jupiter",
+   up:"Cycles · fate · turning points · luck",
+   rv:"Resisting change · bad luck · breaking a cycle",
+   upText:"The wheel turns and a new season begins. Go with the change: what rises will fall, and what falls will rise again.",
+   rvText:"Things seem to be going against you, or you are clinging to how things were. Every cycle ends. Let this one turn.",
+   art:S('<circle cx="30" cy="30" r="22"/><circle cx="30" cy="30" r="14"/><circle cx="30" cy="30" r="3" fill="currentColor"/><path d="M30 8 V52 M8 30 H52 M14.4 14.4 L45.6 45.6 M45.6 14.4 L14.4 45.6"/>') },
+ { n:"XI", name:"Justice", astro:"Sign: Libra",
+   up:"Truth · fairness · cause and effect · accountability",
+   rv:"Injustice · dishonesty · avoiding responsibility",
+   upText:"What you have sown, you now reap. Be honest, weigh things fairly, and stand by the consequences of your choices.",
+   rvText:"Something is unfair, or someone is not taking responsibility. Look honestly at your own part.",
+   art:S('<path d="M30 4 V56"/><path d="M26 10 H34"/><path d="M12 22 H48"/><path d="M12 22 L6 36 H18Z M48 22 L42 36 H54Z"/><path d="M6 36 C6 41 18 41 18 36 M42 36 C42 41 54 41 54 36"/>') },
+ { n:"XII", name:"The Hanged Man", astro:"Element: Water",
+   up:"Surrender · pause · a new perspective · letting go",
+   rv:"Stalling · resistance · pointless sacrifice",
+   upText:"Stop struggling and hang still for a moment. Seen upside down, the world reveals what you could not see before.",
+   rvText:"You are waiting without purpose, or resisting a surrender that would free you. Let go, or move on.",
+   art:S('<path d="M10 8 H50 M30 8 V20"/><path d="M30 20 V36"/><path d="M30 26 L38 22"/><path d="M30 36 L22 30 M30 36 L38 30"/><circle cx="30" cy="42" r="6"/><circle cx="30" cy="42" r="11" stroke-dasharray="2 3"/>') },
+ { n:"XIII", name:"Death", astro:"Sign: Scorpio",
+   up:"Endings · transformation · transition · rebirth",
+   rv:"Resisting change · stagnation · fear of endings",
+   upText:"Something is ending so that something new can be born. This card rarely means physical death; it is the great transformer. Release what is finished.",
+   rvText:"You are holding on to what has already ended. The longer you resist, the harder it becomes. Let it die, and be renewed.",
+   art:S('<path d="M30 8 C20 8 14 15 14 24 C14 31 18 34 20 36 V42 H40 V36 C42 34 46 31 46 24 C46 15 40 8 30 8Z"/><circle cx="24" cy="25" r="4" fill="currentColor"/><circle cx="36" cy="25" r="4" fill="currentColor"/><path d="M30 30 L28 34 H32Z" fill="currentColor"/><path d="M25 42 V47 M30 42 V47 M35 42 V47"/><path d="M14 54 Q30 46 46 54"/>') },
+ { n:"XIV", name:"Temperance", astro:"Sign: Sagittarius",
+   up:"Balance · moderation · patience · blending opposites",
+   rv:"Imbalance · excess · impatience",
+   upText:"Blend fire and water, effort and rest, until they become something new. Patience is the secret of this alchemy.",
+   rvText:"Something in your life has gone to excess, or you are rushing. Bring yourself back to the middle way.",
+   art:S('<path d="M8 12 H24 L22 26 H10Z"/><path d="M36 34 H52 L50 48 H38Z"/><path d="M22 18 C30 18 34 26 40 34" stroke-dasharray="1 4" stroke-width="2.6"/><path d="M30 46 L36 56 H24Z"/>') },
+ { n:"XV", name:"The Devil", astro:"Sign: Capricorn",
+   up:"The shadow self · desire · attachment · bondage",
+   rv:"Release · breaking free · reclaiming your power",
+   upText:"Look honestly at what binds you: a desire, a habit, a fear. The chains are often loose enough to lift off. Know your shadow, and it can no longer rule you.",
+   rvText:"You are waking up to what has held you, and beginning to break free. Take your power back.",
+   art:S('<circle cx="30" cy="30" r="22"/><path d="M30 50 L18 15 L48 37 H12 L42 15Z"/><path d="M14 6 C16 12 20 14 24 14 M46 6 C44 12 40 14 36 14"/>') },
+ { n:"XVI", name:"The Tower", astro:"Planet: Mars",
+   up:"Sudden upheaval · revelation · collapse of the false · awakening",
+   rv:"Fear of change · delayed upheaval · narrowly avoiding disaster",
+   upText:"What was built on false foundations is falling. It is shocking, but it clears the ground. After the lightning comes the truth.",
+   rvText:"You sense the collapse coming and are trying to hold the walls up. Some things must fall before you can rebuild.",
+   art:S('<path d="M22 54 V20 H38 V54"/><path d="M20 20 L22 12 H38 L40 20"/><path d="M26 30 H30 V36 H26Z M32 40 H36 V46 H32Z"/><path d="M50 2 L40 14 H46 L36 26" stroke-width="2.6"/><path d="M14 30 L10 34 M48 36 L52 40"/>') },
+ { n:"XVII", name:"The Star", astro:"Sign: Aquarius",
+   up:"Hope · renewal · inspiration · healing",
+   rv:"Despair · disconnection · loss of faith",
+   upText:"After the storm, the sky clears. Healing is flowing to you. Trust again, hope again, and let your light shine.",
+   rvText:"You have lost faith or feel disconnected from your light. Even a small hope is enough to begin again.",
+   art:S('<path d="M30 6 L33.5 24 L50 18 L36 28 L50 38 L33.5 32 L30 50 L26.5 32 L10 38 L24 28 L10 18 L26.5 24Z" fill="currentColor" stroke="none"/><g fill="currentColor" stroke="none"><circle cx="10" cy="8" r="1.8"/><circle cx="50" cy="8" r="1.8"/><circle cx="8" cy="50" r="1.8"/><circle cx="52" cy="50" r="1.8"/><circle cx="30" cy="56" r="1.8"/></g>') },
+ { n:"XVIII", name:"The Moon", astro:"Sign: Pisces",
+   up:"Illusion · dreams · intuition · the unconscious · fear",
+   rv:"Fear released · truth surfacing · confusion clearing",
+   upText:"Not everything is as it seems. Walk the path between your fears and your dreams, and trust your intuition in the half-light.",
+   rvText:"The fog is lifting and the truth is coming to the surface. What frightened you loses its power.",
+   art:S('<circle cx="30" cy="20" r="13"/><path d="M34 9 A11 11 0 1 0 34 31 A8 11 0 1 1 34 9Z" fill="currentColor"/><path d="M8 56 V40 H16 V56 M44 56 V40 H52 V56"/><path d="M8 40 L12 36 L16 40 M44 40 L48 36 L52 40"/><path d="M30 56 C26 50 34 46 30 40"/>') },
+ { n:"XIX", name:"The Sun", astro:"The Sun",
+   up:"Joy · success · vitality · clarity",
+   rv:"Clouded joy · a blocked inner child · overconfidence",
+   upText:"Light, warmth and joy. Things are going well, so let yourself be seen and celebrate like a child in the sun.",
+   rvText:"Something is clouding your joy, but the sun is still behind the clouds. Or you are too sure of yourself.",
+   art:S('<circle cx="30" cy="30" r="11"/><path d="M30 4 V12 M30 48 V56 M4 30 H12 M48 30 H56 M11.6 11.6 L17.3 17.3 M42.7 42.7 L48.4 48.4 M48.4 11.6 L42.7 17.3 M17.3 42.7 L11.6 48.4"/><circle cx="26" cy="28" r="1.4" fill="currentColor"/><circle cx="34" cy="28" r="1.4" fill="currentColor"/><path d="M26 33 Q30 36 34 33"/>') },
+ { n:"XX", name:"Judgement", astro:"Element: Fire",
+   up:"Awakening · rebirth · a calling · reckoning",
+   rv:"Self-doubt · ignoring the call · harsh self-judgement",
+   upText:"You are being called to rise. Look back on who you were, forgive it, and step into who you are becoming.",
+   rvText:"You hear the call but doubt yourself, or you judge yourself too harshly. Answer it anyway.",
+   art:S('<path d="M10 22 L40 14 L44 8 L48 30 L42 26 L12 28Z"/><path d="M22 26 V40 H34 V24"/><path d="M28 30 V36 M25 33 H31"/><path d="M12 54 V48 M22 54 V46 M38 54 V46 M48 54 V48"/>') },
+ { n:"XXI", name:"The World", astro:"Planet: Saturn",
+   up:"Completion · wholeness · achievement · integration",
+   rv:"Unfinished business · lack of closure · one last step",
+   upText:"A great cycle is complete. You have become whole. Dance in the circle, then step through into the next world.",
+   rvText:"You are close to the end, but something is left unfinished. Tie up the last thread before you move on.",
+   art:S('<ellipse cx="30" cy="30" rx="14" ry="21"/><path d="M16 22 L13 20 M16 30 L12 30 M16 38 L13 40 M44 22 L47 20 M44 30 L48 30 M44 38 L47 40"/><g fill="currentColor" stroke="none"><circle cx="7" cy="7" r="3"/><circle cx="53" cy="7" r="3"/><circle cx="7" cy="53" r="3"/><circle cx="53" cy="53" r="3"/></g><path d="M30 22 V36 M25 27 H35 M30 36 L26 42 M30 36 L35 41"/>') }
+];
+const REVERSED_CHANCE = 1/3;
+
+/* ---------- card back (chaos star) ---------- */
+const BACK = (()=>{
+  let rays = '';
+  for(let i=0;i<8;i++){
+    const a = (i*45-90)*Math.PI/180, c = Math.cos(a), s = Math.sin(a);
+    const x1=50+c*9, y1=86+s*9, x2=50+c*24, y2=86+s*24, tx=50+c*31, ty=86+s*31;
+    const bx=50+c*22, by=86+s*22, w=5;
+    rays += `<path d="M${x1} ${y1} L${x2} ${y2}"/><path d="M${tx} ${ty} L${bx-s*w} ${by+c*w} L${bx+s*w} ${by-c*w}Z" fill="currentColor" stroke="none"/>`;
+  }
+  return `<svg viewBox="0 0 100 172" preserveAspectRatio="none" style="color:#d6bc89">
+    <defs><radialGradient id="bg" cx="50%" cy="50%" r="60%"><stop offset="0" stop-color="#2a1a3a"/><stop offset="1" stop-color="#0b0710"/></radialGradient>
+    <pattern id="pt" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M5 0 L10 5 L5 10 L0 5Z" fill="none" stroke="rgba(214,188,137,.08)" stroke-width=".6"/></pattern></defs>
+    <rect width="100" height="172" fill="url(#bg)"/><rect width="100" height="172" fill="url(#pt)"/>
+    <rect x="5" y="5" width="90" height="162" rx="4" fill="none" stroke="rgba(214,188,137,.55)" stroke-width=".8"/>
+    <rect x="9" y="9" width="82" height="154" rx="3" fill="none" stroke="rgba(214,188,137,.25)" stroke-width=".6"/>
+    <circle cx="50" cy="86" r="36" fill="none" stroke="rgba(214,188,137,.3)" stroke-width=".6"/>
+    <g stroke="currentColor" stroke-width="2.4" stroke-linecap="round">${rays}</g>
+    <circle cx="50" cy="86" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+  </svg>`;
+})();
+
+function cardEl(cls=''){
+  const b = document.createElement('button');
+  b.className = 'card ' + cls; b.setAttribute('aria-label','Face-down tarot card');
+  b.innerHTML = `<div class="inner"><div class="face back-face">${BACK}</div><div class="face front-face"></div></div>`;
+  return b;
+}
+function setFront(el, card, reversed){
+  el.querySelector('.front-face').innerHTML =
+    `<div class="front${reversed?' rev':''}"><div class="num">${card.n}</div><div class="art">${card.art}</div><div class="name">${card.name}</div></div>`;
+  el.setAttribute('aria-label', `${card.name}${reversed?' (reversed)':''}`);
+}
+function meaning(card, reversed, pos){
+  const d = document.createElement('div'); d.className = 'mean';
+  d.innerHTML = `<div class="top"><div>${pos?`<div class="pos">${pos}</div>`:''}<h3>${card.n} · ${card.name}</h3></div>
+    <div class="orient${reversed?' rv':''}">${reversed?'Reversed':'Upright'}</div></div>
+    <div class="keys">${reversed?card.rv:card.up}</div>
+    <p>${reversed?card.rvText:card.upText}</p>
+    <div class="astro">${card.astro}</div>`;
+  return d;
+}
+
+/* ---------- random helpers ---------- */
+function seeded(seed){ let t = seed >>> 0; return ()=>{ t += 0x6D2B79F5; let r = Math.imul(t ^ t>>>15, 1|t); r = r + Math.imul(r ^ r>>>7, 61|r) ^ r; return ((r ^ r>>>14)>>>0)/4294967296; }; }
+function hash(str){ let h = 2166136261; for(const ch of str){ h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h>>>0; }
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x===t));
+  document.querySelectorAll('.mode').forEach(m=>m.classList.toggle('on', m.id === 'mode-'+t.dataset.mode));
+}));
+
+/* =========================================================
+   CARD OF THE DAY: the same card all day for each visitor
+   ========================================================= */
+(function(){
+  let seeker = store('tarot-seeker');
+  if(!seeker){ seeker = Math.random().toString(36).slice(2); store('tarot-seeker', seeker); }
+  const now = new Date();
+  const today = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  const rnd = seeded(hash(seeker + today));
+  const card = CARDS[Math.floor(rnd()*CARDS.length)], reversed = rnd() < REVERSED_CHANCE;
+  document.getElementById('dayNote').textContent =
+    now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }) + ' · your card for today';
+  const el = cardEl('big'); setFront(el, card, reversed);
+  document.getElementById('daySlot').appendChild(el);
+  const reveal = ()=>{
+    if(el.classList.contains('flipped')) return;
+    el.classList.add('flipped'); store('tarot-seen', today);
+    document.getElementById('dayHint').textContent = 'A new card waits for you tomorrow.';
+    setTimeout(()=>document.getElementById('dayReading').appendChild(meaning(card, reversed)), 500);
+  };
+  el.addEventListener('click', reveal);
+  if(store('tarot-seen') === today){ el.querySelector('.inner').style.transition = 'none'; reveal();
+    requestAnimationFrame(()=>el.querySelector('.inner').style.transition = ''); }
+})();
+
+/* =========================================================
+   THREE CARDS: past, present, future
+   ========================================================= */
+(function(){
+  const spread = document.getElementById('threeSpread'), out = document.getElementById('threeReading'),
+        hint = document.getElementById('threeHint'), btn = document.getElementById('drawBtn');
+  const POS = ['Past','Present','Future'];
+  let shown = 0;
+  function draw(){
+    out.innerHTML = ''; spread.innerHTML = ''; shown = 0; hint.textContent = '';
+    const deck = CARDS.map((c,i)=>i);
+    for(let i=deck.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [deck[i],deck[j]] = [deck[j],deck[i]]; }
+    const picks = deck.slice(0,3).map(i=>({ card:CARDS[i], reversed:Math.random() < REVERSED_CHANCE }));
+    btn.style.visibility = 'hidden';
+    const pile = cardEl(); pile.style.pointerEvents = 'none'; spread.appendChild(pile);
+    pile.classList.add('shuffling');
+    setTimeout(()=>{
+      spread.innerHTML = '';
+      picks.forEach((p,i)=>{
+        const slot = document.createElement('div'); slot.className = 'slot deal';
+        const el = cardEl(); setFront(el, p.card, p.reversed);
+        slot.innerHTML = `<div class="pos">${POS[i]}</div>`; slot.appendChild(el);
+        spread.appendChild(slot);
+        setTimeout(()=>slot.classList.add('dealt'), 180*i);
+        el.addEventListener('click', ()=>{
+          if(el.classList.contains('flipped')) return;
+          el.classList.add('flipped'); shown++;
+          // keep the readings in past, present, future order
+          setTimeout(()=>{
+            const m = meaning(p.card, p.reversed, POS[i]); m.dataset.i = i;
+            const after = [...out.children].find(c=>+c.dataset.i > i);
+            out.insertBefore(m, after || null);
+          }, 450);
+          hint.textContent = shown < 3 ? 'Turn over the remaining cards.' : '';
+          if(shown === 3){ btn.textContent = 'DRAW AGAIN'; btn.style.visibility = 'visible'; }
+        });
+      });
+      hint.textContent = 'Tap each card to turn it over.';
+    }, 1050);
+  }
+  btn.addEventListener('click', draw);
+})();
+</script>
+</body>
+</html>
