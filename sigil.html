@@ -88,6 +88,10 @@ footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:
   .row{flex-direction:column}
   .box{padding:18px 16px}
 }
+.langbtn{position:absolute;top:20px;right:20px;z-index:50;padding:10px 14px;border:1px solid rgba(213,187,140,.38);
+  background:rgba(7,7,8,.82);color:#d9c7a4;font-family:Georgia,"Times New Roman",serif;font-size:12px;letter-spacing:.14em;cursor:pointer}
+.langbtn:hover{background:rgba(213,187,140,.08)}
+@media (max-width:600px){ .langbtn{top:14px;right:14px;padding:8px 12px;font-size:11px} }
 </style>
 </head>
 <body>
@@ -148,6 +152,30 @@ footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* =========================================================
+   LANGUAGE (EN / LT). The choice is shared by the whole temple.
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+function setTempleLang(l){ try { localStorage.setItem('temple-lang', l); } catch(e){} location.reload(); }
+const T = (en, lt) => LANG === 'lt' ? lt : en;
+document.documentElement.lang = LANG;
+function translatePage(dict, attrs){
+  if(LANG !== 'lt') return;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => { const k = n.nodeValue.trim(); if(k && dict[k]) n.nodeValue = n.nodeValue.replace(k, dict[k]); });
+  (attrs || []).forEach(([sel, attr, val]) => { const el = document.querySelector(sel); if(el) el.setAttribute(attr, val); });
+  if(dict.__title) document.title = dict.__title;
+}
+function addLangButton(){
+  const b = document.createElement('button');
+  b.className = 'langbtn'; b.type = 'button'; b.textContent = LANG === 'lt' ? 'EN' : 'LT';
+  b.setAttribute('aria-label', 'Language / Kalba');
+  b.addEventListener('click', () => setTempleLang(LANG === 'lt' ? 'en' : 'lt'));
+  document.body.appendChild(b);
+}
+
+/* =========================================================
    THE WHEEL: consonants placed on three rings.
    Each letter of the reduced intention becomes a point,
    and the sigil is the path that connects them.
@@ -172,7 +200,7 @@ let current = null, currentText = '', showWheel = false, light = false;
 function reduce(text){
   // strip accents (so Lithuanian š, ž, č and others work too), keep letters only
   const plain = text.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z]/g,'');
-  const noVowels = plain.replace(/[AEIOU]/g,'');
+  const noVowels = plain.replace(LANG === 'lt' ? /[AEIOUY]/g : /[AEIOU]/g,'');  // in Lithuanian, Y is a vowel
   const unique = [...new Set(noVowels)].join('');
   return { plain, noVowels, unique };
 }
@@ -216,14 +244,14 @@ function render(animate){
 function forge(){
   const text = $('intent').value.trim();
   $('err').textContent = '';
-  if(!text){ $('err').textContent = 'Write your intention first.'; return; }
+  if(!text){ $('err').textContent = T('Write your intention first.','Pirmiausia parašyk savo ketinimą.'); return; }
   const r = reduce(text);
   if(r.unique.length < 2){
-    $('err').textContent = 'Too few consonants remain to form a sigil. Try writing your intention in a few more words.';
+    $('err').textContent = T('Too few consonants remain to form a sigil. Try writing your intention in a few more words.','Liko per mažai priebalsių sigilui sukurti. Pabandyk ketinimą parašyti keliais žodžiais daugiau.');
     return;
   }
   current = r.unique; currentText = text;
-  $('saveBtn').disabled = false; $('saveBtn').textContent = '✦ SAVE TO MY SANCTUARY'; $('saveMsg').textContent = ''; $('saveMsg').className = 'msg';
+  $('saveBtn').disabled = false; $('saveBtn').textContent = T('✦ SAVE TO MY SANCTUARY','✦ IŠSAUGOTI MANO ŠVENTOVĖJE'); $('saveMsg').textContent = ''; $('saveMsg').className = 'msg';
   $('s1').textContent = text.toUpperCase();
   $('s2').textContent = r.noVowels.split('').join(' ');
   $('s3').textContent = r.unique.split('').join(' ');
@@ -270,28 +298,57 @@ function saveMsg(html, cls){ const m = $('saveMsg'); m.innerHTML = html; m.class
 
 $('saveBtn').addEventListener('click', async ()=>{
   if(!current) return;
-  if(!sb){ saveMsg('The Temple could not connect to accounts right now. Try again later.', 'bad'); return; }
+  if(!sb){ saveMsg(T('The Temple could not connect to accounts right now. Try again later.','Šiuo metu Šventyklai nepavyko prisijungti prie paskyrų. Pabandyk vėliau.'), 'bad'); return; }
   const btn = $('saveBtn');
-  btn.disabled = true; btn.textContent = 'SAVING…';
+  btn.disabled = true; btn.textContent = T('SAVING…','SAUGOMA…');
   try {
     const { data:{ session } } = await sb.auth.getSession();
     const user = session && session.user;
     if(!user){
-      btn.disabled = false; btn.textContent = '✦ SAVE TO MY SANCTUARY';
-      saveMsg('You need to be signed in to save sigils. <a href="index.html">Enter the Temple</a> and sign in, then come back here.');
+      btn.disabled = false; btn.textContent = T('✦ SAVE TO MY SANCTUARY','✦ IŠSAUGOTI MANO ŠVENTOVĖJE');
+      saveMsg(T('You need to be signed in to save sigils. <a href="index.html">Enter the Temple</a> and sign in, then come back here.','Sigilams išsaugoti reikia prisijungti. <a href="index.html">Įženk į Šventyklą</a>, prisijunk ir grįžk čia.'));
       return;
     }
     const { error } = await sb.from('user_sigils').insert({ user_id:user.id, intention:currentText.slice(0,120), letters:current });
     if(error) throw error;
-    btn.textContent = '✓ SAVED';
-    saveMsg('Your sigil now rests in My Sanctuary, under Sigils.', 'ok');
+    btn.textContent = T('✓ SAVED','✓ IŠSAUGOTA');
+    saveMsg(T('Your sigil now rests in My Sanctuary, under Sigils.','Tavo sigilas dabar ilsisi tavo Šventovėje, skiltyje „Sigilai“.'), 'ok');
   } catch(err){
-    btn.disabled = false; btn.textContent = '✦ SAVE TO MY SANCTUARY';
+    btn.disabled = false; btn.textContent = T('✦ SAVE TO MY SANCTUARY','✦ IŠSAUGOTI MANO ŠVENTOVĖJE');
     const missing = err && (err.code === '42P01' || String(err.message||'').includes('user_sigils'));
-    saveMsg(missing ? 'Saving sigils is not set up in the Temple yet.' : 'The sigil could not be saved. Please try again.', 'bad');
+    saveMsg(missing ? T('Saving sigils is not set up in the Temple yet.','Sigilų išsaugojimas Šventykloje dar neįjungtas.') : T('The sigil could not be saved. Please try again.','Sigilo išsaugoti nepavyko. Pabandyk dar kartą.'), 'bad');
     console.error('Could not save sigil:', err);
   }
 });
+</script>
+<script>
+translatePage({
+ "__title": "Sigilų kalvė · Chaoso šventykla",
+ "← TEMPLE": "← ŠVENTYKLA",
+ "Temple of Chaos": "Chaoso šventykla",
+ "THE SIGIL FORGE": "SIGILŲ KALVĖ",
+ "Speak your intention. The forge strips it to its bones and binds what remains into a single sign, made for you alone.": "Ištark savo ketinimą. Kalvė nulupa jį iki kaulų, o tai, kas lieka, sulydo į vieną ženklą, sukurtą tik tau.",
+ "Your intention": "Tavo ketinimas",
+ "FORGE THE SIGIL": "KALTI SIGILĄ",
+ "Write it in the present tense, as if it is already true: “I am protected”, not “I want protection”.": "Rašyk esamuoju laiku, tarsi tai jau būtų tiesa: „Mane saugo šviesa“, o ne „Noriu apsaugos“.",
+ "Vowels removed": "Pašalinti balsiai",
+ "Repeated letters removed": "Pašalintos pasikartojančios raidės",
+ "SHOW THE WHEEL": "RODYTI RATĄ",
+ "LIGHT VERSION": "ŠVIESI VERSIJA",
+ "DOWNLOAD": "ATSISIŲSTI",
+ "✦ SAVE TO MY SANCTUARY": "✦ IŠSAUGOTI MANO ŠVENTOVĖJE",
+ "HOW TO USE YOUR SIGIL": "KAIP NAUDOTI SAVO SIGILĄ",
+ "Look at it until the letters disappear.": "Žiūrėk į jį, kol raidės išnyks.",
+ "Let it stop being words and become a pure shape to you.": "Leisk jam nustoti būti žodžiais ir tapti tau grynu pavidalu.",
+ "Charge it.": "Įkrauk jį.",
+ "Enter a still, focused state through slow breathing, meditation, drumming, dance, or whatever empties your mind. At the peak, gaze at the sigil and pour your will into it.": "Pasiek ramią, sutelktą būseną lėtu kvėpavimu, meditacija, būgnais, šokiu ar bet kuo, kas ištuština protą. Viršūnėje pažvelk į sigilą ir įliek į jį savo valią.",
+ "Release it.": "Paleisk jį.",
+ "Burn it, bury it, or put it away, and let the intention go from your conscious mind.": "Sudegink, užkask arba padėk jį į šalį ir paleisk ketinimą iš sąmoningo proto.",
+ "Forget it.": "Pamiršk jį.",
+ "Chaos magicians hold that a sigil works best when you stop thinking about it, so your deeper mind can carry it out.": "Chaoso magai tiki, kad sigilas veikia geriausiai, kai apie jį nustoji galvoti – tada jį įgyvendina gilesnis protas.",
+ "Forged in the Temple of Chaos. Your intention stays on your device unless you choose to save it to your Sanctuary.": "Nukalta Chaoso šventykloje. Tavo ketinimas lieka tavo įrenginyje, nebent nuspręsi jį išsaugoti savo Šventovėje."
+}, [["#intent","placeholder","Mane saugo šviesa"]]);
+addLangButton();
 </script>
 </body>
 </html>
