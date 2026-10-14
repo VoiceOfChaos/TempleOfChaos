@@ -14,7 +14,7 @@
     <meta property="og:site_name" content="Temple of Chaos">
     <meta property="og:title" content="Crossroads of Hekate · Temple of Chaos">
     <meta property="og:description" content="Walk Hekate&#x27;s crossroads beneath the dark moon: her triple statue, her wheel, torches and keys, her lore, Deipnon offerings and a guided meditation.">
-    <meta property="og:url" content="https://voiceofchaos.github.io/TempleOfChaos/hecate.html">
+    <meta property="og:url" content="https://voiceofchaos.github.io/TempleOfChaos/hekate.html">
     <meta property="og:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -214,6 +214,7 @@ body.meditating #card, body.meditating #tray, body.meditating #toast{visibility:
 <div id="topbar" class="ui">
   <a class="btn" href="gardens.html">← Gardens</a>
   <h1>Crossroads of Hekate</h1>
+  <button id="langBtn" class="btn" aria-label="Language / Kalba">LT</button>
   <button id="cloakBtn" class="btn" aria-label="Choose cloak colour"><span class="sw"></span>Cloak</button>
 </div>
 <div id="cloakPanel" class="ui">
@@ -242,7 +243,80 @@ body.meditating #card, body.meditating #tray, body.meditating #toast{visibility:
 /* =========================================================
    EDIT HERE: deity, symbols and offerings
    ========================================================= */
-const DEITY = "HEKATE";
+/* =========================================================
+   LANGUAGE (EN / LT). The choice is shared by the whole temple.
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+function setTempleLang(l){ try { localStorage.setItem('temple-lang', l); } catch(e){} location.reload(); }
+document.documentElement.lang = LANG;
+
+const UI_LT = {
+  back:"← Sodai", cloak:"Apsiaustas", chooseCloak:"PASIRINK APSIAUSTĄ",
+  cloaks:["Vidurnakčio violetinė","Kraujo raudona","Tuštumos juoda","Gilaus miško žalia","Bedugnės jūros mėlyna","Kaulo balta","Senovinis auksas","Laukinė rožė"],
+  tray:"Nutempk auką ant aukuro", clear:"Išvalyti aukurą", cleansed:"Aukuras apvalytas.",
+  hint:"Bakstelėk bet kur, kad eitum (arba naudok rodyklių klavišus / WASD).<br>Aplankyk simbolius, tada atnešk aukų prie aukuro.",
+  hintTouch:"Bakstelėk bet kur, kad eitum.<br>Aplankyk simbolius, tada atnešk aukų prie aukuro.",
+  sit:"✦ Atsisėsti ir medituoti", m1:"1 minutė", m3:"3 minutės", m5:"5 minutės",
+  backToGarden:"Grįžti į sodą", breatheIn:"ĮKVĖPK", hold:"SULAIKYK", breatheOut:"IŠKVĖPK"
+};
+
+const LT = {
+  deity: "HEKATĖ",
+  title: "Hekatės kryžkelė",
+  loreBtn: "✦ Jos istorija",
+  symbols: [
+    { name:"Du fakelai", sub:"Šviesa požemiuose",
+      text:"Hekatė nešasi du fakelus. Jais ji nušvietė kelią Demetrai, ieškančiai prarastos dukters, ir jais ji šviečia takus tarp pasaulių. Tai vedimas tamsiausią naktį, šviesa, kuri suranda tai, kas buvo prarasta." },
+    { name:"Raktas", sub:"Slenksčių sergėtoja",
+      text:"Ji – Hekatė Kleiduchos, raktų nešėja. Ji laiko raktus į požemių pasaulį, į slaptą žinojimą ir į kiekvienas duris tarp vienos būties būsenos ir kitos. Ką ji atrakina, tą gali ir užrakinti." },
+    { name:"Hekatės ratas", sub:"Strofalas",
+      text:"Chaldėjų orakuluose strofalas – besisukantis ratas, susijęs su Hekatės galia. Šiandien piešiamas ratas – žiedų labirintas aplink šešiaspindulę žvaigždę – yra jo įkvėptas modernus piešinys. Jis simbolizuoja gyvenimo ciklus, kelionę į vidų ir Hekatę kaip pasaulio sielą." },
+    { name:"Kryžkelė", sub:"Kur susitinka trys keliai",
+      text:"Senovės graikai statydavo Hekatės šventoves ten, kur susitinka trys keliai, ir prie savo namų durų. Kryžkelė – pasirinkimo ir tarpinės būsenos vieta: ten, kur skiriasi keliai, pasauliai ir likimai, ji stovi, stebėdama visas tris kryptis vienu metu." },
+    { name:"Juodieji šunys", sub:"Jos palydovai",
+      text:"Šunys buvo šventi Hekatei, o jų lojimas naktį, kaip sakyta, pranešdavo apie jos atėjimą. Jos juodieji šunys saugo vartus, klajoja tarp pasaulių ir yra ištikimi vedliai per tamsą." },
+    { name:"Tamsusis mėnulis", sub:"Jos naktis",
+      text:"Paskutinė naktis prieš jaunatį priklauso jai. Senovės Atėnuose tą naktį namuose ruošdavo Hekatės vakarienę – Deipnoną. Maistas būdavo paliekamas kryžkelėse jai pagerbti ir neramiems mirusiesiems nuraminti, kol senasis mėnuo būdavo išvalomas." },
+    { name:"Gyvatė", sub:"Atgimimas ir gelmės",
+      text:"Daugelyje aprašymų gyvatės raitosi jos plaukuose ar apie jos kūną. Gyvatės priklauso žemei ir požemiams. Jos neria odą, kad atgimtų, ir neša paslėptą gelmių išmintį." }
+  ],
+  lore: {
+    name:"Hekatė", sub:"Raganų karalienė · Kryžkelių valdovė",
+    sections:[
+      { title:"Jos vardas",
+        text:"Hekatės vardas dažnai aiškinamas kaip „toli siekianti“ arba „veikianti iš toli“, nors tikroji jo kilmė neaiški. Kai kurie mokslininkai jos kultą sieja su Karija Mažojoje Azijoje, kur Lagynoje stovėjo didžioji jos šventovė." },
+      { title:"Titanų duktė",
+        text:"Hesiodo „Teogonija“ (apie 700 m. pr. Kr.) ją vadina titanų Perso ir Asterijos dukterimi ir šlovina labiau nei beveik bet kurią kitą dievybę. Pasak Hesiodo, Dzeusas ją pagerbė dalimi žemės, jūros ir žvaigždėto dangaus – galia visose trijose karalystėse." },
+      { title:"Požemių fakelnešė",
+        text:"Homero himne Demetrai Hekatė išgirsta Persefonės šauksmą, kai ją pagrobia Hadas. Su fakelais rankose ji prisideda prie Demetros paieškų. Persefonei sugrįžus, Hekatė tampa jos palydove ir vedle požemių pasaulyje." },
+      { title:"Trilypė deivė",
+        text:"Nuo V a. pr. Kr. ji dažnai buvo vaizduojama trilypė: trys figūros, stovinčios nugaromis viena į kitą ir žvelgiančios į tris puses. Šios statulos, vadinamos hekatajomis, stovėjo kryžkelėse ir prie namų durų, saugodamos namų slenkstį." },
+      { title:"Raganų karalienė",
+        text:"Ji tapo magijos, vaiduoklių ir nekromantijos deive. Medėja, garsiausia graikų mitų ragana, buvo jos žynė, o daugelis graikų magiškųjų papirusų užkeikimų šaukiasi jos vardo. Chaldėjų orakuluose ji iškyla iki kosminės galios kaip pasaulio siela." },
+      { title:"Šiandienos praktikoje",
+        text:"Šiandien ji – viena labiausiai gerbiamų deivių raganystėje ir pagonybėje. Į ją kreipiamasi prašant apsaugos, magijos, darbo su šešėliu, vedimo gyvenimo kryžkelėse ir ryšio su mirusiaisiais. Daugelis kiekvieną tamsųjį mėnulį laikosi Deipnono." },
+      { title:"Atitikmenys",
+        text:"Mėnulis: tamsusis mėnulis. Spalvos: juoda, sidabrinė ir tamsiai raudona. Gyvūnai: šunys, gyvatės, šeškas ir pelėda. Augalai: kukmedis, kietis, česnakas ir aguona. Simboliai: fakelai, raktai, ratas ir kryžkelė. Aukos: česnakai, medus, kiaušiniai, duona, granatai ir žvakės." }
+    ]
+  },
+  offerings: {
+    candle:{ label:"Juoda žvakė", msg:"Dega juoda žvakė: šviesa, įžiebta tamsoje, kaip jos fakelai." },
+    garlic:{ label:"Česnakas", msg:"Česnakas jos vakarienei – seniausia Deipnono auka, padėta kryžkelėje." },
+    honey:{ label:"Medus", msg:"Išlietas medus: saldumas jai pagerbti ir neramiems mirusiesiems nuraminti." },
+    eggs:{ label:"Kiaušiniai", msg:"Kiaušiniai, nuo senovės aukojami per jos vakarienes: naujos gyvybės sėkla, mėnesiui keičiantis." },
+    pomegranate:{ label:"Granatas", msg:"Granatas, požemių vaisius, karalienei, kuri veda Persefonę." },
+    key:{ label:"Raktas", msg:"Prieš ją padėtas raktas, prašant Raktų nešėjos atverti kelią." }
+  },
+  meditation: {
+    withLT:"Hekate", title:"Kryžkelėje",
+    intro:"Atsisėsk ten, kur susitinka trys keliai. Hekatė laiko savo fakelus šalia tavęs.",
+    lines:["Įsivaizduok tris kelius, nusidriekusius priešais tave.","Vienas – tas, iš kurio atėjai. Pagerbk jį ir paleisk.","Kitas – ten, kur esi dabar. Pajusk savo pėdas ant žemės.","Trečias – ten, kur eini. Tau nereikia matyti jo pabaigos.","Jos fakelai apšviečia tik kitą žingsnį. To pakanka.","Kokios durys turi atsiverti, tos atsivers."],
+    closing:"Raktų nešėja eina kartu su tavimi. Pasirink savo kelią."
+  }
+};
+
+const DEITY = LANG === 'lt' ? LT.deity : "HEKATE";
 const STORAGE_KEY = "garden-offerings-hekate";
 
 const SYMBOLS = [
@@ -303,6 +377,27 @@ const OFFERINGS = {
   key:{ label:"Key", msg:"A key laid before her, asking the Key-bearer to open the way.",
     svg:`<svg viewBox="0 0 40 40" fill="none" stroke="#cfc6e0" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="20" r="6"/><path d="M18 20 H35 M30 20 V26 M34 20 V25"/></svg>` }
 };
+
+
+/* ---------- Lithuanian text ---------- */
+if(LANG === 'lt'){
+  SYMBOLS.forEach((s,i)=>{ const t = LT.symbols[i]; if(!t) return;
+    s.name = t.name; s.sub = t.sub; s.text = t.text;
+    if(s.figures && t.figures) s.figures.forEach((f,k)=>{ if(t.figures[k]) f.caption = t.figures[k]; }); });
+  Object.assign(LORE, LT.lore);
+  for(const k in LT.offerings) if(OFFERINGS[k]) Object.assign(OFFERINGS[k], LT.offerings[k]);
+  document.title = LT.title;
+  document.querySelector('#topbar h1').textContent = LT.title;
+  document.querySelector('#topbar a.btn').textContent = UI_LT.back;
+  document.getElementById('loreBtn').textContent = LT.loreBtn;
+  document.querySelector('#tray .label').textContent = UI_LT.tray;
+  document.getElementById('clear').textContent = UI_LT.clear;
+  document.getElementById('hint').innerHTML = matchMedia('(pointer:coarse)').matches ? UI_LT.hintTouch : UI_LT.hint;
+  document.getElementById('cloakBtn').lastChild.textContent = UI_LT.cloak;
+  document.querySelector('#cloakPanel .t').textContent = UI_LT.chooseCloak;
+}
+document.getElementById('langBtn').textContent = LANG === 'lt' ? 'EN' : 'LT';
+document.getElementById('langBtn').addEventListener('click', ()=>setTempleLang(LANG === 'lt' ? 'en' : 'lt'));
 
 /* =========================================================
    WORLD SETUP
@@ -616,7 +711,7 @@ function placeOffering(type, f){
   glowEl.classList.add('on'); setTimeout(()=>glowEl.classList.remove('on'), 900);
 }
 document.getElementById('clear').addEventListener('click', ()=>{
-  placed = []; save(); render(); toast("The altar is cleansed.");
+  placed = []; save(); render(); toast(LANG === 'lt' ? UI_LT.cleansed : "The altar is cleansed.");
 });
 tray.addEventListener('pointerdown', e=>e.stopPropagation());
 card.addEventListener('pointerdown', e=>e.stopPropagation());
@@ -642,6 +737,7 @@ const CLOAKS = [
   { name:"Ancient Gold",    fill:"#5a4614", edge:"#d8b46a" },
   { name:"Wild Rose",       fill:"#5a2236", edge:"#e06a8c" }
 ];
+if(LANG === 'lt') CLOAKS.forEach((c,i)=>{ c.name = UI_LT.cloaks[i] || c.name; });
 const cloakPath = player.querySelector('.cloak');
 const cloakPanel = document.getElementById('cloakPanel');
 const cloakGrid = cloakPanel.querySelector('.grid');
@@ -756,6 +852,7 @@ const MEDITATION = {
   ],
   "closing": "The Key-bearer walks with you. Choose your road."
 };
+if(LANG === 'lt') Object.assign(MEDITATION, LT.meditation);
 
 const ba = BENCH.angle*Math.PI/180, BX = CX + Math.cos(ba)*420, BY = CY + Math.sin(ba)*420;
 const benchEmblem = SYMBOLS[BENCH.emblem].svg.replace('<svg ', `<svg x="51" y="21" width="18" height="18" style="color:${BENCH.trim}" `);
@@ -768,20 +865,20 @@ el('', BX, BY, `<svg viewBox="0 0 120 64" width="110" height="59">
 obstacles.push({ x:BX, y:BY-12, r:30 });
 
 document.body.insertAdjacentHTML('beforeend', `
-<button id="sitBtn" class="btn ui">✦ Sit and meditate</button>
+<button id="sitBtn" class="btn ui">${LANG === 'lt' ? UI_LT.sit : '✦ Sit and meditate'}</button>
 <div id="medi" style="--mc:${MEDITATION.mc};--mc2:${MEDITATION.mc2};--mcol:${MEDITATION.color}">
   <button class="close" aria-label="Close">×</button>
   <div class="stage on" data-s="start">
-    <div class="deity">MEDITATION WITH ${MEDITATION.deity.toUpperCase()}</div>
+    <div class="deity">${LANG === 'lt' ? 'MEDITACIJA SU ' + MEDITATION.withLT.toUpperCase() : 'MEDITATION WITH ' + MEDITATION.deity.toUpperCase()}</div>
     <h2></h2><p class="intro"></p>
-    <div class="mdur"><button class="btn" data-m="1">1 minute</button><button class="btn" data-m="3">3 minutes</button><button class="btn" data-m="5">5 minutes</button></div>
+    <div class="mdur"><button class="btn" data-m="1">${LANG === 'lt' ? UI_LT.m1 : '1 minute'}</button><button class="btn" data-m="3">${LANG === 'lt' ? UI_LT.m3 : '3 minutes'}</button><button class="btn" data-m="5">${LANG === 'lt' ? UI_LT.m5 : '5 minutes'}</button></div>
   </div>
   <div class="stage" data-s="run">
     <div class="morb"></div><div id="mPhase"></div><div id="mLine"></div><div id="mTime"></div>
   </div>
   <div class="stage" data-s="end">
     <div class="morb" style="transform:scale(1)"></div><p class="closing"></p>
-    <button class="btn" data-a="back">Return to the garden</button>
+    <button class="btn" data-a="back">${LANG === 'lt' ? UI_LT.backToGarden : 'Return to the garden'}</button>
   </div>
 </div>`);
 const sitBtn = document.getElementById('sitBtn'), medi = document.getElementById('medi');
@@ -806,7 +903,9 @@ function bell(){
     });
   } catch(e){}
 }
-const BREATH = [['BREATHE IN',4000,1.15],['HOLD',2000,1.15],['BREATHE OUT',6000,.7]];
+const BREATH = LANG === 'lt'
+  ? [[UI_LT.breatheIn,4000,1.15],[UI_LT.hold,2000,1.15],[UI_LT.breatheOut,6000,.7]]
+  : [['BREATHE IN',4000,1.15],['HOLD',2000,1.15],['BREATHE OUT',6000,.7]];
 function startMeditation(mins){
   mStage('run'); bell();
   const end = Date.now() + mins*60000; let pi = 0, li = 0;
