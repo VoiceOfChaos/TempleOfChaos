@@ -106,6 +106,10 @@ footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:
   .mean{padding:16px}
   .mean p{font-size:15px}
 }
+.langbtn{position:absolute;top:20px;right:20px;z-index:50;padding:10px 14px;border:1px solid rgba(213,187,140,.38);
+  background:rgba(7,7,8,.82);color:#d9c7a4;font-family:Georgia,"Times New Roman",serif;font-size:12px;letter-spacing:.14em;cursor:pointer}
+.langbtn:hover{background:rgba(213,187,140,.08)}
+@media (max-width:600px){ .langbtn{top:14px;right:14px;padding:8px 12px;font-size:11px} }
 </style>
 </head>
 <body>
@@ -142,6 +146,30 @@ footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+/* =========================================================
+   LANGUAGE (EN / LT). The choice is shared by the whole temple.
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+function setTempleLang(l){ try { localStorage.setItem('temple-lang', l); } catch(e){} location.reload(); }
+const T = (en, lt) => LANG === 'lt' ? lt : en;
+document.documentElement.lang = LANG;
+function translatePage(dict, attrs){
+  if(LANG !== 'lt') return;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => { const k = n.nodeValue.trim(); if(k && dict[k]) n.nodeValue = n.nodeValue.replace(k, dict[k]); });
+  (attrs || []).forEach(([sel, attr, val]) => { const el = document.querySelector(sel); if(el) el.setAttribute(attr, val); });
+  if(dict.__title) document.title = dict.__title;
+}
+function addLangButton(){
+  const b = document.createElement('button');
+  b.className = 'langbtn'; b.type = 'button'; b.textContent = LANG === 'lt' ? 'EN' : 'LT';
+  b.setAttribute('aria-label', 'Language / Kalba');
+  b.addEventListener('click', () => setTempleLang(LANG === 'lt' ? 'en' : 'lt'));
+  document.body.appendChild(b);
+}
+
 /* =========================================================
    THE MAJOR ARCANA (edit names, meanings and symbols here)
    ========================================================= */
@@ -282,6 +310,121 @@ const CARDS = [
 ];
 const REVERSED_CHANCE = 1/3;
 
+/* ---------- Lithuanian card names and meanings ---------- */
+const CARDS_LT = [
+ { name:"Kvailys", astro:"Stichija: oras",
+   up:"Nauja pradžia · nekaltumas · spontaniškumas · tikėjimo šuolis",
+   rv:"Neapdairumas · dvejonės · nežinomybės baimė",
+   upText:"Atsiveria naujas kelias, ir tu stovi pačiame jo krašte. Žengk pirmyn atvira širdimi: ne viską reikia suplanuoti, kad tai galėtų prasidėti.",
+   rvText:"Arba šoki nepažiūrėjęs, arba sustingai krašte iš baimės. Rask pusiausvyrą tarp pasitikėjimo ir atsargumo." },
+ { name:"Magas", astro:"Planeta: Merkurijus",
+   up:"Valia · įgyvendinimas · meistrystė · išradingumas",
+   rv:"Manipuliacija · neišnaudotas talentas · išsibarsčiusi energija",
+   upText:"Viskas, ko tau reikia, jau yra tavo rankose. Kaip viršuje, taip ir apačioje: sutelk valią, ir tai, ką įsivaizduoji, gali įgauti pavidalą.",
+   rvText:"Tavo galia išsibarsčiusi arba nukreipta ne ten. Saugokis gudrybių – savo ar kitų – ir vėl sutelk jėgas." },
+ { name:"Vyriausioji žynė", astro:"Planeta: Mėnulis",
+   up:"Intuicija · paslaptis · pasąmonė · slaptas žinojimas",
+   rv:"Paslaptys · ignoruojama intuicija · užsisklendimas",
+   upText:"Už šydo slypi gilesnis už žodžius žinojimas. Nurimk ir klausykis intuicijos: atsakymas jau yra tavyje.",
+   rvText:"Tu užgožiai savo vidinį balsą, arba kažkas yra slepiama. Sukurk tylą ir pažvelk po paviršiumi." },
+ { name:"Imperatorė", astro:"Planeta: Venera",
+   up:"Gausa · vaisingumas · rūpestis · grožis · gamta",
+   rv:"Kūrybinis blokas · priklausomybė · savęs apleidimas",
+   upText:"Gyvenimas aplink tave bręsta. Puoselėk tai, ką myli, mėgaukis savo pojūčiais ir leisk dalykams augti savo laiku.",
+   rvText:"Tu davei negaudamas arba tavo kūrybiškumas išseko. Sugrįžk į savo kūną, į gamtą ir prie rūpinimosi savimi." },
+ { name:"Imperatorius", astro:"Ženklas: Avinas",
+   up:"Valdžia · struktūra · stabilumas · apsauga",
+   rv:"Nelankstumas · dominavimas · disciplinos stoka",
+   upText:"Kurk tvirtus pamatus. Prisiimk atsakomybę, nubrėžk ribas ir valdyk savo gyvenimą aiškiai ir stipriai.",
+   rvText:"Kontrolė virto nelankstumu ar tironija – tavo ar kažko šalia tavęs. Arba struktūros nėra visai. Ieškok sveiko vidurio." },
+ { name:"Hierofantas", astro:"Ženklas: Jautis",
+   up:"Tradicija · dvasinis mokymas · mokytojas · šventas žinojimas",
+   rv:"Maištas · savas kelias · dogmų kvestionavimas",
+   upText:"Perduotoje tradicijoje slypi išmintis. Ieškok mokytojo, tradicijos ar ritualo, kuris suteiktų tavo keliui formą.",
+   rvText:"Senosios taisyklės tau nebetinka. Gali tekti atsiskirti nuo tradicijos ir rasti savą tiesą." },
+ { name:"Įsimylėjėliai", astro:"Ženklas: Dvyniai",
+   up:"Meilė · sąjunga · pasirinkimai · vertybių darna",
+   rv:"Nedarna · disbalansas · sunkus pasirinkimas",
+   upText:"Širdžių susitikimas arba svarbus pasirinkimas. Rinkis tai, kas iš tiesų dera su tuo, kas esi, ir meilė ateis.",
+   rvText:"Santykiuose kažkas išsibalansavo, arba vengi pasirinkimo. Būk sąžiningas su savimi dėl to, ką iš tiesų vertini." },
+ { name:"Vežimas", astro:"Ženklas: Vėžys",
+   up:"Ryžtas · pergalė · valia · judėjimas pirmyn",
+   rv:"Krypties stoka · draskymasis į šalis · prarasta kontrolė",
+   upText:"Paimk vadžias. Dvi priešingos jėgos gali nešti tave pirmyn, jei laikysi jas tvirta valia. Pergalė arti.",
+   rvText:"Tave traukia dvi kryptys, arba praradai kryptį. Sustok, pasirink tikslą ir vėl vairuok." },
+ { name:"Jėga", astro:"Ženklas: Liūtas",
+   up:"Drąsa · vidinė jėga · užuojauta · vidinio žvėries prijaukinimas",
+   rv:"Abejonės savimi · silpnumas · nesutramdytos emocijos",
+   upText:"Tikroji jėga yra švelni. Pasitik savo ir kitų laukinumą kantrybe ir meile, o ne prievarta.",
+   rvText:"Tave užvaldė baimė ar abejonės, arba emocijos ima viršų. Sugrįžk prie savo tylios vidinės drąsos." },
+ { name:"Atsiskyrėlis", astro:"Ženklas: Mergelė",
+   up:"Savistaba · vienatvė · vidinis vedimas · ieškojimas",
+   rv:"Izoliacija · vienišumas · per didelis užsisklendimas",
+   upText:"Kuriam laikui pasitrauk nuo triukšmo. Nešk savo žibintą į tamsą, ir kelias tau bus parodytas.",
+   rvText:"Vienatvė virto izoliacija. Tavo šviesa skirta dalytis – įsileisk ką nors." },
+ { name:"Likimo ratas", astro:"Planeta: Jupiteris",
+   up:"Ciklai · likimas · lūžio taškai · sėkmė",
+   rv:"Pasipriešinimas pokyčiams · nesėkmė · ciklo nutraukimas",
+   upText:"Ratas sukasi, ir prasideda naujas sezonas. Plauk su pokyčiais: kas kyla, tas krinta, o kas krinta, vėl pakils.",
+   rvText:"Atrodo, kad viskas eina prieš tave, arba įsikibęs laikaisi to, kas buvo. Kiekvienas ciklas baigiasi. Leisk šiam pasisukti." },
+ { name:"Teisingumas", astro:"Ženklas: Svarstyklės",
+   up:"Tiesa · teisingumas · priežastis ir pasekmė · atsakomybė",
+   rv:"Neteisybė · nesąžiningumas · atsakomybės vengimas",
+   upText:"Ką pasėjai, tą dabar pjauni. Būk sąžiningas, sverk teisingai ir prisiimk savo pasirinkimų pasekmes.",
+   rvText:"Kažkas yra neteisinga, arba kažkas neprisiima atsakomybės. Sąžiningai pažvelk į savo dalį." },
+ { name:"Pakaruoklis", astro:"Stichija: vanduo",
+   up:"Pasidavimas · pauzė · nauja perspektyva · paleidimas",
+   rv:"Strigimas · pasipriešinimas · beprasmė auka",
+   upText:"Nustok kovoti ir akimirkai pakybok ramiai. Žiūrint aukštyn kojomis, pasaulis atskleidžia tai, ko anksčiau nematei.",
+   rvText:"Lauki be tikslo arba priešiniesi pasidavimui, kuris tave išlaisvintų. Paleisk arba eik toliau." },
+ { name:"Mirtis", astro:"Ženklas: Skorpionas",
+   up:"Pabaigos · transformacija · perėjimas · atgimimas",
+   rv:"Pasipriešinimas pokyčiams · sąstingis · pabaigų baimė",
+   upText:"Kažkas baigiasi, kad galėtų gimti kažkas nauja. Ši korta retai reiškia fizinę mirtį – tai didžioji transformatorė. Paleisk tai, kas baigta.",
+   rvText:"Laikaisi to, kas jau pasibaigė. Kuo ilgiau priešiniesi, tuo sunkiau. Leisk tam numirti ir atsinaujink." },
+ { name:"Saikingumas", astro:"Ženklas: Šaulys",
+   up:"Pusiausvyra · saikas · kantrybė · priešybių suliejimas",
+   rv:"Disbalansas · perteklius · nekantrumas",
+   upText:"Suliek ugnį ir vandenį, pastangas ir poilsį, kol jie taps kažkuo nauju. Kantrybė – šios alchemijos paslaptis.",
+   rvText:"Kažkas tavo gyvenime peržengė saiką, arba tu skubi. Sugrįžk į vidurio kelią." },
+ { name:"Velnias", astro:"Ženklas: Ožiaragis",
+   up:"Šešėlinis aš · geismas · prisirišimas · vergovė",
+   rv:"Išsilaisvinimas · grandinių nutraukimas · galios susigrąžinimas",
+   upText:"Sąžiningai pažvelk į tai, kas tave saisto: troškimą, įprotį, baimę. Grandinės dažnai būna pakankamai laisvos, kad jas nusimestum. Pažink savo šešėlį, ir jis nebegalės tavęs valdyti.",
+   rvText:"Tu pabundi ir pamatai, kas tave laikė, ir pradedi išsilaisvinti. Susigrąžink savo galią." },
+ { name:"Bokštas", astro:"Planeta: Marsas",
+   up:"Staigus sukrėtimas · atskleidimas · netikrumo griūtis · pabudimas",
+   rv:"Pokyčių baimė · atidėtas sukrėtimas · vos išvengta nelaimė",
+   upText:"Tai, kas buvo pastatyta ant netikrų pamatų, griūva. Tai sukrečia, bet išvalo vietą. Po žaibo ateina tiesa.",
+   rvText:"Jauti artėjančią griūtį ir bandai išlaikyti sienas. Kai kas turi sugriūti, kad galėtum statyti iš naujo." },
+ { name:"Žvaigždė", astro:"Ženklas: Vandenis",
+   up:"Viltis · atsinaujinimas · įkvėpimas · gijimas",
+   rv:"Neviltis · atitrūkimas · prarastas tikėjimas",
+   upText:"Po audros dangus prasigiedrija. Gijimas plūsta į tave. Vėl pasitikėk, vėl turėk vilties ir leisk savo šviesai spindėti.",
+   rvText:"Praradai tikėjimą arba jautiesi atitrūkęs nuo savo šviesos. Net mažos vilties pakanka, kad pradėtum iš naujo." },
+ { name:"Mėnulis", astro:"Ženklas: Žuvys",
+   up:"Iliuzija · sapnai · intuicija · pasąmonė · baimė",
+   rv:"Baimės paleidimas · iškylanti tiesa · išsisklaidanti sumaištis",
+   upText:"Ne viskas yra taip, kaip atrodo. Eik taku tarp savo baimių ir sapnų ir pasitikėk intuicija prieblandoje.",
+   rvText:"Rūkas sklaidosi, ir tiesa iškyla į paviršių. Tai, kas gąsdino, praranda galią." },
+ { name:"Saulė", astro:"Saulė",
+   up:"Džiaugsmas · sėkmė · gyvybingumas · aiškumas",
+   rv:"Aptemęs džiaugsmas · užblokuotas vidinis vaikas · pernelyg didelis pasitikėjimas",
+   upText:"Šviesa, šiluma ir džiaugsmas. Sekasi gerai, tad leisk sau būti matomam ir švęsk kaip vaikas saulėje.",
+   rvText:"Kažkas temdo tavo džiaugsmą, bet saulė vis dar už debesų. Arba tu per daug savimi pasitiki." },
+ { name:"Teismas", astro:"Stichija: ugnis",
+   up:"Pabudimas · atgimimas · pašaukimas · atsiskaitymas",
+   rv:"Abejonės savimi · pašaukimo ignoravimas · griežtas savęs teisimas",
+   upText:"Esi šaukiamas pakilti. Pažvelk atgal į tai, kuo buvai, atleisk tam ir žengk į tai, kuo tampi.",
+   rvText:"Girdi pašaukimą, bet abejoji savimi, arba teisi save per griežtai. Vis tiek atsiliepk." },
+ { name:"Pasaulis", astro:"Planeta: Saturnas",
+   up:"Užbaigimas · pilnatvė · pasiekimas · integracija",
+   rv:"Nebaigti reikalai · užbaigimo stoka · paskutinis žingsnis",
+   upText:"Didysis ciklas užbaigtas. Tapai visuma. Pašok rate, tada žengk į kitą pasaulį.",
+   rvText:"Esi arti pabaigos, bet kažkas liko nebaigta. Sumegzk paskutinį siūlą, prieš eidamas toliau." }
+];
+if(LANG === 'lt') CARDS.forEach((c,i)=>Object.assign(c, CARDS_LT[i]));
+
 /* ---------- card back (chaos star) ---------- */
 const BACK = (()=>{
   let rays = '';
@@ -305,19 +448,19 @@ const BACK = (()=>{
 
 function cardEl(cls=''){
   const b = document.createElement('button');
-  b.className = 'card ' + cls; b.setAttribute('aria-label','Face-down tarot card');
+  b.className = 'card ' + cls; b.setAttribute('aria-label', T('Face-down tarot card','Užversta taro korta'));
   b.innerHTML = `<div class="inner"><div class="face back-face">${BACK}</div><div class="face front-face"></div></div>`;
   return b;
 }
 function setFront(el, card, reversed){
   el.querySelector('.front-face').innerHTML =
     `<div class="front${reversed?' rev':''}"><div class="num">${card.n}</div><div class="art">${card.art}</div><div class="name">${card.name}</div></div>`;
-  el.setAttribute('aria-label', `${card.name}${reversed?' (reversed)':''}`);
+  el.setAttribute('aria-label', `${card.name}${reversed ? T(' (reversed)',' (apversta)') : ''}`);
 }
 function meaning(card, reversed, pos){
   const d = document.createElement('div'); d.className = 'mean';
   d.innerHTML = `<div class="top"><div>${pos?`<div class="pos">${pos}</div>`:''}<h3>${card.n} · ${card.name}</h3></div>
-    <div class="orient${reversed?' rv':''}">${reversed?'Reversed':'Upright'}</div></div>
+    <div class="orient${reversed?' rv':''}">${reversed ? T('Reversed','Apversta') : T('Upright','Tiesioginė')}</div></div>
     <div class="keys">${reversed?card.rv:card.up}</div>
     <p>${reversed?card.rvText:card.upText}</p>
     <div class="astro">${card.astro}</div>`;
@@ -354,8 +497,8 @@ async function signedInUser(){
 (async function(){
   const now = new Date();
   const today = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
-  const dateText = now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
-  document.getElementById('dayNote').textContent = dateText + ' · seeking your card…';
+  const dateText = now.toLocaleDateString(T('en-GB','lt-LT'), { weekday:'long', day:'numeric', month:'long' });
+  document.getElementById('dayNote').textContent = dateText + T(' · seeking your card…',' · ieškoma tavo kortos…');
 
   const user = await signedInUser();
   let seeker;
@@ -370,14 +513,14 @@ async function signedInUser(){
   const rnd = seeded(hash(seeker + today));
   const card = CARDS[Math.floor(rnd()*CARDS.length)], reversed = rnd() < REVERSED_CHANCE;
   document.getElementById('dayNote').innerHTML = user
-    ? dateText + ' · your card for today<br><span style="font-size:12px;opacity:.75">✦ drawn for your account</span>'
-    : dateText + ' · your card for today<br><span style="font-size:12px;opacity:.75">Not signed in: <a href="index.html" style="text-decoration:underline">enter the Temple</a> to draw a card for your own account</span>';
+    ? dateText + T(' · your card for today',' · tavo šios dienos korta') + '<br><span style="font-size:12px;opacity:.75">' + T('✦ drawn for your account','✦ ištraukta tavo paskyrai') + '</span>'
+    : dateText + T(' · your card for today',' · tavo šios dienos korta') + '<br><span style="font-size:12px;opacity:.75">' + T('Not signed in: <a href="index.html" style="text-decoration:underline">enter the Temple</a> to draw a card for your own account','Neprisijungta: <a href="index.html" style="text-decoration:underline">įženk į Šventyklą</a>, kad ištrauktum kortą savo paskyrai') + '</span>';
   const el = cardEl('big'); setFront(el, card, reversed);
   document.getElementById('daySlot').appendChild(el);
   const reveal = ()=>{
     if(el.classList.contains('flipped')) return;
     el.classList.add('flipped'); store(seenKey, today);
-    document.getElementById('dayHint').textContent = 'A new card waits for you tomorrow.';
+    document.getElementById('dayHint').textContent = T('A new card waits for you tomorrow.','Rytoj tavęs lauks nauja korta.');
     setTimeout(()=>document.getElementById('dayReading').appendChild(meaning(card, reversed)), 500);
   };
   el.addEventListener('click', reveal);
@@ -391,7 +534,7 @@ async function signedInUser(){
 (function(){
   const spread = document.getElementById('threeSpread'), out = document.getElementById('threeReading'),
         hint = document.getElementById('threeHint'), btn = document.getElementById('drawBtn');
-  const POS = ['Past','Present','Future'];
+  const POS = LANG === 'lt' ? ['Praeitis','Dabartis','Ateitis'] : ['Past','Present','Future'];
   let shown = 0;
   function draw(){
     out.innerHTML = ''; spread.innerHTML = ''; shown = 0; hint.textContent = '';
@@ -418,15 +561,31 @@ async function signedInUser(){
             const after = [...out.children].find(c=>+c.dataset.i > i);
             out.insertBefore(m, after || null);
           }, 450);
-          hint.textContent = shown < 3 ? 'Turn over the remaining cards.' : '';
-          if(shown === 3){ btn.textContent = 'DRAW AGAIN'; btn.style.visibility = 'visible'; }
+          hint.textContent = shown < 3 ? T('Turn over the remaining cards.','Apversk likusias kortas.') : '';
+          if(shown === 3){ btn.textContent = T('DRAW AGAIN','TRAUKTI DAR KARTĄ'); btn.style.visibility = 'visible'; }
         });
       });
-      hint.textContent = 'Tap each card to turn it over.';
+      hint.textContent = T('Tap each card to turn it over.','Bakstelėk kiekvieną kortą, kad ją apverstum.');
     }, 1050);
   }
   btn.addEventListener('click', draw);
 })();
+</script>
+<script>
+translatePage({
+ "__title": "Taro · Chaoso šventykla",
+ "← TEMPLE": "← ŠVENTYKLA",
+ "Temple of Chaos": "Chaoso šventykla",
+ "THE TAROT": "TARO",
+ "Twenty-two doors of the Major Arcana. Quiet your mind, hold your question, and let the cards speak.": "Dvidešimt dvejos Didžiųjų Arkanų durys. Nuramink mintis, laikyk savo klausimą ir leisk kortoms prabilti.",
+ "CARD OF THE DAY": "DIENOS KORTA",
+ "THREE CARDS": "TRYS KORTOS",
+ "Tap the card to turn it over.": "Bakstelėk kortą, kad ją apverstum.",
+ "Hold a question or a situation in your mind, then draw.": "Laikyk mintyse klausimą ar situaciją, tada trauk.",
+ "SHUFFLE AND DRAW": "MAIŠYTI IR TRAUKTI",
+ "The cards offer reflection, not certainty. The choice is always yours.": "Kortos siūlo apmąstymus, ne tikrumą. Pasirinkimas visada tavo."
+});
+addLangButton();
 </script>
 </body>
 </html>
