@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Temple of Chaos</title>
-        <!-- Tab icon and link previews -->
+    <!-- Tab icon and link previews -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -9207,7 +9207,7 @@ button[onclick="showHiddenDedications()"] {
                 <small>Walk the gardens of the gods and leave offerings.</small>
             </span>
         </a>
-                <a class="temple-function-item" href="tarot.html" style="text-decoration:none">
+        <a class="temple-function-item" href="tarot.html" style="text-decoration:none">
             <span class="temple-function-icon">✧</span>
             <span class="temple-function-copy">
                 <strong>THE TAROT</strong>
@@ -13634,6 +13634,7 @@ document.addEventListener('keydown', function(event) {
             <button class="sanctuary-tab" onclick="showSanctuaryTab('deities',this)">DEITIES</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('bookmarked',this)">BOOKMARKED</button>
             <button class="sanctuary-tab" onclick="showSanctuaryTab('candles',this)">CANDLES</button>
+            <button class="sanctuary-tab" onclick="showSanctuaryTab('sigils',this)">SIGILS</button>
             <button class="sanctuary-tab" id="sanctuaryReviewTab" style="display:none" onclick="showSanctuaryTab('review',this)">REVIEW</button>
         </div>
 
@@ -13642,6 +13643,7 @@ document.addEventListener('keydown', function(event) {
         <section id="sanctuaryPanelDeities" class="sanctuary-panel"></section>
         <section id="sanctuaryPanelBookmarked" class="sanctuary-panel"></section>
         <section id="sanctuaryPanelCandles" class="sanctuary-panel"></section>
+        <section id="sanctuaryPanelSigils" class="sanctuary-panel"></section>
         <section id="sanctuaryPanelReview" class="sanctuary-panel"></section>
     </div>
 </div>
@@ -16986,6 +16988,142 @@ document.addEventListener('click', function(event) {
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') toggleTempleFunctionsMenu(false);
 });
+</script>
+
+
+<!-- =====================================================
+     MY SANCTUARY: SIGILS TAB (saved from the Sigil Forge)
+===================================================== -->
+<style id="sanctuary-sigils-css">
+@media(min-width:701px){
+    #sanctuaryTabs{grid-template-columns:repeat(auto-fit,minmax(78px,1fr))}
+}
+.sigil-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.sigil-card{padding:12px;border:1px solid rgba(210,190,150,.14);background:rgba(255,255,255,.018);display:flex;flex-direction:column}
+.sigil-card .sigil-img{width:100%;aspect-ratio:1;border:1px solid rgba(210,190,150,.2);background:#0b0710}
+.sigil-card .sigil-img svg{width:100%;height:100%;display:block}
+.sigil-card .sanctuary-item-title{font-size:14px;margin-top:10px;line-height:1.4;word-break:break-word}
+.sigil-card .sigil-letters{color:#b89d6a;font-size:11px;letter-spacing:.24em;margin-top:5px}
+.sigil-card .sanctuary-item-actions{margin-top:10px}
+</style>
+<script id="sanctuary-sigils-js">
+(function(){
+    // The same letter wheel the Sigil Forge uses, so saved sigils look identical.
+    const RINGS = [
+        { letters:"BCDFG",     r:34, start:-90 },
+        { letters:"HJKLMNP",   r:58, start:-90 + 360/14 },
+        { letters:"QRSTVWXYZ", r:82, start:-90 }
+    ];
+    const POS = {};
+    RINGS.forEach(ring => {
+        const n = ring.letters.length;
+        [...ring.letters].forEach((ch,i) => {
+            const a = (ring.start + i*360/n) * Math.PI/180;
+            POS[ch] = { x:100 + Math.cos(a)*ring.r, y:100 + Math.sin(a)*ring.r };
+        });
+    });
+
+    function sigilSVG(letters, light){
+        const ink = light ? '#1a1418' : '#d6bc89', bg = light ? '#f4efe6' : '#0b0710';
+        const faint = light ? 'rgba(26,20,24,.18)' : 'rgba(214,188,137,.16)';
+        const pts = [...String(letters||'')].map(ch => POS[ch]).filter(Boolean);
+        if (pts.length < 2) return '';
+        const d = pts.map((p,i) => `${i?'L':'M'}${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ');
+        const s = pts[0], e = pts[pts.length-1], pe = pts[pts.length-2];
+        const ang = Math.atan2(e.y-pe.y, e.x-pe.x), nx = -Math.sin(ang)*6, ny = Math.cos(ang)*6;
+        const glow = light ? '' : '<filter id="sgl"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="1024" height="1024"><defs>${glow}</defs>
+            <rect width="200" height="200" fill="${bg}"/>
+            <circle cx="100" cy="100" r="94" fill="none" stroke="${faint}" stroke-width=".6"/>
+            <g fill="none" stroke="${ink}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" ${light?'':'filter="url(#sgl)"'}>
+              <path d="${d}"/>
+              <circle cx="${s.x.toFixed(2)}" cy="${s.y.toFixed(2)}" r="4.6" fill="${bg}"/>
+              <path d="M${(e.x-nx).toFixed(2)} ${(e.y-ny).toFixed(2)} L${(e.x+nx).toFixed(2)} ${(e.y+ny).toFixed(2)}"/>
+            </g></svg>`;
+    }
+
+    let sigilsCache = null, sigilsError = '';
+
+    async function loadSigils(){
+        if (!supabaseClient || !currentAuthUser) { sigilsCache = []; return; }
+        const { data, error } = await supabaseClient.from('user_sigils').select('*')
+            .eq('user_id', currentAuthUser.id).order('created_at', { ascending:false });
+        if (error) {
+            sigilsCache = [];
+            sigilsError = error.code === '42P01' ? 'Sigil storage is not set up yet.' : 'Your sigils could not be loaded.';
+            console.error('Could not load sigils:', error);
+        } else { sigilsCache = data || []; sigilsError = ''; }
+    }
+
+    function renderSigilsPanel(){
+        const panel = document.getElementById('sanctuaryPanelSigils');
+        if (!panel) return;
+        const esc = typeof escapeSanctuary === 'function' ? escapeSanctuary
+            : v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        let body;
+        if (sigilsCache === null) {
+            body = '<div class="sanctuary-empty">Gathering your sigils…</div>';
+        } else if (sigilsError) {
+            body = `<div class="sanctuary-empty">${esc(sigilsError)}</div>`;
+        } else if (!sigilsCache.length) {
+            body = '<div class="sanctuary-empty">No sigils yet. Forge one in the Sigil Forge and save it to your Sanctuary.</div>';
+        } else {
+            body = '<div class="sigil-grid">' + sigilsCache.map(sg => `
+                <div class="sigil-card">
+                    <div class="sigil-img">${sigilSVG(sg.letters, false)}</div>
+                    <div class="sanctuary-item-title">${esc(sg.intention)}</div>
+                    <div class="sigil-letters">${esc(sg.letters)}</div>
+                    <div class="sanctuary-item-meta">${esc(new Date(sg.created_at).toLocaleDateString())}</div>
+                    <div class="sanctuary-item-actions">
+                        <button class="sanctuary-small" onclick="templeDownloadSigil('${esc(sg.id)}', false)">DOWNLOAD</button>
+                        <button class="sanctuary-small" onclick="templeDownloadSigil('${esc(sg.id)}', true)">LIGHT</button>
+                        <button class="sanctuary-small" onclick="templeRemoveSigil('${esc(sg.id)}')">REMOVE</button>
+                    </div>
+                </div>`).join('') + '</div>';
+        }
+        panel.innerHTML = `
+            <div class="sanctuary-toolbar">
+                <h3>MY SIGILS</h3>
+                <a class="sanctuary-action" href="sigil.html" style="text-decoration:none">+ FORGE A SIGIL</a>
+            </div>${body}`;
+    }
+
+    window.templeDownloadSigil = function(id, light){
+        const sg = (sigilsCache || []).find(x => String(x.id) === String(id));
+        if (!sg) return;
+        const url = URL.createObjectURL(new Blob([sigilSVG(sg.letters, light)], { type:'image/svg+xml' }));
+        const img = new Image();
+        img.onload = () => {
+            const c = document.createElement('canvas'); c.width = c.height = 1024;
+            c.getContext('2d').drawImage(img, 0, 0, 1024, 1024);
+            URL.revokeObjectURL(url);
+            const a = document.createElement('a');
+            a.download = 'sigil-' + String(sg.letters).toLowerCase() + (light ? '-light' : '') + '.png';
+            a.href = c.toDataURL('image/png');
+            document.body.appendChild(a); a.click(); a.remove();
+        };
+        img.src = url;
+    };
+
+    window.templeRemoveSigil = async function(id){
+        if (!supabaseClient || !currentAuthUser) return;
+        if (!confirm('Remove this sigil from your Sanctuary?')) return;
+        const { error } = await supabaseClient.from('user_sigils').delete().eq('id', id).eq('user_id', currentAuthUser.id);
+        if (error) { alert('The sigil could not be removed. Please try again.'); console.error(error); return; }
+        sigilsCache = (sigilsCache || []).filter(x => String(x.id) !== String(id));
+        renderSigilsPanel();
+    };
+
+    // Teach the existing Sanctuary about the new tab, without changing its code.
+    if (typeof renderSanctuaryTab === 'function') {
+        const originalRender = renderSanctuaryTab;
+        renderSanctuaryTab = function(tab){
+            if (tab !== 'sigils') return originalRender.apply(this, arguments);
+            renderSigilsPanel();
+            loadSigils().then(() => { if (sanctuaryCurrentTab === 'sigils') renderSigilsPanel(); });
+        };
+    }
+})();
 </script>
 
 </body>
