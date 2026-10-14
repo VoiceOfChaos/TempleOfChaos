@@ -214,6 +214,7 @@ body.meditating #card, body.meditating #tray, body.meditating #toast{visibility:
 <div id="topbar" class="ui">
   <a class="btn" href="gardens.html">← Gardens</a>
   <h1>Garden of Nyx</h1>
+  <button id="langBtn" class="btn" aria-label="Language / Kalba">LT</button>
   <button id="cloakBtn" class="btn" aria-label="Choose cloak colour"><span class="sw"></span>Cloak</button>
 </div>
 <div id="cloakPanel" class="ui">
@@ -242,7 +243,82 @@ body.meditating #card, body.meditating #tray, body.meditating #toast{visibility:
 /* =========================================================
    EDIT HERE: deity, symbols and offerings
    ========================================================= */
-const DEITY = "NYX";
+/* =========================================================
+   LANGUAGE (EN / LT). The choice is shared by the whole temple.
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+function setTempleLang(l){ try { localStorage.setItem('temple-lang', l); } catch(e){} location.reload(); }
+document.documentElement.lang = LANG;
+
+const UI_LT = {
+  back:"← Sodai", cloak:"Apsiaustas", chooseCloak:"PASIRINK APSIAUSTĄ",
+  cloaks:["Vidurnakčio violetinė","Kraujo raudona","Tuštumos juoda","Gilaus miško žalia","Bedugnės jūros mėlyna","Kaulo balta","Senovinis auksas","Laukinė rožė"],
+  tray:"Nutempk auką ant aukuro", clear:"Išvalyti aukurą", cleansed:"Aukuras apvalytas.",
+  hint:"Bakstelėk bet kur, kad eitum (arba naudok rodyklių klavišus / WASD).<br>Aplankyk simbolius, tada atnešk aukų prie aukuro.",
+  hintTouch:"Bakstelėk bet kur, kad eitum.<br>Aplankyk simbolius, tada atnešk aukų prie aukuro.",
+  sit:"✦ Atsisėsti ir medituoti", m1:"1 minutė", m3:"3 minutės", m5:"5 minutės",
+  backToGarden:"Grįžti į sodą", breatheIn:"ĮKVĖPK", hold:"SULAIKYK", breatheOut:"IŠKVĖPK"
+};
+
+const LT = {
+  deity: "NIKTĖ",
+  title: "Niktės sodas",
+  loreBtn: "✦ Jos istorija",
+  symbols: [
+    { name:"Pirmapradė tuštuma", sub:"Gimusi iš Chaoso",
+      text:"Niktė – viena pirmųjų būtybių, gimusi tiesiai iš Chaoso. Ji – tamsa, buvusi prieš šviesą, ir iš visų dievų ji stovi arčiausiai pirmapradės tuštumos." },
+    { name:"Žvaigždėtas šydas", sub:"Dangaus apsiaustas",
+      text:"Kiekvieną vakarą Niktė užtraukia savo tamsų apsiaustą per dangų, ir iš jo klosčių šviečia žvaigždės. Tai paslapties šydas, slepiantis ir globojantis viską iki ryto." },
+    { name:"Juodieji sparnai", sub:"Juodasparnė Naktis",
+      text:"Poetai ją vadina juodasparne Naktimi, kai ji praskrenda virš žemės. Jos sparnai neša poilsį gyviesiems ir apgaubia pasaulį tamsos švelnumu." },
+    { name:"Kosminis kiaušinis", sub:"Kur gimė meilė",
+      text:"Senuosiuose pasakojimuose Naktis padėjo kiaušinį begalinėje tamsoje, ir iš jo išsirito Erotas – pirmoji meilė, jėga, jungianti viską tarpusavyje. Kūrinija prasideda jos tamsoje." },
+    { name:"Nakties vežimas", sub:"Per dangaus skliautą",
+      text:"Vėlesni rašytojai ją vaizduoja vairuojančią tamsių žirgų traukiamą vežimą per dangų, o paskui ją seka žvaigždės. Kai jos kelionė baigiasi, savąją pradeda Diena." },
+    { name:"Bronzinis slenkstis", sub:"Kur Naktis sutinka Dieną",
+      text:"Prie bronzinio jos namų slenksčio Naktis ir Diena susitinka ir prasilenkia – viena išeina, kai kita įeina. Tai amžinas tamsos ir šviesos kaitaliojimasis, kur nė viena negali likti amžinai." },
+    { name:"Aguona", sub:"Miegas ir Mirtis, jos sūnūs",
+      text:"Aguona priklauso jos sūnums dvyniams – Hipnui (Miegui) ir Tanatui (Mirčiai). Tai miego ir sapnų gėlė, švelnaus perėjimo iš vieno pasaulio į kitą gėlė." }
+  ],
+  lore: {
+    name:"Niktė", sub:"Pirmapradė Naktis · Chaoso duktė",
+    sections:[
+      { title:"Jos vardas",
+        text:"Niktė (gr. Nyx) – tai tiesiog graikiškas žodis „naktis“; romėnai ją vadino Nox. Ji ne tiek nakties deivė, kiek pati Naktis: tamsa, egzistavusi dar prieš tai, kai pasaulis apskritai buvo nušviestas." },
+      { title:"Chaoso duktė",
+        text:"Hesiodo „Teogonijoje“ pirmas atsirado Chaosas – žiojinti tuštuma. Iš Chaoso kilo Erebas, gilioji tamsa, ir Niktė, juodoji Naktis. Susijungusi su Erebu, ji pagimdė jų priešingybes: Eterį, šviesųjį aukštutinį orą, ir Hemerą, Dieną." },
+      { title:"Galių motina",
+        text:"Viena pati ji pagimdė daugelį jėgų, formuojančių mirtingųjų gyvenimą: Hipną (Miegą) ir Tanatą (Mirtį), Sapnus, Morą (Lemtį), Keras, Moiras, Nemezidę, Eridę (Nesantaiką), Gerą (Senatvę), Apatę (Apgaulę) ir saulėlydžio Hesperides." },
+      { title:"Jos bijo net Dzeusas",
+        text:"Homero „Iliadoje“ Hipnas bėga pas Niktę ieškoti apsaugos nuo Dzeuso rūstybės. Dievų karalius susilaiko, nenorėdamas užgauti greitosios Nakties. Net aukščiausiasis iš olimpiečių ją gerbia." },
+      { title:"Nakties namai",
+        text:"Hesiodas jos namus nukelia į pasaulio pakraštį, netoli Tartaro, apgaubtus tamsiais debesimis. Ten prie didžiulio bronzinio slenksčio Naktis ir Diena prasilenkia ir pasisveikina – viena įeina, kai kita išeina. Namuose jos niekada nebūna kartu." },
+      { title:"Pirmasis kiaušinis",
+        text:"Aristofano komedijoje „Paukščiai“ (414 m. pr. Kr.) juodasparnė Naktis padeda kiaušinį Erebo gelmėse, ir iš jo išnyra auksasparnis Erotas. Orfikų tradicijoje ji – pirmapradė pranašystės deivė, iš savo olos patarianti net Dzeusui." },
+      { title:"Jos garbinimas",
+        text:"Šventyklų ji turėjo nedaug, tačiau Pausanijas mini Nakties orakulą Megaroje, o orfikų himnas Nakčiai prašo aukoti fakelus. Šiandien ji gerbiama helenų politeizme, raganystėje ir chaoso tradicijose kaip pirmapradė tamsos, sapnų ir paslapties motina." },
+      { title:"Atitikmenys",
+        text:"Laikas: gili naktis ir tamsusis mėnulis. Spalvos: juoda, tamsiai mėlyna ir sidabrinė. Simboliai: žvaigždės, šydas, sparnai ir kiaušinis. Gyvūnai: pelėdos ir juodi žirgai. Augalai: aguona ir naktį žydinčios gėlės. Aukos: fakelai ir žvakės, tamsus vynas, medus, pienas, aguonos ir smilkalai." }
+    ]
+  },
+  offerings: {
+    torch:{ label:"Fakelas", msg:"Jai uždegamas fakelas – auka, kurios Nakčiai prašo orfikų himnas." },
+    wine:{ label:"Tamsus vynas", msg:"Tamsus vynas, išlietas nakties dievų motinai." },
+    honey:{ label:"Medus", msg:"Medus, saldus kaip miegas, kurį ji atneša visoms gyvoms būtybėms." },
+    milk:{ label:"Pienas", msg:"Dubenėlis pieno, blyškaus kaip žvaigždžių šviesa, Nakties Motinai." },
+    poppy:{ label:"Aguona", msg:"Aguona jos sūnums, Miegui ir Mirčiai, ir kiekvienam jos siunčiamam sapnui." },
+    incense:{ label:"Smilkalai", msg:"Smilkalų dūmai kyla aukštyn ir išnyksta jos tamsoje." }
+  },
+  meditation: {
+    withLT:"Nikte", title:"Poilsis tamsoje",
+    intro:"Pailsėk po jos žvaigždėtu šydu. Naktis iš tavęs nieko nereikalauja.",
+    lines:["Leisk akims apsunkti, kaip ilgos dienos pabaigoje.","Pajusk aplink save tamsą: švelnią, beribę ir saugią.","Kiekvienas rūpestis gali palaukti iki ryto.","Tu – maža šviesa po begaliniu dangumi, ir to pakanka.","Viskas gimė iš tamsos. Ilsėkis šaltinyje.","Tegul jos švelnus sūnus Miegas tave saugo."],
+    closing:"Eik švelniai. Naktis vėl sugrįš pas tave."
+  }
+};
+
+const DEITY = LANG === 'lt' ? LT.deity : "NYX";
 const STORAGE_KEY = "garden-offerings-nyx";
 
 const SYMBOLS = [
@@ -305,6 +381,27 @@ const OFFERINGS = {
   incense:{ label:"Incense", msg:"Incense smoke drifts upward, vanishing into her darkness.",
     svg:`<svg viewBox="0 0 40 40"><path d="M8 36 H32" stroke="#6e6578" stroke-width="4" stroke-linecap="round"/><path d="M20 34 L22 14" stroke="#7a2b1d" stroke-width="2"/><path d="M22 13 C17 9 26 7 21 2" stroke="#cfc3d6" stroke-width="1.5" fill="none" opacity=".8"/></svg>` }
 };
+
+
+/* ---------- Lithuanian text ---------- */
+if(LANG === 'lt'){
+  SYMBOLS.forEach((s,i)=>{ const t = LT.symbols[i]; if(!t) return;
+    s.name = t.name; s.sub = t.sub; s.text = t.text;
+    if(s.figures && t.figures) s.figures.forEach((f,k)=>{ if(t.figures[k]) f.caption = t.figures[k]; }); });
+  Object.assign(LORE, LT.lore);
+  for(const k in LT.offerings) if(OFFERINGS[k]) Object.assign(OFFERINGS[k], LT.offerings[k]);
+  document.title = LT.title;
+  document.querySelector('#topbar h1').textContent = LT.title;
+  document.querySelector('#topbar a.btn').textContent = UI_LT.back;
+  document.getElementById('loreBtn').textContent = LT.loreBtn;
+  document.querySelector('#tray .label').textContent = UI_LT.tray;
+  document.getElementById('clear').textContent = UI_LT.clear;
+  document.getElementById('hint').innerHTML = matchMedia('(pointer:coarse)').matches ? UI_LT.hintTouch : UI_LT.hint;
+  document.getElementById('cloakBtn').lastChild.textContent = UI_LT.cloak;
+  document.querySelector('#cloakPanel .t').textContent = UI_LT.chooseCloak;
+}
+document.getElementById('langBtn').textContent = LANG === 'lt' ? 'EN' : 'LT';
+document.getElementById('langBtn').addEventListener('click', ()=>setTempleLang(LANG === 'lt' ? 'en' : 'lt'));
 
 /* =========================================================
    WORLD SETUP
@@ -596,7 +693,7 @@ function placeOffering(type, f){
   glowEl.classList.add('on'); setTimeout(()=>glowEl.classList.remove('on'), 900);
 }
 document.getElementById('clear').addEventListener('click', ()=>{
-  placed = []; save(); render(); toast("The altar is cleansed.");
+  placed = []; save(); render(); toast(LANG === 'lt' ? UI_LT.cleansed : "The altar is cleansed.");
 });
 tray.addEventListener('pointerdown', e=>e.stopPropagation());
 card.addEventListener('pointerdown', e=>e.stopPropagation());
@@ -622,6 +719,7 @@ const CLOAKS = [
   { name:"Ancient Gold",    fill:"#5a4614", edge:"#d8b46a" },
   { name:"Wild Rose",       fill:"#5a2236", edge:"#e06a8c" }
 ];
+if(LANG === 'lt') CLOAKS.forEach((c,i)=>{ c.name = UI_LT.cloaks[i] || c.name; });
 const cloakPath = player.querySelector('.cloak');
 const cloakPanel = document.getElementById('cloakPanel');
 const cloakGrid = cloakPanel.querySelector('.grid');
@@ -736,6 +834,7 @@ const MEDITATION = {
   ],
   "closing": "Go gently. Night will return for you."
 };
+if(LANG === 'lt') Object.assign(MEDITATION, LT.meditation);
 
 const ba = BENCH.angle*Math.PI/180, BX = CX + Math.cos(ba)*420, BY = CY + Math.sin(ba)*420;
 const benchEmblem = SYMBOLS[BENCH.emblem].svg.replace('<svg ', `<svg x="51" y="21" width="18" height="18" style="color:${BENCH.trim}" `);
@@ -748,20 +847,20 @@ el('', BX, BY, `<svg viewBox="0 0 120 64" width="110" height="59">
 obstacles.push({ x:BX, y:BY-12, r:30 });
 
 document.body.insertAdjacentHTML('beforeend', `
-<button id="sitBtn" class="btn ui">✦ Sit and meditate</button>
+<button id="sitBtn" class="btn ui">${LANG === 'lt' ? UI_LT.sit : '✦ Sit and meditate'}</button>
 <div id="medi" style="--mc:${MEDITATION.mc};--mc2:${MEDITATION.mc2};--mcol:${MEDITATION.color}">
   <button class="close" aria-label="Close">×</button>
   <div class="stage on" data-s="start">
-    <div class="deity">MEDITATION WITH ${MEDITATION.deity.toUpperCase()}</div>
+    <div class="deity">${LANG === 'lt' ? 'MEDITACIJA SU ' + MEDITATION.withLT.toUpperCase() : 'MEDITATION WITH ' + MEDITATION.deity.toUpperCase()}</div>
     <h2></h2><p class="intro"></p>
-    <div class="mdur"><button class="btn" data-m="1">1 minute</button><button class="btn" data-m="3">3 minutes</button><button class="btn" data-m="5">5 minutes</button></div>
+    <div class="mdur"><button class="btn" data-m="1">${LANG === 'lt' ? UI_LT.m1 : '1 minute'}</button><button class="btn" data-m="3">${LANG === 'lt' ? UI_LT.m3 : '3 minutes'}</button><button class="btn" data-m="5">${LANG === 'lt' ? UI_LT.m5 : '5 minutes'}</button></div>
   </div>
   <div class="stage" data-s="run">
     <div class="morb"></div><div id="mPhase"></div><div id="mLine"></div><div id="mTime"></div>
   </div>
   <div class="stage" data-s="end">
     <div class="morb" style="transform:scale(1)"></div><p class="closing"></p>
-    <button class="btn" data-a="back">Return to the garden</button>
+    <button class="btn" data-a="back">${LANG === 'lt' ? UI_LT.backToGarden : 'Return to the garden'}</button>
   </div>
 </div>`);
 const sitBtn = document.getElementById('sitBtn'), medi = document.getElementById('medi');
@@ -786,7 +885,9 @@ function bell(){
     });
   } catch(e){}
 }
-const BREATH = [['BREATHE IN',4000,1.15],['HOLD',2000,1.15],['BREATHE OUT',6000,.7]];
+const BREATH = LANG === 'lt'
+  ? [[UI_LT.breatheIn,4000,1.15],[UI_LT.hold,2000,1.15],[UI_LT.breatheOut,6000,.7]]
+  : [['BREATHE IN',4000,1.15],['HOLD',2000,1.15],['BREATHE OUT',6000,.7]];
 function startMeditation(mins){
   mStage('run'); bell();
   const end = Date.now() + mins*60000; let pi = 0, li = 0;
