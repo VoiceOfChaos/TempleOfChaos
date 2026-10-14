@@ -369,7 +369,9 @@ async function signedInUser(){
 
   const rnd = seeded(hash(seeker + today));
   const card = CARDS[Math.floor(rnd()*CARDS.length)], reversed = rnd() < REVERSED_CHANCE;
-  document.getElementById('dayNote').textContent = dateText + ' · your card for today';
+  document.getElementById('dayNote').innerHTML = user
+    ? dateText + ' · your card for today<br><span style="font-size:12px;opacity:.75">✦ drawn for your account</span>'
+    : dateText + ' · your card for today<br><span style="font-size:12px;opacity:.75">Not signed in: <a href="index.html" style="text-decoration:underline">enter the Temple</a> to draw a card for your own account</span>';
   const el = cardEl('big'); setFront(el, card, reversed);
   document.getElementById('daySlot').appendChild(el);
   const reveal = ()=>{
