@@ -140,6 +140,7 @@ footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:
 
 <footer>The cards offer reflection, not certainty. The choice is always yours.</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* =========================================================
    THE MAJOR ARCANA (edit names, meanings and symbols here)
@@ -335,27 +336,50 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
 }));
 
 /* =========================================================
-   CARD OF THE DAY: the same card all day for each visitor
+   CARD OF THE DAY
+   Signed-in members: one card per account per day (same on every device).
+   Visitors who are not signed in: one card per browser per day.
    ========================================================= */
-(function(){
-  let seeker = store('tarot-seeker');
-  if(!seeker){ seeker = Math.random().toString(36).slice(2); store('tarot-seeker', seeker); }
+const SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH";
+async function signedInUser(){
+  try {
+    if(!window.supabase || !window.supabase.createClient) return null;
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY,
+      { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false, flowType:'pkce' } });
+    const { data:{ session } } = await sb.auth.getSession();
+    return session && session.user ? session.user : null;
+  } catch(e){ return null; }
+}
+(async function(){
   const now = new Date();
   const today = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  const dateText = now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+  document.getElementById('dayNote').textContent = dateText + ' · seeking your card…';
+
+  const user = await signedInUser();
+  let seeker;
+  if(user){
+    seeker = 'member:' + user.id;
+  } else {
+    seeker = store('tarot-seeker');
+    if(!seeker){ seeker = Math.random().toString(36).slice(2); store('tarot-seeker', seeker); }
+  }
+  const seenKey = 'tarot-seen:' + seeker;
+
   const rnd = seeded(hash(seeker + today));
   const card = CARDS[Math.floor(rnd()*CARDS.length)], reversed = rnd() < REVERSED_CHANCE;
-  document.getElementById('dayNote').textContent =
-    now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }) + ' · your card for today';
+  document.getElementById('dayNote').textContent = dateText + ' · your card for today';
   const el = cardEl('big'); setFront(el, card, reversed);
   document.getElementById('daySlot').appendChild(el);
   const reveal = ()=>{
     if(el.classList.contains('flipped')) return;
-    el.classList.add('flipped'); store('tarot-seen', today);
+    el.classList.add('flipped'); store(seenKey, today);
     document.getElementById('dayHint').textContent = 'A new card waits for you tomorrow.';
     setTimeout(()=>document.getElementById('dayReading').appendChild(meaning(card, reversed)), 500);
   };
   el.addEventListener('click', reveal);
-  if(store('tarot-seen') === today){ el.querySelector('.inner').style.transition = 'none'; reveal();
+  if(store(seenKey) === today){ el.querySelector('.inner').style.transition = 'none'; reveal();
     requestAnimationFrame(()=>el.querySelector('.inner').style.transition = ''); }
 })();
 
