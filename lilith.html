@@ -214,6 +214,7 @@ body.meditating #card, body.meditating #tray, body.meditating #toast{visibility:
 <div id="topbar" class="ui">
   <a class="btn" href="gardens.html">← Gardens</a>
   <h1>Garden of Lilith</h1>
+  <button id="langBtn" class="btn" aria-label="Language / Kalba">LT</button>
   <button id="cloakBtn" class="btn" aria-label="Choose cloak colour"><span class="sw"></span>Cloak</button>
 </div>
 <div id="cloakPanel" class="ui">
@@ -242,7 +243,80 @@ body.meditating #card, body.meditating #tray, body.meditating #toast{visibility:
 /* =========================================================
    EDIT HERE: deity, symbols and offerings
    ========================================================= */
-const DEITY = "LILITH";
+/* =========================================================
+   LANGUAGE (EN / LT). The choice is shared by the whole temple.
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+function setTempleLang(l){ try { localStorage.setItem('temple-lang', l); } catch(e){} location.reload(); }
+document.documentElement.lang = LANG;
+
+const UI_LT = {
+  back:"← Sodai", cloak:"Apsiaustas", chooseCloak:"PASIRINK APSIAUSTĄ",
+  cloaks:["Vidurnakčio violetinė","Kraujo raudona","Tuštumos juoda","Gilaus miško žalia","Bedugnės jūros mėlyna","Kaulo balta","Senovinis auksas","Laukinė rožė"],
+  tray:"Nutempk auką ant aukuro", clear:"Išvalyti aukurą", cleansed:"Aukuras apvalytas.",
+  hint:"Bakstelėk bet kur, kad eitum (arba naudok rodyklių klavišus / WASD).<br>Aplankyk simbolius, tada atnešk aukų prie aukuro.",
+  hintTouch:"Bakstelėk bet kur, kad eitum.<br>Aplankyk simbolius, tada atnešk aukų prie aukuro.",
+  sit:"✦ Atsisėsti ir medituoti", m1:"1 minutė", m3:"3 minutės", m5:"5 minutės",
+  backToGarden:"Grįžti į sodą", breatheIn:"ĮKVĖPK", hold:"SULAIKYK", breatheOut:"IŠKVĖPK"
+};
+
+const LT = {
+  deity: "LILITA",
+  title: "Lilitos sodas",
+  loreBtn: "✦ Jos istorija",
+  symbols: [
+    { name:"Juodasis mėnulis", sub:"Juodasis mėnulis Lilita",
+      text:"Astrologijoje Juodasis mėnulis Lilita žymi tašką, kuriame Mėnulio orbita labiausiai nutolusi nuo Žemės. Jis aiškinamas kaip laukinė, nepažabota ir atstumta savasties dalis: šešėlis, kuris atsisako būti nutildytas." },
+    { name:"Naktinė pelėda", sub:"Tamsos padaras",
+      text:"Pelėda siejama su Lilita nuo tos Izaijo eilutės, kurioje ji minima tarp nakties padarų. Ji mato tamsoje, skrenda tyliai ir neša išmintį, randamą ten, kur nepasiekia jokia šviesa." },
+    { name:"Edeno žaltys", sub:"Moteris medyje",
+      text:"Kai kurie viduramžių ir Renesanso dailininkai Edeno žaltį vaizdavo su moters veidu ir kūnu. Daugelis joje mato Lilitą, sugrįžtančią į sodą pasiūlyti Ievai žinojimo, kurį pati buvo pasiėmusi." },
+    { name:"Nakties sparnai", sub:"Laisvė",
+      text:"Lilita skrenda. Ji pakilo iš Edeno savo pačios galia ir joja nakties vėju. Jos sparnai – laisvė: atsisakymas būti laikomai ten, kur ji pati nepasirinko būti." },
+    { name:"Raudonoji jūra", sub:"Jos prieglobstis",
+      text:"Palikusi Edeną, ji apsigyveno prie Raudonosios jūros, laukinėse vietose, kurių nepasiekia joks įstatymas. Tai jos prieglobstis ir karalystė, kurioje ji niekam neatsiskaito." },
+    { name:"Lilitos sigilas", sub:"Jos antspaudas",
+      text:"Lilitos antspaudas, plačiai naudojamas šiuolaikiniame Lilitos garbinime ir kairiojo kelio praktikoje. Jis kilęs iš modernios okultinės tradicijos, o ne iš senovinių tekstų. Praktikuojantieji jį piešia, žvelgia į jį ar padeda ant jos aukuro, šaukdamiesi jos buvimo. Kaip slaptasis vardas, kurį ji ištarė, kad ištrūktų iš Edeno, antspaudas yra raktas: jį žinant, atsiveria kelias." },
+    { name:"Nakties karūna", sub:"Demonų karalienė",
+      text:"Kaip demonų karalienė, Lilita dėvi nakties karūną. Ji valdo tamsos dvasias – valdovė, nesilenkianti jokiam sostui, išskyrus savąjį." }
+  ],
+  lore: {
+    name:"Lilita", sub:"Nakties karalienė · Pirmoji moteris",
+    sections:[
+      { title:"Jos vardas",
+        text:"Lilitos vardas gali būti kilęs iš akadų lilītu – senovės Mesopotamijoje bijotų vėjo ir audros nakties dvasių. Hebrajų Biblijoje šis žodis pasitaiko tik kartą, Izaijo 34:14, tarp laukinių padarų, klajojančių nuniokotoje žemėje. Jis verstas kaip „nakties padaras“ arba „pelėda“." },
+      { title:"Pirmoji moteris",
+        text:"„Ben Siros abėcėlė“, viduramžių žydų tekstas iš maždaug VIII–X a. po Kr., pasakoja, kad Lilita buvo pirmoji Adomo žmona, sukurta iš tos pačios žemės kaip ir jis. Ji atsisakė gulėti po juo, sakydama, kad jie lygūs. Kai jis nenorėjo klausyti, ji ištarė slaptąjį Dievo vardą, pakilo į orą ir nuskrido prie Raudonosios jūros." },
+      { title:"Trys angelai",
+        text:"Dievas pasiuntė tris angelus – Senojų, Sansenojų ir Semangelofą – jos sugrąžinti, tačiau ji atsisakė. Šimtmečius po to amuletai su trijų angelų vardais būdavo kabinami virš lopšių ir gimdyvių lovų, kad ji neprisiartintų prie motinų ir naujagimių." },
+      { title:"Nakties karalienė",
+        text:"Kabaloje, ypač „Zohare“, ji tampa demonų karaliene ir Samaelio sutuoktine. Jos bijota kaip miegančių vyrų gundytojos ir nakties dvasių motinos." },
+      { title:"Nakties karalienės reljefas",
+        text:"Babilonietiška molio plokštė iš maždaug 1800 m. pr. Kr., žinoma kaip Burney reljefas, vaizduoja sparnuotą moterį pelėdos kojomis, stovinčią ant liūtų tarp dviejų pelėdų. Kadaise manyta, kad tai Lilita. Dauguma mokslininkų dabar joje mato Ištarą arba Ereškigal, tačiau šis atvaizdas iki šiol glaudžiai su ja siejamas." },
+      { title:"Atgimusi maištininkė",
+        text:"Nuo XX a. 8-ojo dešimtmečio ji tapo moterų nepriklausomybės simboliu, o vienas žydų feministinis žurnalas pasivadino jos vardu. Kairiojo kelio ir liuciferiškose tradicijose ji – Tamsioji Motina: laisvės, seksualumo, šešėlio ir savivaldos deivė, dažnai gerbiama kartu su Liuciferiu ir Samaeliu." },
+      { title:"Atitikmenys",
+        text:"Mėnulis: tamsusis mėnulis ir astrologijos Juodasis mėnulis Lilita. Spalvos: juoda ir raudona. Gyvūnai: pelėda, žaltys ir nakties paukščiai. Vietos: laukinė gamta, Raudonoji jūra ir naktis. Aukos: raudonas vynas, granatai, obuoliai, juodasis šokoladas, mira ir juodos ar raudonos žvakės." }
+    ]
+  },
+  offerings: {
+    wine:{ label:"Raudonas vynas", msg:"Taurė raudono vyno, įpilto Nakties karalienei." },
+    candle:{ label:"Juoda žvakė", msg:"Jos garbei dega juoda žvakė – liepsna, priklausanti tamsai." },
+    pomegranate:{ label:"Granatas", msg:"Sėklų pilnas granatas – geismui, vaisingumui ir gelmių tamsai." },
+    chocolate:{ label:"Juodasis šokoladas", msg:"Juodasis šokoladas, kartus ir saldus, paaukotas malonumui." },
+    myrrh:{ label:"Mira", msg:"Kyla miros dūmai, senoviniai ir kartūs, nešantys tavo žodžius į naktį." },
+    apple:{ label:"Obuolys", msg:"Obuolys, pažinimo vaisius, tai, kuri pasirinko žinojimą, o ne paklusnumą." }
+  },
+  meditation: {
+    withLT:"Lilita", title:"Nepažabotas aš",
+    intro:"Pabūk su Nakties karaliene. Čia nieko nereikia aiškinti.",
+    lines:["Pastebėk, kurioje kūno vietoje save mažini.","Įkvėpk į tą vietą ir leisk jai išsiplėsti.","Prisimink, kada tau buvo liepta būti mažesniam.","Tu gali atsisakyti. Tu gali pakilti.","Pajusk, kaip ant nugaros skleidžiasi sparnai.","Tu priklausai sau."],
+    closing:"Nešk savo laisvę atgal į pasaulį."
+  }
+};
+
+const DEITY = LANG === 'lt' ? LT.deity : "LILITH";
 const STORAGE_KEY = "garden-offerings-lilith";
 
 const SYMBOLS = [
@@ -303,6 +377,27 @@ const OFFERINGS = {
   apple:{ label:"Apple", msg:"An apple, the fruit of knowing, for the one who chose knowledge over obedience.",
     svg:`<svg viewBox="0 0 40 40"><path d="M20 13 C11 7 4 16 7 26 C10 36 17 38 20 35 C23 38 30 36 33 26 C36 16 29 7 20 13Z" fill="#b3202e"/><path d="M20 13 C20 9 21 6 24 4" stroke="#4a2c14" stroke-width="2" fill="none"/><path d="M22 8 C26 4 31 5 31 6 C27 10 23 10 22 8Z" fill="#2f6b3a"/></svg>` }
 };
+
+
+/* ---------- Lithuanian text ---------- */
+if(LANG === 'lt'){
+  SYMBOLS.forEach((s,i)=>{ const t = LT.symbols[i]; if(!t) return;
+    s.name = t.name; s.sub = t.sub; s.text = t.text;
+    if(s.figures && t.figures) s.figures.forEach((f,k)=>{ if(t.figures[k]) f.caption = t.figures[k]; }); });
+  Object.assign(LORE, LT.lore);
+  for(const k in LT.offerings) if(OFFERINGS[k]) Object.assign(OFFERINGS[k], LT.offerings[k]);
+  document.title = LT.title;
+  document.querySelector('#topbar h1').textContent = LT.title;
+  document.querySelector('#topbar a.btn').textContent = UI_LT.back;
+  document.getElementById('loreBtn').textContent = LT.loreBtn;
+  document.querySelector('#tray .label').textContent = UI_LT.tray;
+  document.getElementById('clear').textContent = UI_LT.clear;
+  document.getElementById('hint').innerHTML = matchMedia('(pointer:coarse)').matches ? UI_LT.hintTouch : UI_LT.hint;
+  document.getElementById('cloakBtn').lastChild.textContent = UI_LT.cloak;
+  document.querySelector('#cloakPanel .t').textContent = UI_LT.chooseCloak;
+}
+document.getElementById('langBtn').textContent = LANG === 'lt' ? 'EN' : 'LT';
+document.getElementById('langBtn').addEventListener('click', ()=>setTempleLang(LANG === 'lt' ? 'en' : 'lt'));
 
 /* =========================================================
    WORLD SETUP
@@ -594,7 +689,7 @@ function placeOffering(type, f){
   glowEl.classList.add('on'); setTimeout(()=>glowEl.classList.remove('on'), 900);
 }
 document.getElementById('clear').addEventListener('click', ()=>{
-  placed = []; save(); render(); toast("The altar is cleansed.");
+  placed = []; save(); render(); toast(LANG === 'lt' ? UI_LT.cleansed : "The altar is cleansed.");
 });
 tray.addEventListener('pointerdown', e=>e.stopPropagation());
 card.addEventListener('pointerdown', e=>e.stopPropagation());
@@ -620,6 +715,7 @@ const CLOAKS = [
   { name:"Ancient Gold",    fill:"#5a4614", edge:"#d8b46a" },
   { name:"Wild Rose",       fill:"#5a2236", edge:"#e06a8c" }
 ];
+if(LANG === 'lt') CLOAKS.forEach((c,i)=>{ c.name = UI_LT.cloaks[i] || c.name; });
 const cloakPath = player.querySelector('.cloak');
 const cloakPanel = document.getElementById('cloakPanel');
 const cloakGrid = cloakPanel.querySelector('.grid');
@@ -734,6 +830,7 @@ const MEDITATION = {
   ],
   "closing": "Take your freedom back into the world."
 };
+if(LANG === 'lt') Object.assign(MEDITATION, LT.meditation);
 
 const ba = BENCH.angle*Math.PI/180, BX = CX + Math.cos(ba)*420, BY = CY + Math.sin(ba)*420;
 const benchEmblem = SYMBOLS[BENCH.emblem].svg.replace('<svg ', `<svg x="51" y="21" width="18" height="18" style="color:${BENCH.trim}" `);
@@ -746,20 +843,20 @@ el('', BX, BY, `<svg viewBox="0 0 120 64" width="110" height="59">
 obstacles.push({ x:BX, y:BY-12, r:30 });
 
 document.body.insertAdjacentHTML('beforeend', `
-<button id="sitBtn" class="btn ui">✦ Sit and meditate</button>
+<button id="sitBtn" class="btn ui">${LANG === 'lt' ? UI_LT.sit : '✦ Sit and meditate'}</button>
 <div id="medi" style="--mc:${MEDITATION.mc};--mc2:${MEDITATION.mc2};--mcol:${MEDITATION.color}">
   <button class="close" aria-label="Close">×</button>
   <div class="stage on" data-s="start">
-    <div class="deity">MEDITATION WITH ${MEDITATION.deity.toUpperCase()}</div>
+    <div class="deity">${LANG === 'lt' ? 'MEDITACIJA SU ' + MEDITATION.withLT.toUpperCase() : 'MEDITATION WITH ' + MEDITATION.deity.toUpperCase()}</div>
     <h2></h2><p class="intro"></p>
-    <div class="mdur"><button class="btn" data-m="1">1 minute</button><button class="btn" data-m="3">3 minutes</button><button class="btn" data-m="5">5 minutes</button></div>
+    <div class="mdur"><button class="btn" data-m="1">${LANG === 'lt' ? UI_LT.m1 : '1 minute'}</button><button class="btn" data-m="3">${LANG === 'lt' ? UI_LT.m3 : '3 minutes'}</button><button class="btn" data-m="5">${LANG === 'lt' ? UI_LT.m5 : '5 minutes'}</button></div>
   </div>
   <div class="stage" data-s="run">
     <div class="morb"></div><div id="mPhase"></div><div id="mLine"></div><div id="mTime"></div>
   </div>
   <div class="stage" data-s="end">
     <div class="morb" style="transform:scale(1)"></div><p class="closing"></p>
-    <button class="btn" data-a="back">Return to the garden</button>
+    <button class="btn" data-a="back">${LANG === 'lt' ? UI_LT.backToGarden : 'Return to the garden'}</button>
   </div>
 </div>`);
 const sitBtn = document.getElementById('sitBtn'), medi = document.getElementById('medi');
@@ -784,7 +881,9 @@ function bell(){
     });
   } catch(e){}
 }
-const BREATH = [['BREATHE IN',4000,1.15],['HOLD',2000,1.15],['BREATHE OUT',6000,.7]];
+const BREATH = LANG === 'lt'
+  ? [[UI_LT.breatheIn,4000,1.15],[UI_LT.hold,2000,1.15],[UI_LT.breatheOut,6000,.7]]
+  : [['BREATHE IN',4000,1.15],['HOLD',2000,1.15],['BREATHE OUT',6000,.7]];
 function startMeditation(mins){
   mStage('run'); bell();
   const end = Date.now() + mins*60000; let pi = 0, li = 0;
