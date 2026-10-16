@@ -13163,7 +13163,7 @@ async function registerAccount() {
             setAccountMessage('Welcome to the Temple.');
             setTimeout(closeAccountModal, 700);
         } else {
-            setAccountMessage('Account created. Check your email to verify your account, then return here to enter the Temple.');
+            setAccountMessage('Account created. Check your email to verify your account, then return here to enter the Temple. If you do not see the email, check your spam folder.');
         }
     } catch (error) {
         console.error('Registration error:', error);
@@ -13295,7 +13295,7 @@ async function sendPasswordReset() {
         const options = redirectTo ? { redirectTo } : undefined;
         const { error } = await supabaseClient.auth.resetPasswordForEmail(email, options);
         if (error) throw error;
-        setResetMessage('A password-restoration link has been sent to your email. Open it and choose a new password.');
+        setResetMessage('A password-restoration link has been sent to your email. Open it and choose a new password. If you do not see it, check your spam folder.');
     } catch (error) {
         console.error('Password reset error:', error);
         setResetMessage(readableAuthError(error, 'Unable to send the password-restoration email.'));
@@ -17885,6 +17885,7 @@ document.addEventListener('keydown', function(event) {
 "The email or password is incorrect.": "Neteisingas el. paštas arba slaptažodis.",
 "Your email is not verified yet. Open the verification email, then enter your password again.": "Tavo el. paštas dar nepatvirtintas. Atidaryk patvirtinimo laišką ir vėl įvesk slaptažodį.",
 "Account created. Check your email to verify your account, then return here to enter the Temple.": "Paskyra sukurta. Patikrink el. paštą ir patvirtink paskyrą, tada grįžk čia ir įženk į Šventyklą.",
+"Account created. Check your email to verify your account, then return here to enter the Temple. If you do not see the email, check your spam folder.": "Paskyra sukurta. Patikrink el. paštą ir patvirtink paskyrą, tada grįžk čia ir įženk į Šventyklą. Jei laiško nematai, patikrink šlamšto (spam) aplanką.",
 "An account already exists with this email address. Please enter the Temple instead.": "Paskyra su šiuo el. pašto adresu jau egzistuoja. Verčiau įženk į Šventyklą.",
 "That name is already taken. Please choose another name.": "Šis vardas jau užimtas. Pasirink kitą vardą.",
 "Return to the sanctuary you have created.": "Sugrįžk į šventovę, kurią sukūrei.",
@@ -17901,6 +17902,7 @@ document.addEventListener('keydown', function(event) {
 "Unable to sign in.": "Nepavyko prisijungti.",
 "Enter the email address belonging to your account.": "Įvesk savo paskyrai priklausantį el. pašto adresą.",
 "A password-restoration link has been sent to your email. Open it and choose a new password.": "Slaptažodžio atkūrimo nuoroda išsiųsta tavo el. paštu. Atidaryk ją ir pasirink naują slaptažodį.",
+"A password-restoration link has been sent to your email. Open it and choose a new password. If you do not see it, check your spam folder.": "Slaptažodžio atkūrimo nuoroda išsiųsta tavo el. paštu. Atidaryk ją ir pasirink naują slaptažodį. Jei laiško nematai, patikrink šlamšto (spam) aplanką.",
 "Unable to send the password-restoration email.": "Nepavyko išsiųsti slaptažodžio atkūrimo laiško.",
 "The account system is not connected.": "Paskyrų sistema neprijungta.",
 "Your new password must contain at least 6 characters.": "Tavo naujame slaptažodyje turi būti bent 6 simboliai.",
