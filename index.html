@@ -9228,6 +9228,13 @@ button[onclick="showHiddenDedications()"] {
                 <small>Moon phases, dark moons and the Wheel of the Year.</small>
             </span>
         </a>
+        <a class="temple-function-item" href="laws.html" style="text-decoration:none">
+            <span class="temple-function-icon">⚖</span>
+            <span class="temple-function-copy">
+                <strong>TEMPLE LAWS</strong>
+                <small>The laws of the Temple and your privacy.</small>
+            </span>
+        </a>
     </div>
 </div>
 
@@ -17187,6 +17194,8 @@ document.addEventListener('keydown', function(event) {
 "Turn your intention into a chaos-magic sigil.": "Paversk savo ketinimą chaoso magijos sigilu.",
 "MOON & SABBATS": "MĖNULIS IR ŠVENTĖS",
 "Moon phases, dark moons and the Wheel of the Year.": "Mėnulio fazės, tamsieji mėnuliai ir Metų ratas.",
+"TEMPLE LAWS": "ŠVENTYKLOS ĮSTATYMAI",
+"The laws of the Temple and your privacy.": "Šventyklos įstatymai ir tavo privatumas.",
 "ENTER THE TEMPLE": "ĮŽENGTI Į ŠVENTYKLĄ",
 "A place beyond order": "Vieta anapus tvarkos",
 "Temple of Chaos": "Chaoso šventykla",
@@ -18160,6 +18169,37 @@ document.addEventListener('keydown', function(event) {
             setChatStatus(e.message || T('Could not silence the member.', 'Nepavyko nutildyti nario.'));
         }
     }
+})();
+</script>
+<!-- =========================================================
+     SIGN-UP CONSENT: age 16+ and the Temple Laws (laws.html)
+     ========================================================= -->
+<style id="temple-consent-css">
+#registerAccountForm .temple-consent{display:flex!important;flex-direction:row!important;gap:10px!important;align-items:flex-start!important;margin:4px 0 16px!important;text-align:left!important;width:100%!important}
+#registerAccountForm .temple-consent input[type=checkbox]{flex:0 0 16px!important;width:16px!important;height:16px!important;min-height:0!important;margin:3px 0 0!important;padding:0!important;border:0!important;background:none!important;accent-color:#d6bc89;cursor:pointer;-webkit-appearance:checkbox!important;appearance:auto!important}
+#registerAccountForm .temple-consent label{display:block!important;flex:1 1 auto!important;margin:0!important;font-size:12px!important;line-height:1.5!important;letter-spacing:.02em!important;text-transform:none!important;color:#a89e90!important;font-family:Georgia,"Times New Roman",serif!important;cursor:pointer}
+#registerAccountForm .temple-consent a{color:#d6bc89!important;text-decoration:underline!important;letter-spacing:inherit!important}
+</style>
+<script id="temple-consent">
+(function(){
+    var form = document.getElementById('registerAccountForm');
+    var btn = document.getElementById('registerButton');
+    if (!form || !btn) return;
+    var lt = false;
+    try { var v = localStorage.getItem('temple-lang'); lt = v ? v === 'lt' : (navigator.language || '').toLowerCase().indexOf('lt') === 0; } catch(e){}
+    var box = document.createElement('div');
+    box.className = 'temple-consent';
+    box.innerHTML = '<input type="checkbox" id="templeConsent" required>' +
+        '<label for="templeConsent">' + (lt
+          ? 'Man yra 16 ar daugiau metų ir sutinku su <a href="laws.html#laws" target="_blank">Šventyklos įstatymais</a> bei <a href="laws.html#privacy" target="_blank">privatumo politika</a>, įskaitant tai, kad mano tekstai gali atskleisti mano dvasinius įsitikinimus.'
+          : 'I am 16 or older and I accept the <a href="laws.html#laws" target="_blank">Temple Laws</a> and the <a href="laws.html#privacy" target="_blank">Privacy Policy</a>, including that what I write may reveal my spiritual beliefs.') + '</label>';
+    form.insertBefore(box, btn);
+    var cb = box.querySelector('input');
+    cb.addEventListener('invalid', function(){
+        if (!cb.checked) cb.setCustomValidity(lt ? 'Pažymėk, kad sutinki su Šventyklos įstatymais.' : 'Please accept the Temple Laws to create an account.');
+    });
+    ['change','click','input'].forEach(function(ev){ cb.addEventListener(ev, function(){ cb.setCustomValidity(''); }); });
+    form.addEventListener('submit', function(){ cb.setCustomValidity(''); }, true);
 })();
 </script>
 </body>
