@@ -17953,6 +17953,7 @@ document.addEventListener('keydown', function(event) {
 "Message not found.": "Žinutė nerasta.",
 "You can only delete your own messages.": "Gali trinti tik savo žinutes.",
 "Supabase blocked the deletion. Check your DELETE policy.": "Supabase užblokavo ištrynimą. Patikrink savo DELETE politiką.",
+"You have been silenced in the Temple.": "Tu buvai nutildytas (-a) Šventykloje.",
 "Could not delete the message.": "Nepavyko ištrinti žinutės.",
 "Surveys are not connected to Supabase yet.": "Apklausos dar neprijungtos prie Supabase.",
 "OPENING SURVEYS...": "ATVERIAMOS APKLAUSOS...",
@@ -18074,6 +18075,92 @@ document.addEventListener('keydown', function(event) {
     window.prompt = function(m, d){ return _prompt.call(window, window.templeTranslate(m), d); };
 })();
 
+</script>
+<!-- =========================================================
+     MODERATION: the admin can remove any message and silence members
+     (needs moderation_setup.sql run once in Supabase)
+     ========================================================= -->
+<style id="temple-moderation-css">
+.chat-message-actions .chat-mod-button{border-color:rgba(180,80,80,.35);color:#b88a7a}
+.chat-message-actions .chat-mod-button:hover{border-color:rgba(200,90,90,.7)!important;color:#e09a8a!important}
+</style>
+<script id="temple-moderation">
+(function(){
+    var lt = (function(){ try { return localStorage.getItem('temple-lang') === 'lt'; } catch(e){ return false; } })()
+             || (!(function(){ try { return localStorage.getItem('temple-lang'); } catch(e){ return null; } })() && (navigator.language || '').toLowerCase().indexOf('lt') === 0);
+    function T(en, l){ return lt ? l : en; }
+    if (typeof renderChatMessages !== 'function') return;
+
+    var checkedFor = null;
+    var originalRender = renderChatMessages;
+
+    renderChatMessages = function(){
+        originalRender.apply(this, arguments);
+
+        // Find out once per account whether this is the admin
+        if (currentAuthUser && checkedFor !== currentAuthUser.id && typeof checkChatAdmin === 'function') {
+            checkedFor = currentAuthUser.id;
+            checkChatAdmin().then(function(isAdmin){ if (isAdmin) renderChatMessages(); });
+            return;
+        }
+        if (!chatIsAdmin || !currentAuthUser) return;
+
+        var box = document.getElementById('chatMessages');
+        if (!box) return;
+        box.querySelectorAll('article.chat-message').forEach(function(el){
+            if (el.classList.contains('mine') || el.querySelector('.chat-mod-button')) return;
+            var id = el.getAttribute('data-message-id');
+            var msg = chatMessages.find(function(m){ return String(m.id) === String(id); });
+            if (!msg) return;
+            var bar = document.createElement('div');
+            bar.className = 'chat-message-actions';
+            var rm = document.createElement('button');
+            rm.type = 'button'; rm.className = 'chat-mod-button'; rm.textContent = T('REMOVE', 'PAŠALINTI');
+            rm.addEventListener('click', function(){ removeMessage(msg); });
+            var sil = document.createElement('button');
+            sil.type = 'button'; sil.className = 'chat-mod-button'; sil.textContent = T('SILENCE MEMBER', 'NUTILDYTI NARĮ');
+            sil.addEventListener('click', function(){ silenceMember(msg); });
+            bar.appendChild(rm); bar.appendChild(sil);
+            el.appendChild(bar);
+        });
+    };
+
+    async function removeMessage(msg){
+        if (!confirm(T('Remove this message for everyone?', 'Pašalinti šią žinutę visiems?'))) return;
+        try {
+            var res = await supabaseClient.from(CHAT_TABLE).delete().eq('id', msg.id).select();
+            if (res.error) throw res.error;
+            if (!res.data || !res.data.length) throw new Error(T('The database did not allow it. Run moderation_setup.sql in Supabase.', 'Duomenų bazė to neleido. Supabase paleisk moderation_setup.sql.'));
+            chatMessages = chatMessages.filter(function(m){ return String(m.id) !== String(msg.id); });
+            renderChatMessages();
+            setChatStatus(T('Message removed.', 'Žinutė pašalinta.'));
+        } catch (e) {
+            console.error('Could not remove message:', e);
+            setChatStatus(e.message || T('Could not remove the message.', 'Nepavyko pašalinti žinutės.'));
+        }
+    }
+
+    async function silenceMember(msg){
+        var name = msg.username || T('this member', 'šį narį');
+        var reason = prompt(T('Silence ' + name + '? They will still be able to read, but not write, leave offerings or vote.\n\nReason (only you see it):',
+                              'Nutildyti ' + name + '? Jie galės skaityti, bet negalės rašyti, palikti aukų ar balsuoti.\n\nPriežastis (matai tik tu):'), '');
+        if (reason === null) return;
+        try {
+            var res = await supabaseClient.from('temple_banned_users').insert({ user_id: msg.user_id, reason: reason || null });
+            if (res.error && !/duplicate|already exists|23505/i.test((res.error.message || '') + res.error.code)) throw res.error;
+            if (confirm(T('Silenced. Also remove ALL of their messages in this room?', 'Nutildyta. Ar pašalinti ir VISAS jų žinutes šioje menėje?'))) {
+                var del = await supabaseClient.from(CHAT_TABLE).delete().eq('user_id', msg.user_id).eq('room', chatCurrentRoom).select();
+                if (del.error) throw del.error;
+                chatMessages = chatMessages.filter(function(m){ return String(m.user_id) !== String(msg.user_id); });
+                renderChatMessages();
+            }
+            setChatStatus(T(name + ' has been silenced.', name + ' nutildytas (-a).'));
+        } catch (e) {
+            console.error('Could not silence member:', e);
+            setChatStatus(e.message || T('Could not silence the member.', 'Nepavyko nutildyti nario.'));
+        }
+    }
+})();
 </script>
 </body>
 </html>
