@@ -9221,6 +9221,13 @@ button[onclick="showHiddenDedications()"] {
                 <small>Turn your intention into a chaos-magic sigil.</small>
             </span>
         </a>
+        <a class="temple-function-item" href="calendar.html" style="text-decoration:none">
+            <span class="temple-function-icon">☾</span>
+            <span class="temple-function-copy">
+                <strong>MOON &amp; SABBATS</strong>
+                <small>Moon phases, dark moons and the Wheel of the Year.</small>
+            </span>
+        </a>
     </div>
 </div>
 
@@ -17127,6 +17134,21 @@ document.addEventListener('keydown', function(event) {
 </script>
 
 
+
+<!-- Shows the full text of database errors in the console instead of "[object Object]". -->
+<script id="temple-error-details">
+(function(){
+    var original = console.error;
+    console.error = function(){
+        var args = Array.prototype.map.call(arguments, function(x){
+            if (x && typeof x === 'object' && !(x instanceof Error)) { try { return JSON.stringify(x); } catch(e){} }
+            return x;
+        });
+        return original.apply(console, args);
+    };
+})();
+</script>
+
 <!-- =====================================================
      LITHUANIAN TRANSLATION (EN / LT switch in the Temple Functions menu)
      Translations live in the list below: "English text": "Lithuanian text".
@@ -17163,6 +17185,8 @@ document.addEventListener('keydown', function(event) {
 "Draw your card of the day or a three-card reading.": "Ištrauk dienos kortą arba trijų kortų būrimą.",
 "THE SIGIL FORGE": "SIGILŲ KALVĖ",
 "Turn your intention into a chaos-magic sigil.": "Paversk savo ketinimą chaoso magijos sigilu.",
+"MOON & SABBATS": "MĖNULIS IR ŠVENTĖS",
+"Moon phases, dark moons and the Wheel of the Year.": "Mėnulio fazės, tamsieji mėnuliai ir Metų ratas.",
 "ENTER THE TEMPLE": "ĮŽENGTI Į ŠVENTYKLĄ",
 "A place beyond order": "Vieta anapus tvarkos",
 "Temple of Chaos": "Chaoso šventykla",
