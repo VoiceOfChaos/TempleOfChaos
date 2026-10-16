@@ -1029,7 +1029,7 @@ window.__onFrame = ()=>{
 
   // Clear button: guests clear their own; the admin cleanses the whole altar; members don't see it
   const oldClear = document.getElementById('clear');
-  const clearBtn = oldClear.cloneNode(true); oldClear.replaceWith(clearBtn);
+  const clearBtn = oldClear.cloneNode(true); oldClear.replaceWith(clearBtn); clearBtn.style.display = 'none';
   clearBtn.addEventListener('click', async ()=>{
     if(user && isAdmin && sb){
       if(!confirm(TT('Cleanse this altar for everyone?', 'Apvalyti šį aukurą visiems?'))) return;
@@ -1041,7 +1041,7 @@ window.__onFrame = ()=>{
     }
   });
   function updateClear(){
-    clearBtn.style.display = (user && !isAdmin) ? 'none' : '';
+    clearBtn.style.display = (user && isAdmin) ? '' : 'none';
     clearBtn.textContent = (user && isAdmin) ? TT('Cleanse the altar (all)', 'Apvalyti aukurą (visiems)') : (lt ? UI_LT.clear : 'Clear the altar');
   }
 
