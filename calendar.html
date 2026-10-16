@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon &amp; Sabbats · Temple of Chaos</title>
+<!-- Tab icon and link previews -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#050507">
+<meta name="description" content="The Temple of Chaos moon calendar: tonight's moon phase, the next dark and full moons, and the Wheel of the Year, with the deities of each sacred night.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Temple of Chaos">
+<meta property="og:title" content="Moon & Sabbats · Temple of Chaos">
+<meta property="og:description" content="Tonight's moon phase, the next dark and full moons, and the Wheel of the Year.">
+<meta property="og:url" content="https://voiceofchaos.github.io/TempleOfChaos/calendar.html">
+<meta property="og:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
+<style>
+:root{--bg:#050507;--ink:#e8e3d8;--muted:#a89e90;--dim:#82796e;--gold:#d6bc89;--line:rgba(213,187,140,.28)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(circle at 50% 0%, rgba(91,42,134,.22), transparent 55%),
+                   radial-gradient(circle at 50% 100%, rgba(30,40,110,.16), transparent 50%)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;color:inherit}
+.topbtn{position:absolute;top:20px;z-index:50;padding:10px 16px;border:1px solid rgba(213,187,140,.38);
+  background:rgba(7,7,8,.82);color:#d9c7a4;font-size:12px;letter-spacing:.14em;cursor:pointer}
+.topbtn:hover{background:rgba(213,187,140,.08)}
+.back{left:20px}.langbtn{right:20px;padding:10px 14px}
+
+header{text-align:center;padding:96px 20px 26px}
+.eyebrow{color:var(--dim);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+h1{margin-top:14px;font-weight:normal;font-size:clamp(28px,6vw,44px);letter-spacing:.14em;color:var(--gold)}
+header p{margin:14px auto 0;max-width:540px;color:var(--muted);font-size:16px;line-height:1.6;font-style:italic}
+
+main{max-width:760px;margin:0 auto;padding:0 16px 70px;display:grid;gap:22px}
+.box{border:1px solid var(--line);background:linear-gradient(145deg,rgba(24,20,18,.92),rgba(7,7,8,.96));padding:24px 22px}
+.box h2{font-weight:normal;font-size:13px;letter-spacing:.24em;color:var(--dim);text-transform:uppercase;margin-bottom:16px}
+
+/* tonight */
+.tonight{display:flex;gap:26px;align-items:center}
+.moonbig{flex:none;width:170px;height:170px;filter:drop-shadow(0 0 26px rgba(230,220,190,.25))}
+.moonbig svg{width:100%;height:100%}
+.tn-phase{font-size:26px;letter-spacing:.08em;color:var(--gold)}
+.tn-meta{margin-top:8px;color:var(--muted);font-size:15px;line-height:1.6}
+.tn-next{margin-top:14px;font-size:15px;line-height:1.7;color:#d8d0c5}
+.tn-next b{color:#ecdfc3;font-weight:normal}
+.sacred{margin-top:16px;padding:12px 14px;border-left:2px solid var(--gold);background:rgba(213,187,140,.06);font-size:15px;line-height:1.55;color:#e4d9c6}
+.sacred a{color:var(--gold);text-decoration:underline}
+
+/* upcoming */
+.ev{display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-top:1px solid rgba(213,187,140,.12)}
+.ev:first-of-type{border-top:0;padding-top:0}
+.ev .ic{flex:none;width:36px;height:36px;color:var(--gold)}
+.ev .ic svg{width:100%;height:100%}
+.ev .when{font-size:12px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.ev .what{margin-top:3px;font-size:17px;color:#ecdfc3;letter-spacing:.03em}
+.ev .note{margin-top:4px;font-size:14px;line-height:1.55;color:var(--muted)}
+.ev .note a{color:var(--gold);text-decoration:underline}
+.tag{display:inline-block;margin-left:6px;padding:1px 7px;border:1px solid rgba(213,187,140,.35);font-size:10px;letter-spacing:.14em;color:#c9b38a;vertical-align:middle}
+
+/* month grid */
+.mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.mhead .mname{font-size:18px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+.nav{width:38px;height:38px;border:1px solid var(--line);background:rgba(7,7,8,.6);cursor:pointer;font-size:16px;color:#d9c7a4}
+.nav:hover{background:rgba(213,187,140,.08)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dow{text-align:center;font-size:10px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;padding-bottom:6px}
+.day{position:relative;aspect-ratio:1;border:1px solid rgba(213,187,140,.1);background:rgba(255,255,255,.015);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;color:#cfc4b2}
+.day:hover{border-color:rgba(213,187,140,.45)}
+.day.other{opacity:.28}
+.day.today{border-color:var(--gold);box-shadow:inset 0 0 0 1px rgba(214,188,137,.4)}
+.day.sel{background:rgba(213,187,140,.12)}
+.day .ph{width:16px;height:16px}
+.day .ph svg{width:100%;height:100%}
+.day .dot{position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:#e0a35a;box-shadow:0 0 6px #e0a35a}
+.detail{margin-top:16px;min-height:40px}
+.detail .dd{font-size:12px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.detail .none{margin-top:6px;color:var(--muted);font-style:italic;font-size:15px}
+.legend{margin-top:14px;display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--dim)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend .ph{width:14px;height:14px;display:inline-block}
+.legend .dot{width:6px;height:6px;border-radius:50%;background:#e0a35a;display:inline-block}
+
+@media (min-width:601px){.day{aspect-ratio:auto;height:64px}}
+footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:0 20px 40px}
+@media (max-width:600px){
+  .topbtn{top:14px;padding:8px 12px;font-size:11px}.back{left:14px}.langbtn{right:14px}
+  header{padding-top:78px}
+  .box{padding:20px 16px}
+  .tonight{flex-direction:column;text-align:center;gap:16px}
+  .moonbig{width:150px;height:150px}
+  .sacred{text-align:left}
+  .day{font-size:12px}
+  .day .ph{width:13px;height:13px}
+}
+</style>
+</head>
+<body>
+
+<a class="topbtn back" href="index.html" id="backBtn">← TEMPLE</a>
+<button class="topbtn langbtn" id="langBtn" type="button" aria-label="Language / Kalba">LT</button>
+
+<header>
+  <div class="eyebrow" id="eyebrow">Temple of Chaos</div>
+  <h1 id="title">MOON &amp; SABBATS</h1>
+  <p id="intro">The tides of night and the turning of the year. Every time is your own local time.</p>
+</header>
+
+<main>
+  <section class="box">
+    <h2 id="hTonight">Tonight</h2>
+    <div class="tonight">
+      <div class="moonbig" id="moonBig"></div>
+      <div>
+        <div class="tn-phase" id="tnPhase"></div>
+        <div class="tn-meta" id="tnMeta"></div>
+        <div class="tn-next" id="tnNext"></div>
+      </div>
+    </div>
+    <div id="tnSacred"></div>
+  </section>
+
+  <section class="box">
+    <h2 id="hUpcoming">Coming nights</h2>
+    <div id="upcoming"></div>
+  </section>
+
+  <section class="box">
+    <div class="mhead">
+      <button class="nav" id="prevM" aria-label="Previous month">‹</button>
+      <div class="mname" id="mName"></div>
+      <button class="nav" id="nextM" aria-label="Next month">›</button>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="legend" id="legend"></div>
+    <div class="detail" id="detail"></div>
+  </section>
+</main>
+
+<footer id="foot">Moon phases calculated with Jean Meeus's astronomical algorithms, accurate to a few minutes.</footer>
+
+<script>
+/* =========================================================
+   LANGUAGE (shared with the whole Temple)
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+const T = (en, lt) => LANG === 'lt' ? lt : en;
+const LOC = T('en-GB','lt-LT');
+document.documentElement.lang = LANG;
+document.getElementById('langBtn').textContent = LANG === 'lt' ? 'EN' : 'LT';
+document.getElementById('langBtn').addEventListener('click', ()=>{ try { localStorage.setItem('temple-lang', LANG === 'lt' ? 'en' : 'lt'); } catch(e){} location.reload(); });
+if(LANG === 'lt'){
+  document.title = 'Mėnulis ir šventės · Chaoso šventykla';
+  backBtn.textContent = '← ŠVENTYKLA'; eyebrow.textContent = 'Chaoso šventykla'; title.textContent = 'MĖNULIS IR ŠVENTĖS';
+  intro.textContent = 'Nakties potvyniai ir metų ratas. Visi laikai rodomi tavo vietos laiku.';
+  hTonight.textContent = 'Šiąnakt'; hUpcoming.textContent = 'Artėjančios naktys';
+  foot.textContent = 'Mėnulio fazės apskaičiuotos pagal Jeano Meeuso astronominius algoritmus, kelių minučių tikslumu.';
+  prevM.setAttribute('aria-label','Ankstesnis mėnuo'); nextM.setAttribute('aria-label','Kitas mėnuo');
+}
+
+/* =========================================================
+   ASTRONOMY (Jean Meeus, Astronomical Algorithms, ch. 27 & 49)
+   ========================================================= */
+const rad = d => d*Math.PI/180;
+const jdToDate = jd => new Date((jd - 2440587.5) * 86400000);
+const DELTA_T = 69/86400;   // TT − UT, about 69 s in the 2020s
+
+function moonPhaseJDE(k){   // k: integer + 0 new, .25 first quarter, .5 full, .75 last quarter
+  const T = k/1236.85, T2=T*T, T3=T2*T, T4=T3*T;
+  let jde = 2451550.09766 + 29.530588861*k + 0.00015437*T2 - 0.000000150*T3 + 0.00000000073*T4;
+  const E = 1 - 0.002516*T - 0.0000074*T2;
+  const M  = rad(2.5534 + 29.10535670*k - 0.0000014*T2 - 0.00000011*T3);
+  const Mp = rad(201.5643 + 385.81693528*k + 0.0107582*T2 + 0.00001238*T3 - 0.000000058*T4);
+  const F  = rad(160.7108 + 390.67050284*k - 0.0016118*T2 - 0.00000227*T3 + 0.000000011*T4);
+  const Om = rad(124.7746 - 1.56375588*k + 0.0020672*T2 + 0.00000215*T3);
+  const s = Math.sin, c = Math.cos, frac = ((k % 1) + 1) % 1;
+  let corr;
+  if(frac < 0.01 || frac > 0.99 || Math.abs(frac-0.5) < 0.01){
+    const full = Math.abs(frac-0.5) < 0.01;
+    corr = (full?-0.40614:-0.40720)*s(Mp) + (full?0.17302:0.17241)*E*s(M) + (full?0.01614:0.01608)*s(2*Mp)
+      + (full?0.01043:0.01039)*s(2*F) + (full?0.00734:0.00739)*E*s(Mp-M) - (full?0.00515:0.00514)*E*s(Mp+M)
+      + (full?0.00209:0.00208)*E*E*s(2*M) - 0.00111*s(Mp-2*F) - 0.00057*s(Mp+2*F) + 0.00056*E*s(2*Mp+M)
+      - 0.00042*s(3*Mp) + 0.00042*E*s(M+2*F) + 0.00038*E*s(M-2*F) - 0.00024*E*s(2*Mp-M) - 0.00017*s(Om)
+      - 0.00007*s(Mp+2*M) + 0.00004*s(2*Mp-2*F) + 0.00004*s(3*M) + 0.00003*s(Mp+M-2*F) + 0.00003*s(2*Mp+2*F)
+      - 0.00003*s(Mp+M+2*F) + 0.00003*s(Mp-M+2*F) - 0.00002*s(Mp-M-2*F) - 0.00002*s(3*Mp+M) + 0.00002*s(4*Mp);
+  } else {
+    corr = -0.62801*s(Mp) + 0.17172*E*s(M) - 0.01183*E*s(Mp+M) + 0.00862*s(2*Mp) + 0.00804*s(2*F)
+      + 0.00454*E*s(Mp-M) + 0.00204*E*E*s(2*M) - 0.00180*s(Mp-2*F) - 0.00070*s(Mp+2*F) - 0.00040*s(3*Mp)
+      - 0.00034*E*s(2*Mp-M) + 0.00032*E*s(M+2*F) + 0.00032*E*s(M-2*F) - 0.00028*E*E*s(Mp+2*M) + 0.00027*E*s(2*Mp+M)
+      - 0.00017*s(Om) - 0.00005*s(Mp-M-2*F) + 0.00004*s(2*Mp+2*F) - 0.00004*s(Mp+M+2*F) + 0.00004*s(Mp-2*M)
+      + 0.00003*s(Mp+M-2*F) + 0.00003*s(3*M) + 0.00002*s(2*Mp-2*F) + 0.00002*s(Mp-M+2*F) - 0.00002*s(3*Mp+M);
+    const W = 0.00306 - 0.00038*E*c(M) + 0.00026*c(Mp) - 0.00002*c(Mp-M) + 0.00002*c(Mp+M) + 0.00002*c(2*F);
+    corr += frac < 0.5 ? W : -W;
+  }
+  return jde + corr;
+}
+const PHASES = ['new','first','full','last'];
+function phasesBetween(start, end){      // all principal phases between two Dates
+  const out = [];
+  const y = start.getUTCFullYear() + start.getUTCMonth()/12;
+  let k = Math.floor((y - 2000) * 12.3685) - 1;
+  for(;; k++){
+    let done = false;
+    for(let q=0;q<4;q++){
+      const d = jdToDate(moonPhaseJDE(k + q/4) - DELTA_T);
+      if(d > end){ done = true; break; }
+      if(d >= start) out.push({ type:PHASES[q], date:d });
+    }
+    if(done) break;
+  }
+  return out;
+}
+
+const EQ_TERMS = [[485,324.96,1934.136],[203,337.23,32964.467],[199,342.08,20.186],[182,27.85,445267.112],[156,73.14,45036.886],
+ [136,171.52,22518.443],[77,222.54,65928.934],[74,296.72,3034.906],[70,243.58,9037.513],[58,119.81,33718.147],[52,297.17,150.678],
+ [50,21.02,2281.226],[45,247.54,29929.562],[44,325.15,31555.956],[29,60.93,4443.417],[18,155.12,67555.328],[17,288.79,4562.452],
+ [16,198.04,62894.029],[14,199.76,31436.921],[12,95.39,14577.848],[12,287.11,31931.756],[12,320.81,34777.259],[9,227.73,1222.114],[8,15.45,16859.074]];
+function seasonDate(year, which){      // 0 March equinox, 1 June solstice, 2 September equinox, 3 December solstice
+  const Y = (year-2000)/1000, Y2=Y*Y, Y3=Y2*Y, Y4=Y3*Y;
+  const base = [
+    2451623.80984 + 365242.37404*Y + 0.05169*Y2 - 0.00411*Y3 - 0.00057*Y4,
+    2451716.56767 + 365241.62603*Y + 0.00325*Y2 + 0.00888*Y3 - 0.00030*Y4,
+    2451810.21715 + 365242.01767*Y - 0.11575*Y2 + 0.00337*Y3 + 0.00078*Y4,
+    2451900.05952 + 365242.74049*Y - 0.06223*Y2 - 0.00823*Y3 + 0.00032*Y4][which];
+  const T = (base - 2451545)/36525, W = rad(35999.373*T - 2.47);
+  const dl = 1 + 0.0334*Math.cos(W) + 0.0007*Math.cos(2*W);
+  const S = EQ_TERMS.reduce((a,[A,B,C])=>a + A*Math.cos(rad(B + C*T)), 0);
+  return jdToDate(base + 0.00001*S/dl - DELTA_T);
+}
+
+/* =========================================================
+   SACRED DAYS (edit names, notes and links here)
+   ========================================================= */
+const FULL_MOON_NAMES = {
+  en:['Wolf Moon','Snow Moon','Worm Moon','Pink Moon','Flower Moon','Strawberry Moon','Buck Moon','Sturgeon Moon','Harvest Moon',"Hunter's Moon",'Beaver Moon','Cold Moon'],
+  lt:['Vilkų mėnulis','Sniego mėnulis','Kirmėlių mėnulis','Rožinis mėnulis','Žiedų mėnulis','Braškių mėnulis','Elnio mėnulis','Eršketų mėnulis','Derliaus mėnulis','Medžiotojų mėnulis','Bebrų mėnulis','Šalčio mėnulis']
+};
+const PHASE_NAMES = {
+  new:T('New Moon','Jaunatis'), first:T('First Quarter','Priešpilnis'), full:T('Full Moon','Pilnatis'), last:T('Last Quarter','Delčia'),
+  waxCres:T('Waxing Crescent','Jaunas mėnulis'), waxGib:T('Waxing Gibbous','Augantis mėnulis'),
+  wanGib:T('Waning Gibbous','Dylantis mėnulis'), wanCres:T('Waning Crescent','Senas mėnulis')
+};
+const NOTES = {
+  dark: T('The last night of the lunar month, sacred to Hekate. Leave her supper, the Deipnon, at the crossroads: garlic, eggs, honey, bread. A night to cleanse the house and release the old month. <a href="hekate.html">Visit her crossroads →</a>',
+          'Paskutinė mėnulio mėnesio naktis, šventa Hekatei. Palik jai vakarienę – Deipnoną – kryžkelėje: česnako, kiaušinių, medaus, duonos. Naktis išvalyti namus ir paleisti senąjį mėnesį. <a href="hekate.html">Aplankyk jos kryžkelę →</a>'),
+  new:  T('Amavasya, the moonless night sacred to Kali. A time for new beginnings, setting intentions and forging sigils. <a href="kali.html">Kali\'s garden</a> · <a href="sigil.html">Forge a sigil</a>',
+          'Amavasja – bemėnulė naktis, šventa Kali. Laikas naujoms pradžioms, ketinimams ir sigilų kalimui. <a href="kali.html">Kali sodas</a> · <a href="sigil.html">Nukalk sigilą</a>'),
+  first:T('The moon grows: a time to act, build and push your intentions forward.','Mėnulis auga: laikas veikti, kurti ir stumti ketinimus pirmyn.'),
+  full: T('Esbat: the moon at the height of her power. A night for magic, gratitude, divination and charging your tools under her light. <a href="tarot.html">Draw a card</a>',
+          'Esbatas: mėnulis savo galios viršūnėje. Naktis magijai, dėkingumui, būrimui ir įrankių įkrovimui jo šviesoje. <a href="tarot.html">Ištrauk kortą</a>'),
+  last: T('The moon wanes: a time to release, banish, cut cords and rest.','Mėnulis dyla: laikas paleisti, išvaryti, nutraukti ryšius ir ilsėtis.')
+};
+function sabbatsFor(year){
+  const ev = [];
+  const fixed = (m,d,en,lt,nen,nlt,tag) => ev.push({ date:new Date(year,m,d,12), kind:'sabbat', name:T(en,lt), note:T(nen,nlt), tag });
+  const season = (w,en,lt,nen,nlt) => ev.push({ date:seasonDate(year,w), kind:'sabbat', name:T(en,lt), note:T(nen,nlt), exact:true });
+  fixed(1,1,'Imbolc','Imbolkas','The first stirring of spring, sacred to Brigid: candles, poetry, healing and the returning light.','Pirmieji pavasario virpesiai, šventi Brigitai: žvakės, poezija, gijimas ir sugrįžtanti šviesa.');
+  season(0,'Ostara · Spring Equinox','Ostara · Pavasario lygiadienis','Day and night stand equal. Balance, fertility and new growth.','Diena ir naktis lygios. Pusiausvyra, vaisingumas ir naujas augimas.');
+  fixed(3,30,'Walpurgis Night','Valpurgijos naktis','The witches\' night before Beltane, when the veil is thin and fires burn on the hills.','Raganų naktis prieš Beltainą, kai šydas plonas, o ant kalvų dega laužai.');
+  fixed(4,1,'Beltane','Beltainas','The fire festival of life, passion and union. Sacred to Aphrodite and the gods of love. <a href="aphrodite.html">Aphrodite\'s garden</a>','Gyvybės, aistros ir sąjungos ugnies šventė. Šventa Afroditei ir meilės dievams. <a href="aphrodite.html">Afroditės sodas</a>');
+  season(1,'Litha · Summer Solstice','Lita · Vasaros saulėgrįža','The longest day: the sun at its peak, before the slow return of the dark.','Ilgiausia diena: saulė viršūnėje, prieš lėtą tamsos sugrįžimą.');
+  fixed(5,23,'Rasos (Joninės)','Rasos (Joninės)','The Baltic midsummer night: wreaths, bonfires, dew and the search for the fern blossom.','Baltiškoji vasaros vidurio naktis: vainikai, laužai, rasa ir paparčio žiedo paieškos.','BALTIC');
+  fixed(7,1,'Lughnasadh','Lugnasadas','The first harvest: gratitude for what has grown, and the first bread of the year.','Pirmasis derlius: dėkingumas už tai, kas užaugo, ir pirmoji metų duona.');
+  season(2,'Mabon · Autumn Equinox','Mabonas · Rudens lygiadienis','Balance again, as the dark begins to win. Harvest, gratitude and preparation for the descent.','Vėl pusiausvyra, tamsai pradedant nugalėti. Derlius, dėkingumas ir pasiruošimas nusileidimui.');
+  fixed(9,31,'Samhain','Samhainas','The veil between the worlds is thinnest. Honour the dead and the ancestors; a night for divination and shadow work. <a href="nyx.html">Nyx\'s garden</a>','Šydas tarp pasaulių ploniausias. Pagerbk mirusiuosius ir protėvius; naktis būrimui ir darbui su šešėliu. <a href="nyx.html">Niktės sodas</a>');
+  fixed(10,2,'Vėlinės','Vėlinės','The Baltic days of the souls: candles for the dead, and a meal left for the ancestors who return.','Baltiškosios vėlių dienos: žvakės mirusiesiems ir vaišės sugrįžtantiems protėviams.','BALTIC');
+  season(3,'Yule · Winter Solstice','Jolė · Žiemos saulėgrįža','The longest night. From the deepest darkness, the light is reborn.','Ilgiausia naktis. Iš giliausios tamsos vėl gimsta šviesa.');
+  return ev;
+}
+
+/* =========================================================
+   BUILD THE EVENTS
+   ========================================================= */
+const now = new Date();
+const rangeStart = new Date(now.getFullYear()-1, 0, 1), rangeEnd = new Date(now.getFullYear()+2, 0, 1);
+const phases = phasesBetween(rangeStart, rangeEnd);
+const EVENTS = [];
+phases.forEach(p=>{
+  if(p.type === 'new'){
+    const eve = new Date(p.date); eve.setDate(eve.getDate()-1); eve.setHours(20,0,0,0);
+    EVENTS.push({ date:eve, kind:'dark', name:T('Dark Moon · Hekate\'s Deipnon','Tamsusis mėnulis · Hekatės Deipnonas'), note:NOTES.dark, evening:true });
+    EVENTS.push({ date:p.date, kind:'new', name:PHASE_NAMES.new, note:NOTES.new, exact:true });
+  } else if(p.type === 'full'){
+    const mn = FULL_MOON_NAMES[LANG][p.date.getMonth()];
+    EVENTS.push({ date:p.date, kind:'full', name:PHASE_NAMES.full + ' · ' + mn, note:NOTES.full, exact:true });
+  } else {
+    EVENTS.push({ date:p.date, kind:p.type, name:PHASE_NAMES[p.type], note:NOTES[p.type], exact:true });
+  }
+});
+for(let y = rangeStart.getFullYear(); y < rangeEnd.getFullYear(); y++) EVENTS.push(...sabbatsFor(y));
+EVENTS.sort((a,b)=>a.date-b.date);
+
+/* =========================================================
+   MOON DRAWING
+   ========================================================= */
+function moonSVG(f, big){      // f: 0 new → .5 full → 1 new
+  const r = 46, cx = 50, cy = 50;
+  const lit = big ? '#efe6cf' : 'currentColor', dark = big ? '#1b1722' : 'rgba(214,188,137,.16)';
+  const k = Math.cos(2*Math.PI*f);            // 1 new, -1 full
+  const rx = Math.abs(k)*r;
+  const waxing = f < 0.5, gibbous = k < 0;
+  // lit side: the right limb while waxing, the left limb while waning
+  const limbSweep = waxing ? 1 : 0;
+  const termSweep = waxing ? (gibbous ? 1 : 0) : (gibbous ? 0 : 1);
+  const d = `M${cx} ${cy-r} A${r} ${r} 0 0 ${limbSweep} ${cx} ${cy+r} A${rx.toFixed(2)} ${r} 0 0 ${termSweep} ${cx} ${cy-r}Z`;
+  const glow = big ? `<defs><radialGradient id="mg" cx="45%" cy="40%" r="65%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#d9cdb0"/></radialGradient></defs>` : '';
+  const craters = big ? `<g fill="rgba(120,110,95,.18)"><circle cx="38" cy="36" r="7"/><circle cx="60" cy="58" r="9"/><circle cx="44" cy="66" r="5"/><circle cx="66" cy="34" r="4"/></g>` : '';
+  const illum = (1 - k)/2;
+  const litPath = illum > 0.995 ? `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${big?'url(#mg)':lit}"/>` : illum < 0.005 ? '' : `<path d="${d}" fill="${big?'url(#mg)':lit}"/>`;
+  return `<svg viewBox="0 0 100 100">${glow}<circle cx="${cx}" cy="${cy}" r="${r}" fill="${dark}" stroke="${big?'rgba(239,230,207,.25)':'rgba(214,188,137,.35)'}" stroke-width="${big?1:3}"/>${litPath}${big&&illum>0.005?`<clipPath id="mlit">${illum>0.995?`<circle cx="${cx}" cy="${cy}" r="${r}"/>`:`<path d="${d}"/>`}</clipPath><g clip-path="url(#mlit)">${craters}</g>`:''}</svg>`;
+}
+function lunationAt(date){       // fraction of the lunar cycle (0 = new) at a moment
+  let prev = null, next = null;
+  for(const p of phases){ if(p.type !== 'new') continue; if(p.date <= date) prev = p.date; else { next = p.date; break; } }
+  if(!prev || !next) return 0;
+  return (date - prev)/(next - prev);
+}
+function phaseNameAt(date){
+  const near = phases.find(p => Math.abs(p.date - date) < 18*3600*1000);
+  if(near) return PHASE_NAMES[near.type];
+  const f = lunationAt(date);
+  return f < .25 ? PHASE_NAMES.waxCres : f < .5 ? PHASE_NAMES.waxGib : f < .75 ? PHASE_NAMES.wanGib : PHASE_NAMES.wanCres;
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+const fmtDay = d => d.toLocaleDateString(LOC, { weekday:'long', day:'numeric', month:'long' });
+const fmtTime = d => d.toLocaleTimeString(LOC, { hour:'2-digit', minute:'2-digit' });
+const sameDay = (a,b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+function daysWord(n){
+  if(LANG !== 'lt') return n === 1 ? '1 day' : n + ' days';
+  const a = n%10, b = n%100;
+  return n + ' ' + (a===1 && b!==11 ? 'dienos' : 'dienų');
+}
+const ICONS = {
+  sabbat:`<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="20" cy="20" r="15"/><path d="M20 5 V35 M5 20 H35 M9.4 9.4 L30.6 30.6 M30.6 9.4 L9.4 30.6"/><circle cx="20" cy="20" r="4" fill="currentColor"/></svg>`,
+  dark:`<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="#0b0710" stroke="currentColor" stroke-width="1.8"/><path d="M14 9 L26 9 M20 9 L20 4" stroke="currentColor" stroke-width="1.8"/><circle cx="20" cy="22" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`
+};
+function eventIcon(ev){
+  if(ev.kind === 'sabbat') return ICONS.sabbat;
+  if(ev.kind === 'dark') return ICONS.dark;
+  return moonSVG({ new:0, first:.25, full:.5, last:.75 }[ev.kind] ?? lunationAt(ev.date), false);
+}
+function eventHTML(ev){
+  const when = ev.exact && ev.kind !== 'sabbat' ? `${fmtDay(ev.date)} · ${fmtTime(ev.date)}`
+             : ev.evening ? `${fmtDay(ev.date)} · ${T('evening','vakare')}` : fmtDay(ev.date);
+  const tag = ev.tag ? `<span class="tag">${T('BALTIC','BALTŲ')}</span>` : '';
+  return `<div class="ev"><div class="ic">${eventIcon(ev)}</div><div>
+    <div class="when">${when}</div><div class="what">${ev.name}${tag}</div><div class="note">${ev.note}</div></div></div>`;
+}
+
+// Tonight
+(function(){
+  const f = lunationAt(now), illum = Math.round((1 - Math.cos(2*Math.PI*f))/2*100);
+  let prevNew = null; for(const p of phases){ if(p.type==='new' && p.date <= now) prevNew = p.date; }
+  const age = prevNew ? (now - prevNew)/86400000 : 0;
+  moonBig.innerHTML = moonSVG(f, true);
+  tnPhase.textContent = phaseNameAt(now);
+  tnMeta.textContent = T(`${illum}% illuminated · moon age ${age.toFixed(1)} days`, `Apšviesta ${illum}% · mėnulio amžius ${age.toFixed(1).replace('.',',')} d.`);
+  const nf = phases.find(p => p.type==='full' && p.date > now), nn = phases.find(p => p.type==='new' && p.date > now);
+  const inDays = d => Math.max(0, Math.ceil((d - now)/86400000));
+  const line = (label, d) => `${label}: <b>${fmtDay(d)}, ${fmtTime(d)}</b> (${T('in','po')} ${daysWord(inDays(d))})`;
+  tnNext.innerHTML = [ line(T('Next full moon','Kita pilnatis'), nf.date), line(T('Next new moon','Kita jaunatis'), nn.date) ].join('<br>');
+  const todays = EVENTS.filter(e => sameDay(e.date, now));
+  if(todays.length) tnSacred.innerHTML = todays.map(e => `<div class="sacred"><b>${T('Tonight','Šiąnakt')}: ${e.name}</b><br>${e.note}</div>`).join('');
+})();
+
+// Coming nights
+(function(){
+  const start = new Date(now); start.setHours(0,0,0,0);
+  const list = EVENTS.filter(e => e.date >= start && !sameDay(e.date, now) || (sameDay(e.date, now) && e.date > now)).slice(0, 8);
+  upcoming.innerHTML = list.map(eventHTML).join('');
+})();
+
+// Month grid
+let viewY = now.getFullYear(), viewM = now.getMonth(), selected = new Date(now);
+const PRINCIPAL = d => phases.find(p => sameDay(p.date, d));
+function renderMonth(){
+  const first = new Date(viewY, viewM, 1);
+  mName.textContent = first.toLocaleDateString(LOC, { month:'long', year:'numeric' });
+  const startDow = (first.getDay() + 6) % 7;       // weeks start on Monday
+  const startDate = new Date(viewY, viewM, 1 - startDow);
+  let html = '';
+  for(let i=0;i<7;i++){ const d = new Date(2024,0,1+i); html += `<div class="dow">${d.toLocaleDateString(LOC,{weekday:'short'})}</div>`; }
+  for(let i=0;i<42;i++){
+    const d = new Date(startDate); d.setDate(startDate.getDate()+i);
+    const p = PRINCIPAL(d), evs = EVENTS.filter(e => sameDay(e.date, d) && (e.kind === 'sabbat' || e.kind === 'dark'));
+    const cls = ['day', d.getMonth()!==viewM?'other':'', sameDay(d,now)?'today':'', sameDay(d,selected)?'sel':''].join(' ');
+    html += `<div class="${cls}" data-t="${d.getTime()}">${evs.length?'<span class="dot"></span>':''}<span>${d.getDate()}</span>`
+         + (p ? `<span class="ph">${moonSVG({new:0,first:.25,full:.5,last:.75}[p.type], false)}</span>` : '') + `</div>`;
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll('.day').forEach(el => el.addEventListener('click', ()=>{ selected = new Date(+el.dataset.t); renderMonth(); showDetail(); }));
+}
+function showDetail(){
+  const evs = EVENTS.filter(e => sameDay(e.date, selected));
+  const f = lunationAt(new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 22));
+  const head = `<div class="dd">${fmtDay(selected)} · ${phaseNameAt(new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 22))}</div>`;
+  detail.innerHTML = head + (evs.length ? evs.map(eventHTML).join('') : `<div class="none">${T('No sacred event on this day.','Šią dieną švenčių nėra.')}</div>`);
+}
+legend.innerHTML = `<span><span class="ph">${moonSVG(0,false)}</span>${PHASE_NAMES.new}</span><span><span class="ph">${moonSVG(.25,false)}</span>${PHASE_NAMES.first}</span>`
+  + `<span><span class="ph">${moonSVG(.5,false)}</span>${PHASE_NAMES.full}</span><span><span class="ph">${moonSVG(.75,false)}</span>${PHASE_NAMES.last}</span>`
+  + `<span><span class="dot"></span>${T('Sabbat or dark moon','Šventė ar tamsusis mėnulis')}</span>`;
+prevM.addEventListener('click', ()=>{ viewM--; if(viewM<0){ viewM=11; viewY--; } renderMonth(); });
+nextM.addEventListener('click', ()=>{ viewM++; if(viewM>11){ viewM=0; viewY++; } renderMonth(); });
+renderMonth(); showDetail();
+</script>
+</body>
+</html>
