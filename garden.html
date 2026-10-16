@@ -918,5 +918,157 @@ window.__onFrame = ()=>{
   sitBtn.classList.toggle('show', !meditating && Math.hypot(px-BX, py-BY) < 80);
 };
 </script>
+
+<!-- =========================================================
+     SHARED ALTAR: offerings from Temple members are seen by everyone
+     (needs altar_setup.sql run once in Supabase)
+     ========================================================= -->
+<style id="shared-altar-css">
+#altarLog{max-width:520px;margin:0 auto 4px;font-size:12px;line-height:1.5;color:rgba(232,227,216,.72);text-align:center;min-height:18px}
+#altarLog b{color:var(--gold);font-weight:normal}
+#altarLog a{color:var(--gold);text-decoration:underline}
+#altarLog .who{display:block;opacity:.85}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script id="shared-altar">
+(function(){
+  const SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH";
+  const GARDEN = STORAGE_KEY.replace('garden-offerings-', '');
+  const MAX_SHOWN = 14, DAYS = 7;
+  const lt = LANG === 'lt';
+  const TT = (en, l) => lt ? l : en;
+
+  const tray = document.getElementById('tray');
+  const label = tray.querySelector('.label');
+  const log = document.createElement('div'); log.id = 'altarLog';
+  label.insertAdjacentElement('afterend', log);
+
+  // The visitor's own offerings, kept in this browser (used when not signed in)
+  let local = Array.isArray(placed) ? placed.slice() : [];
+  let shared = [], user = null, isAdmin = false, weekCount = 0, sb = null;
+
+  save = function(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(local)); } catch(e){} };
+  function rebuild(){
+    const all = shared.map(r => ({ t:r.offering, f:r.pos, ts:new Date(r.created_at).getTime() }))
+      .concat(user ? [] : local)
+      .filter(o => OFFERINGS[o.t])
+      .sort((a,b) => a.ts - b.ts);
+    placed = all.slice(-MAX_SHOWN);
+  }
+  const ago = ts => {
+    const s = (Date.now() - ts)/1000, rtf = new Intl.RelativeTimeFormat(lt ? 'lt' : 'en', { numeric:'auto' });
+    if(s < 60) return TT('just now', 'ką tik');
+    if(s < 3600) return rtf.format(-Math.round(s/60), 'minute');
+    if(s < 86400) return rtf.format(-Math.round(s/3600), 'hour');
+    return rtf.format(-Math.round(s/86400), 'day');
+  };
+  const nameOf = r => r.nickname || TT('A seeker', 'Ieškotojas');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function drawLog(){
+    let html = '';
+    if(sb){
+      html += weekCount
+        ? TT(`<b>${weekCount}</b> ${weekCount === 1 ? 'offering' : 'offerings'} left at this altar this week`,
+             `Šią savaitę prie šio aukuro paliktos aukos: <b>${weekCount}</b>`)
+        : TT('No one has left an offering here this week. Be the first.', 'Šią savaitę čia dar niekas nepaliko aukos. Tavoji gali būti pirmoji.');
+      const last = shared.slice(-2).reverse();
+      last.forEach(r => { const o = OFFERINGS[r.offering]; if(o) html += `<span class="who">${esc(nameOf(r))} · ${esc(o.label)} · ${ago(new Date(r.created_at).getTime())}</span>`; });
+      if(!user) html += `<span class="who">${TT('Only you see your offerings. <a href="index.html">Sign in to the Temple</a> so everyone can.',
+                                               'Savo aukas matai tik tu. <a href="index.html">Prisijunk prie Šventyklos</a>, kad jas matytų visi.')}</span>`;
+    }
+    log.innerHTML = html;
+  }
+  function refresh(animate){ rebuild(); render(animate); drawLog(); }
+
+  // Placing an offering
+  placeOffering = async function(type, f){
+    glowEl.classList.add('on'); setTimeout(()=>glowEl.classList.remove('on'), 900);
+    if(!user || !sb){
+      local.push({ t:type, f, ts:Date.now() }); if(local.length > MAX_SHOWN) local.shift();
+      save(); refresh(true); toast(OFFERINGS[type].msg); return;
+    }
+    const tmp = { id:'tmp'+Date.now(), offering:type, pos:f, created_at:new Date().toISOString(), nickname:user.user_metadata && user.user_metadata.nickname, user_id:user.id };
+    shared.push(tmp); weekCount++; refresh(true); toast(OFFERINGS[type].msg);
+    const { data, error } = await sb.from('garden_offerings').insert({ garden:GARDEN, offering:type, pos:f }).select().single();
+    const i = shared.indexOf(tmp);
+    if(error){
+      if(i > -1) shared.splice(i, 1); weekCount--; refresh();
+      console.error('Offering not saved', error);
+      toast(/rest a while/i.test(error.message || '') ? TT('The altar is full of your gifts. Rest a while before offering again.', 'Aukuras pilnas tavo dovanų. Pailsėk ir aukok vėliau.')
+                                                     : TT('The offering could not reach the altar. Try again.', 'Auka nepasiekė aukuro. Bandyk dar kartą.'));
+    } else if(i > -1){
+      if(shared.some(r => r.id === data.id)) shared.splice(i, 1); else shared[i] = data;
+      drawLog();
+    }
+  };
+
+  // Clear button: guests clear their own; the admin cleanses the whole altar; members don't see it
+  const oldClear = document.getElementById('clear');
+  const clearBtn = oldClear.cloneNode(true); oldClear.replaceWith(clearBtn);
+  clearBtn.addEventListener('click', async ()=>{
+    if(user && isAdmin && sb){
+      if(!confirm(TT('Cleanse this altar for everyone?', 'Apvalyti šį aukurą visiems?'))) return;
+      const { error } = await sb.from('garden_offerings').delete().eq('garden', GARDEN);
+      if(error){ console.error('Cleanse failed', error); toast(TT('The altar could not be cleansed.', 'Aukuro apvalyti nepavyko.')); return; }
+      shared = []; weekCount = 0; refresh(); toast(lt ? UI_LT.cleansed : 'The altar is cleansed.');
+    } else {
+      local = []; save(); refresh(); toast(lt ? UI_LT.cleansed : 'The altar is cleansed.');
+    }
+  });
+  function updateClear(){
+    clearBtn.style.display = (user && !isAdmin) ? 'none' : '';
+    clearBtn.textContent = (user && isAdmin) ? TT('Cleanse the altar (all)', 'Apvalyti aukurą (visiems)') : (lt ? UI_LT.clear : 'Clear the altar');
+  }
+
+  async function load(){
+    const since = new Date(Date.now() - DAYS*86400000).toISOString();
+    const [list, count] = await Promise.all([
+      sb.from('garden_offerings').select('id,offering,pos,nickname,created_at,user_id').eq('garden', GARDEN).gte('created_at', since).order('created_at', { ascending:false }).limit(MAX_SHOWN),
+      sb.from('garden_offerings').select('id', { count:'exact', head:true }).eq('garden', GARDEN).gte('created_at', since)
+    ]);
+    if(list.error){ console.error('Altar could not load', list.error); return; }
+    shared = list.data.reverse();
+    weekCount = count.count || shared.length;
+    refresh();
+  }
+
+  async function start(){
+    if(!window.supabase || !window.supabase.createClient){ drawLog(); return; }
+    try {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY,
+        { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false, flowType:'pkce' } });
+      const { data:{ session } } = await sb.auth.getSession();
+      user = session ? session.user : null;
+      if(user){ try { const r = await sb.rpc('is_temple_admin'); isAdmin = r.data === true; } catch(e){} }
+    } catch(e){ console.error('Temple connection failed', e); sb = null; }
+    updateClear();
+    if(!sb){ drawLog(); return; }
+    await load();
+
+    // Live: show offerings from others as they arrive
+    try {
+      sb.channel('altar-' + GARDEN)
+        .on('postgres_changes', { event:'INSERT', schema:'public', table:'garden_offerings', filter:'garden=eq.' + GARDEN }, p => {
+          const r = p.new; if(!r || shared.some(x => x.id === r.id)) return;
+          if(user && r.user_id === user.id) return;          // our own, already shown
+          shared.push(r); if(shared.length > MAX_SHOWN) shared.shift(); weekCount++;
+          refresh(true);
+          const o = OFFERINGS[r.offering];
+          if(o) toast(TT(`${nameOf(r)} left an offering: ${o.label}`, `${nameOf(r)} paliko auką: ${o.label}`));
+        })
+        .on('postgres_changes', { event:'DELETE', schema:'public', table:'garden_offerings' }, p => {
+          const id = p.old && p.old.id; const before = shared.length;
+          shared = shared.filter(x => x.id !== id);
+          if(shared.length !== before){ weekCount = Math.max(0, weekCount - 1); refresh(); }
+        })
+        .subscribe();
+    } catch(e){}
+    setInterval(()=>{ if(!document.hidden) load(); }, 120000);   // safety refresh every 2 minutes
+  }
+
+  refresh(); start();
+})();
+</script>
 </body>
 </html>
