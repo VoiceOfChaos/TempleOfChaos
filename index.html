@@ -18246,12 +18246,12 @@ body.temple-chrome-hidden #accountButton.account-button{
 <script id="temple-hide-on-scroll">
 (function(){
     var last = new WeakMap(), docLast = 0;
-    function show(){ document.body.classList.remove('temple-chrome-hidden'); }
+    function show(){ if (document.body.classList.contains('temple-chrome-hidden')) document.body.classList.remove('temple-chrome-hidden'); }
     function hide(){
         var wrap = document.getElementById('templeFunctionsWrap');
         if (wrap && wrap.classList.contains('open')) return;          // never hide an open menu
         if (document.body.classList.contains('temple-popup-open')) return;
-        document.body.classList.add('temple-chrome-hidden');
+        if (!document.body.classList.contains('temple-chrome-hidden')) document.body.classList.add('temple-chrome-hidden');
     }
     function handle(pos, prev){
         if (pos < 80) { show(); return; }
