@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Archive · Temple of Chaos</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#050507">
+<meta name="description" content="The Archive of the Temple of Chaos: deities and spirits, herbs, crystals and symbols, rituals, spells and prayers, personal experience and every path, written by the Temple's members.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Temple of Chaos">
+<meta property="og:title" content="The Archive · Temple of Chaos">
+<meta property="og:description" content="Deities, correspondences, rituals, personal experience and every path, written by the Temple's members.">
+<meta property="og:url" content="https://voiceofchaos.github.io/TempleOfChaos/archive.html">
+<meta property="og:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--bg:#050507;--ink:#e8e3d8;--muted:#a89e90;--dim:#82796e;--gold:#d6bc89;--line:rgba(213,187,140,.28);--line2:rgba(213,187,140,.14)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(circle at 50% 0%, rgba(91,42,134,.2), transparent 55%)}
+a{color:var(--gold)}
+button,input,select,textarea{font-family:inherit;color:inherit}
+.topbtn{position:absolute;top:20px;z-index:50;padding:10px 16px;border:1px solid rgba(213,187,140,.38);background:rgba(7,7,8,.82);
+  color:#d9c7a4;font-size:12px;letter-spacing:.14em;cursor:pointer;text-decoration:none}
+.topbtn:hover{background:rgba(213,187,140,.08)}
+.back{left:20px}.langbtn{right:20px;padding:10px 14px}
+header{text-align:center;padding:96px 20px 18px}
+.eyebrow{color:var(--dim);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+h1{margin-top:14px;font-weight:normal;font-size:clamp(28px,6vw,44px);letter-spacing:.16em;color:var(--gold)}
+header p{margin:14px auto 0;max-width:560px;color:var(--muted);font-size:16px;line-height:1.6;font-style:italic}
+main{max-width:820px;margin:0 auto;padding:10px 16px 70px;overflow-x:clip}
+
+.tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px 0 22px}
+.tab{padding:9px 15px;border:1px solid var(--line);background:rgba(7,7,8,.6);font-size:12px;letter-spacing:.14em;cursor:pointer;color:#d9c7a4}
+.tab.on{background:rgba(213,187,140,.14);border-color:var(--gold);color:#f0e2c4}
+.tab .n{opacity:.7;margin-left:4px}
+.btn{padding:10px 16px;border:1px solid rgba(213,187,140,.45);background:rgba(213,187,140,.07);font-size:12px;letter-spacing:.14em;cursor:pointer;color:#e3cfa6}
+.btn:hover{background:rgba(213,187,140,.15)}
+.btn.ghost{border-color:var(--line2);background:none;color:var(--muted)}
+.btn.danger{border-color:rgba(180,80,80,.45);color:#d29a8a;background:none}
+.btn:disabled{opacity:.5;cursor:default}
+
+/* ---------- THE LIBRARY ---------- */
+.library{position:relative;margin:4px 0 26px;padding:16px 58px 10px 16px;
+  background:linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0) 8%,rgba(0,0,0,0) 92%,rgba(0,0,0,.35)),
+             linear-gradient(180deg,#1d130c,#140d08);
+  border:10px solid #2c1c10;border-top-width:14px;box-shadow:inset 0 0 40px rgba(0,0,0,.8),0 10px 30px rgba(0,0,0,.6)}
+.library:before{content:"";position:absolute;inset:-14px -10px auto -10px;height:6px;background:linear-gradient(#5a3a20,#2c1c10)}
+.case{margin-bottom:14px}
+.plaque{display:inline-flex;align-items:center;gap:8px;margin:0 0 8px;padding:5px 12px;cursor:pointer;
+  background:linear-gradient(180deg,#b8975c,#7d6236);color:#1a1108;border:1px solid #d9bb7f;box-shadow:0 2px 4px rgba(0,0,0,.6);
+  font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-family:inherit}
+.plaque .ct{opacity:.75;font-size:11px}
+.plaque:hover{filter:brightness(1.1)}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,36px);grid-auto-rows:172px;column-gap:2px;
+  background:repeating-linear-gradient(180deg,rgba(0,0,0,.28) 0 158px,#5b3a1e 158px 161px,#3a2512 161px 168px,#1a0f07 168px 172px)}
+.book{align-self:end;justify-self:center;margin-bottom:14px;width:var(--w);height:var(--h);padding:0;cursor:pointer;position:relative;
+  border:0;border-radius:2px 2px 1px 1px;color:#e8cf95;
+  background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(255,255,255,.10) 30%,rgba(0,0,0,.05) 55%,rgba(0,0,0,.5)),var(--c);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.4),2px 0 3px rgba(0,0,0,.5);transition:transform .2s ease;transform-origin:bottom center}
+.book:before,.book:after{content:"";position:absolute;left:3px;right:3px;height:2px;background:rgba(232,207,149,.75)}
+.book:before{top:9px;box-shadow:0 4px 0 rgba(232,207,149,.45)}
+.book:after{bottom:16px;box-shadow:0 -4px 0 rgba(232,207,149,.45)}
+.book .bt{position:absolute;top:22px;bottom:28px;left:0;right:0;writing-mode:vertical-rl;display:block;text-align:center;
+  overflow:hidden;font-size:11px;letter-spacing:.05em;line-height:var(--w);text-shadow:0 1px 1px rgba(0,0,0,.8);white-space:nowrap;text-overflow:ellipsis}
+.book .bi{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:9px;opacity:.85}
+.book:hover{transform:translateY(-10px)}
+.book.lean{transform:rotate(9deg);transform-origin:bottom right}
+.book.lean:hover{transform:rotate(9deg) translateY(-10px)}
+.slot{align-self:end;justify-self:center;margin-bottom:14px;width:30px;height:128px;padding:0;cursor:pointer;
+  border:1px dashed rgba(213,187,140,.13);background:linear-gradient(180deg,rgba(255,255,255,.015),rgba(0,0,0,.15));color:transparent;font-size:18px;font-family:inherit}
+.slot:hover{border-color:rgba(213,187,140,.55);color:#d6bc89;background:rgba(213,187,140,.06)}
+.ladder{position:absolute;top:-18px;bottom:-4px;right:6px;width:36px;pointer-events:none;
+  border-left:5px solid #6b4524;border-right:5px solid #6b4524;
+  background:repeating-linear-gradient(180deg,transparent 0 30px,#7a5130 30px 35px,#4a2e17 35px 37px);
+  box-shadow:3px 3px 8px rgba(0,0,0,.6),inset 0 0 0 1px rgba(0,0,0,.3)}
+.ladder:before{content:"";position:absolute;top:-6px;left:-9px;right:-9px;height:6px;border-radius:3px;background:#8a6a3c}
+.libnote{color:var(--muted);font-size:14px;font-style:italic;text-align:center;margin:-10px 0 20px}
+
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.bar input,.bar select{flex:1 1 180px;min-width:0;padding:10px 12px;background:#0d0b0a;border:1px solid var(--line);font-size:15px;color:#e5ddd0}
+.bar select{flex:0 1 220px}
+.note{color:var(--muted);font-size:14px;font-style:italic;text-align:center;padding:20px 0}
+
+.entry{border-top:1px solid var(--line2);padding:16px 2px;cursor:pointer}
+.entry:hover .et{color:#f3e5c6}
+.et{font-size:19px;color:#ecdfc3;letter-spacing:.02em;overflow-wrap:anywhere}
+.ex{overflow-wrap:anywhere}
+.em{margin-top:5px;font-size:12px;color:var(--dim);letter-spacing:.06em}
+.ex{margin-top:7px;font-size:15px;line-height:1.55;color:var(--muted)}
+.chip{display:inline-block;margin:6px 6px 0 0;padding:2px 8px;border:1px solid var(--line2);font-size:11px;letter-spacing:.08em;color:#c9b38a;cursor:pointer;background:none}
+.chip.st{border-color:rgba(224,163,90,.5);color:#e0a35a}
+.acts{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+
+/* article */
+.article{border:1px solid var(--line);background:linear-gradient(145deg,rgba(24,20,18,.92),rgba(7,7,8,.96));padding:28px 24px}
+.article h2.t{font-weight:normal;font-size:clamp(24px,5vw,32px);color:var(--gold);letter-spacing:.04em;line-height:1.25}
+.article .em{margin-top:10px}
+.prose{margin-top:22px;overflow-wrap:anywhere}
+.prose p,.prose li{font-size:17px;line-height:1.75;color:#ddd5c9}
+.prose p+p,.prose p+ul,.prose ul+p,.prose p+ol,.prose ol+p{margin-top:14px}
+.prose h3{font-weight:normal;font-size:21px;color:#ecdfc3;margin:28px 0 10px;letter-spacing:.03em}
+.prose h4{font-weight:normal;font-size:17px;color:var(--gold);margin:22px 0 8px;letter-spacing:.1em;text-transform:uppercase}
+.prose ul,.prose ol{padding-left:24px;display:grid;gap:6px;margin-top:10px}
+.prose blockquote{margin:16px 0;padding:10px 16px;border-left:2px solid var(--gold);color:#cfc5b6;font-style:italic;background:rgba(213,187,140,.05)}
+.prose hr{border:0;border-top:1px solid var(--line2);margin:24px 0}
+.prose b{color:#f0e4ca;font-weight:normal}
+.prose a.wl{text-decoration:underline dotted}
+.prose .missing{color:var(--muted);border-bottom:1px dotted var(--dim)}
+
+/* form */
+.form{border:1px solid var(--line);background:linear-gradient(145deg,rgba(24,20,18,.92),rgba(7,7,8,.96));padding:24px 20px;display:grid;gap:14px}
+.form h2{font-weight:normal;font-size:15px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase}
+.form label{display:grid;gap:6px;font-size:11px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+.form input,.form select,.form textarea{padding:11px 12px;background:#0d0b0a;border:1px solid var(--line);font-size:16px;color:#e5ddd0;text-transform:none;letter-spacing:0;width:100%}
+.form textarea{min-height:320px;line-height:1.6;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.help{font-size:13px;line-height:1.6;color:var(--dim);border-left:2px solid var(--line);padding:8px 12px}
+.help code{color:#d9c7a4;font-family:inherit}
+.msg{font-size:14px;color:#d9c7a4;min-height:18px}
+.msg.err{color:#d6907f}
+.preview{border:1px dashed var(--line);padding:16px}
+
+footer{text-align:center;color:#5f574e;font-size:12px;font-style:italic;padding:0 20px 40px}
+@media (max-width:600px){
+  .topbtn{top:14px;padding:8px 12px;font-size:11px}.back{left:14px}.langbtn{right:14px}
+  header{padding-top:78px}.article{padding:22px 16px}.row{grid-template-columns:1fr}
+  .bar select{flex:1 1 100%}
+  .library{padding:14px 46px 8px 10px;border-width:7px;border-top-width:10px}.ladder{width:30px;right:5px}
+}
+</style>
+</head>
+<body>
+<a class="topbtn back" href="index.html" id="backBtn">← TEMPLE</a>
+<button class="topbtn langbtn" id="langBtn" type="button" aria-label="Language / Kalba">LT</button>
+
+<header>
+  <div class="eyebrow" id="eyebrow">Temple of Chaos</div>
+  <h1 id="title">THE ARCHIVE</h1>
+  <p id="intro">The memory of the Temple. Deities and spirits, herbs and stones, rituals and prayers, visions and every path, written by its members.</p>
+</header>
+
+<main>
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+</main>
+<footer id="foot">Members write; the Temple Keeper approves every entry before it is shown to all.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* =========================================================
+   EDIT HERE: sections and paths of the Archive
+   ========================================================= */
+const SECTIONS = [
+  { id:'deities',         icon:'☉', en:['Deities & Spirits','Gods, goddesses, spirits and beings: origins, symbols, offerings and myths.'],
+                                     lt:['Dievybės ir dvasios','Dievai, deivės, dvasios ir būtybės: kilmė, simboliai, aukos ir mitai.'] },
+  { id:'correspondences', icon:'❦', en:['Herbs, Crystals & Symbols','Correspondences for magic: plants, stones, colours, numbers and signs.'],
+                                     lt:['Žolelės, kristalai ir simboliai','Atitikmenys magijai: augalai, akmenys, spalvos, skaičiai ir ženklai.'] },
+  { id:'rituals',         icon:'✴', en:['Rituals, Spells & Prayers','Rites, workings, spells, invocations and prayers.'],
+                                     lt:['Ritualai, burtai ir maldos','Apeigos, darbai, burtai, invokacijos ir maldos.'] },
+  { id:'upg',             icon:'☾', en:['Personal Experience (UPG)','Visions, dreams, signs and encounters: what the gods showed you.'],
+                                     lt:['Asmeninė patirtis (UPG)','Vizijos, sapnai, ženklai ir susitikimai: ką tau parodė dievai.'] },
+  { id:'paths',           icon:'⚶', en:['Paths & Traditions','Every path: their beliefs, history, practices and how to begin.'],
+                                     lt:['Keliai ir tradicijos','Visi keliai: jų tikėjimai, istorija, praktikos ir kaip pradėti.'] },
+  { id:'other',           icon:'✧', en:['Other','Everything that does not fit elsewhere.'],
+                                     lt:['Kita','Visa, kas netelpa kitur.'] }
+];
+const PATHS = [
+  ['chaos','Chaos magic','Chaoso magija'], ['luciferian','Luciferianism','Liuciferizmas'], ['lhp','Left-hand path','Kairiosios rankos kelias'],
+  ['hellenic','Hellenic','Helėnų'], ['roman','Roman','Romėnų'], ['baltic','Baltic (Romuva)','Baltų (Romuva)'], ['slavic','Slavic','Slavų'],
+  ['norse','Norse','Skandinavų'], ['celtic','Celtic','Keltų'], ['kemetic','Kemetic (Egyptian)','Kemetizmas (Egipto)'],
+  ['mesopotamian','Mesopotamian','Mesopotamijos'], ['hindu','Hindu & Shakta','Induizmas ir šaktizmas'], ['buddhist','Buddhist & Tantric','Budizmas ir tantra'],
+  ['wicca','Wicca','Vika'], ['witchcraft','Witchcraft','Raganavimas'], ['thelema','Thelema','Telema'], ['hermetic','Hermetic & Occult','Hermetizmas ir okultizmas'],
+  ['demonolatry','Demonolatry','Demonolatrija'], ['shamanism','Shamanism & Animism','Šamanizmas ir animizmas'], ['folk','Folk magic','Liaudies magija'],
+  ['eclectic','Eclectic','Eklektinis'], ['other','Other','Kitas']
+];
+
+/* =========================================================
+   LANGUAGE
+   ========================================================= */
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+const T = (en, lt) => LANG === 'lt' ? lt : en;
+const LOC = T('en-GB','lt-LT');
+document.documentElement.lang = LANG;
+langBtn.textContent = LANG === 'lt' ? 'EN' : 'LT';
+langBtn.addEventListener('click', ()=>{ try { localStorage.setItem('temple-lang', LANG === 'lt' ? 'en' : 'lt'); } catch(e){} location.reload(); });
+if(LANG === 'lt'){
+  document.title = 'Archyvas · Chaoso šventykla';
+  backBtn.textContent = '← ŠVENTYKLA'; eyebrow.textContent = 'Chaoso šventykla'; title.textContent = 'ARCHYVAS';
+  intro.textContent = 'Šventyklos atmintis. Dievybės ir dvasios, žolelės ir akmenys, ritualai ir maldos, vizijos ir visi keliai, užrašyti jos narių.';
+  foot.textContent = 'Nariai rašo, o Šventyklos sergėtoja patvirtina kiekvieną įrašą, prieš jį pamatant visiems.';
+}
+const secName = id => { const s = SECTIONS.find(x => x.id === id); return s ? s[LANG][0] : id; };
+const pathName = id => { const p = PATHS.find(x => x[0] === id); return p ? (LANG === 'lt' ? p[2] : p[1]) : (id || ''); };
+
+/* =========================================================
+   CONNECTION
+   ========================================================= */
+const SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH";
+let sb = null, user = null, isAdmin = false;
+let entries = [];          // everything this visitor may see
+let state = { tab:'browse', section:'', path:'', q:'', open:null, editing:null };
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate = d => new Date(d).toLocaleDateString(LOC, { year:'numeric', month:'long', day:'numeric' });
+
+/* =========================================================
+   TEXT FORMATTING (simple, safe Markdown)
+   ## Heading   ### Small heading   **bold**   *italic*
+   - list item   1. numbered   > quote   ---   [[Other entry]]   [text](https://link)
+   ========================================================= */
+function inline(s){
+  s = esc(s);
+  s = s.replace(/\[\[([^\]]{1,160})\]\]/g, (m, t) => {
+    const e = entries.find(x => x.status === 'approved' && x.title.toLowerCase() === t.trim().toLowerCase());
+    return e ? `<a class="wl" href="#e/${e.id}">${t}</a>` : `<span class="missing" title="${esc(T('No entry with this title yet','Tokio įrašo dar nėra'))}">${t}</span>`;
+  });
+  s = s.replace(/\[([^\]]{1,200})\]\((https?:\/\/[^\s)]{1,500})\)/g, '<a href="$2" target="_blank" rel="noopener nofollow">$1</a>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>');
+  return s;
+}
+function md(src){
+  const lines = String(src || '').replace(/\r/g,'').split('\n');
+  let out = '', para = [], list = null;
+  const flushP = () => { if(para.length){ out += `<p>${para.map(inline).join('<br>')}</p>`; para = []; } };
+  const flushL = () => { if(list){ out += `<${list.t}>${list.items.map(i => `<li>${inline(i)}</li>`).join('')}</${list.t}>`; list = null; } };
+  for(const raw of lines){
+    const l = raw.trimEnd();
+    let m;
+    if(!l.trim()){ flushP(); flushL(); continue; }
+    if((m = l.match(/^###\s+(.*)/))){ flushP(); flushL(); out += `<h4>${inline(m[1])}</h4>`; continue; }
+    if((m = l.match(/^##?\s+(.*)/))){ flushP(); flushL(); out += `<h3>${inline(m[1])}</h3>`; continue; }
+    if(/^-{3,}$/.test(l.trim())){ flushP(); flushL(); out += '<hr>'; continue; }
+    if((m = l.match(/^>\s?(.*)/))){ flushP(); flushL(); out += `<blockquote>${inline(m[1])}</blockquote>`; continue; }
+    if((m = l.match(/^\s*[-*•]\s+(.*)/))){ flushP(); if(!list || list.t !== 'ul'){ flushL(); list = { t:'ul', items:[] }; } list.items.push(m[1]); continue; }
+    if((m = l.match(/^\s*\d+[.)]\s+(.*)/))){ flushP(); if(!list || list.t !== 'ol'){ flushL(); list = { t:'ol', items:[] }; } list.items.push(m[1]); continue; }
+    flushL(); para.push(l);
+  }
+  flushP(); flushL();
+  return out;
+}
+const plain = s => String(s || '').replace(/\[\[([^\]]+)\]\]/g,'$1').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/[#>*_`-]+/g,' ').replace(/\s+/g,' ').trim();
+
+/* =========================================================
+   DATA
+   ========================================================= */
+async function load(){
+  if(!sb){ entries = []; return; }
+  const { data, error } = await sb.from('archive_entries')
+    .select('id,title,section,path,tags,lang,body,author_id,author_name,status,created_at,updated_at,approved_at')
+    .order('created_at', { ascending:false }).limit(2000);
+  if(error){ console.error('Archive could not load', error); entries = []; state.loadError = error.message; return; }
+  entries = data || []; state.loadError = null;
+}
+const approved = () => entries.filter(e => e.status === 'approved');
+const mine = () => user ? entries.filter(e => e.author_id === user.id) : [];
+const pending = () => entries.filter(e => e.status === 'pending');
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function renderTabs(){
+  const t = [['browse', T('BROWSE','NARŠYTI')]];
+  t.push(['write', T('+ WRITE','+ RAŠYTI')]);
+  if(user) t.push(['mine', T('MY ENTRIES','MANO ĮRAŠAI'), mine().length]);
+  if(isAdmin) t.push(['review', T('REVIEW','PERŽIŪRA'), pending().length]);
+  tabs.innerHTML = t.map(([id, label, n]) => `<button class="tab${state.tab === id && !state.open ? ' on' : ''}" data-tab="${id}">${label}${n ? `<span class="n">(${n})</span>` : ''}</button>`).join('');
+  tabs.querySelectorAll('.tab').forEach(b => b.onclick = () => { state.open = null; state.editing = null; state.tab = b.dataset.tab; location.hash = ''; render(); });
+}
+function entryCard(e, actions){
+  const meta = [secName(e.section), e.path ? pathName(e.path) : '', e.author_name || '', fmtDate(e.approved_at || e.created_at)].filter(Boolean).join(' · ');
+  const ex = plain(e.body).slice(0, 220);
+  return `<div class="entry" data-id="${e.id}">
+    <div class="et">${esc(e.title)}</div>
+    <div class="em">${esc(meta)}${e.lang !== LANG ? ` · ${e.lang.toUpperCase()}` : ''}</div>
+    <div class="ex">${esc(ex)}${plain(e.body).length > 220 ? '…' : ''}</div>
+    <div>${e.status === 'pending' ? `<span class="chip st">${T('WAITING FOR APPROVAL','LAUKIA PATVIRTINIMO')}</span>` : ''}${(e.tags || []).map(t => `<button class="chip" data-tag="${esc(t)}">#${esc(t)}</button>`).join('')}</div>
+    ${actions ? `<div class="acts">${actions}</div>` : ''}
+  </div>`;
+}
+function bindCards(root){
+  root.querySelectorAll('.entry').forEach(el => el.addEventListener('click', ev => {
+    if(ev.target.closest('.acts')) return;
+    const tag = ev.target.closest('.chip[data-tag]');
+    if(tag){ ev.stopPropagation(); state.tab = 'browse'; state.open = null; state.q = '#' + tag.dataset.tag; location.hash = ''; render(); return; }
+    location.hash = 'e/' + el.dataset.id;
+  }));
+}
+
+/* ---------- THE LIBRARY: every approved entry is a book ---------- */
+const LEATHER = ['#5a1e24','#2b3d2a','#26304d','#4a2648','#4a3018','#1f3d3d','#6a4316','#3d1f1f','#2a2a2e','#3b2a55','#55302a','#1e3a2c'];
+function hashN(n){ let x = (Number(n) * 2654435761) >>> 0; x ^= x >>> 15; return x; }
+function bookLook(e){
+  const h = hashN(e.id), len = String(e.body || '').length;
+  return { c: LEATHER[h % LEATHER.length],
+           w: Math.round(24 + Math.min(10, Math.log2(1 + len / 250) * 2.6)) + 'px',
+           h: (120 + (h >> 5) % 30) + 'px' };
+}
+function bookHTML(e, lean){
+  const L = bookLook(e), sec = SECTIONS.find(x => x.id === e.section);
+  const tip = e.title + ' · ' + (e.author_name || '') + (e.path ? ' · ' + pathName(e.path) : '');
+  return `<button class="book${lean ? ' lean' : ''}" data-id="${e.id}" title="${esc(tip)}" aria-label="${esc(tip)}"
+    style="--c:${L.c};--w:${L.w};--h:${L.h}"><span class="bt">${esc(e.title)}</span><span class="bi">${sec ? sec.icon : ''}</span></button>`;
+}
+function fillShelf(shelf){
+  const books = shelf.querySelectorAll('.book').length;
+  const per = Math.max(1, Math.floor((shelf.clientWidth + 2) / 38));
+  const total = Math.max(per, Math.ceil((books + 1) / per) * per);
+  shelf.querySelectorAll('.slot').forEach(x => x.remove());
+  for(let i = books; i < total; i++){
+    const b = document.createElement('button');
+    b.className = 'slot'; b.type = 'button'; b.textContent = '+';
+    b.title = T('An empty place, waiting for a new book', 'Tuščia vieta, laukianti naujos knygos');
+    b.onclick = () => { state.editing = null; state.section = shelf.dataset.sec; state.tab = 'write'; location.hash = ''; render();
+      const sel = document.getElementById('fSec'); if(sel) sel.value = shelf.dataset.sec; };
+    shelf.appendChild(b);
+  }
+  const lastBook = shelf.querySelectorAll('.book');
+  lastBook.forEach(b => b.classList.remove('lean'));
+  if(lastBook.length && books % per !== 0 && hashN(lastBook.length) % 2) lastBook[lastBook.length - 1].classList.add('lean');
+}
+let shelfResizeT;
+addEventListener('resize', () => { clearTimeout(shelfResizeT); shelfResizeT = setTimeout(() => document.querySelectorAll('.shelf').forEach(fillShelf), 150); });
+
+function renderBrowse(){
+  const all = approved();
+  let byPath = all;
+  if(state.path) byPath = byPath.filter(e => e.path === state.path);
+  const q = state.q.trim().toLowerCase();
+  const usedPaths = [...new Set(all.map(e => e.path).filter(Boolean))];
+  let results = null;
+  if(q){
+    results = q.startsWith('#') ? byPath.filter(e => (e.tags || []).map(t => t.toLowerCase()).includes(q.slice(1)))
+            : byPath.filter(e => (e.title + ' ' + e.body + ' ' + (e.tags || []).join(' ') + ' ' + (e.author_name || '')).toLowerCase().includes(q));
+  }
+  const cases = SECTIONS.filter(sct => !state.section || sct.id === state.section);
+  view.innerHTML = `
+    <div class="bar">
+      <input id="q" type="search" placeholder="${T('Search the Archive…','Ieškoti Archyve…')}" value="${esc(state.q)}">
+      <select id="pathSel"><option value="">${T('All paths','Visi keliai')}</option>${PATHS.filter(p => usedPaths.includes(p[0])).map(p => `<option value="${p[0]}"${state.path === p[0] ? ' selected' : ''}>${esc(LANG === 'lt' ? p[2] : p[1])}</option>`).join('')}</select>
+    </div>
+    ${results ? `<div id="list">${results.length ? results.map(e => entryCard(e)).join('') : `<div class="note">${T('Nothing found.','Nieko nerasta.')}</div>`}</div>` : `
+    ${state.loadError ? `<div class="note">${esc(T('The Archive could not be opened. ','Archyvo atverti nepavyko. ') + state.loadError)}</div>` : ''}
+    ${!all.length && !state.loadError ? `<p class="libnote">${T('The shelves are still empty. Every empty place waits for a book: tap one to write the first.','Lentynos dar tuščios. Kiekviena tuščia vieta laukia knygos: bakstelėk ją ir parašyk pirmąją.')}</p>` : ''}
+    ${state.section ? `<p style="margin:0 0 10px"><a href="#" id="allSec">← ${T('All shelves','Visos lentynos')}</a></p>` : ''}
+    <div class="library">
+      ${cases.map(sct => { const books = byPath.filter(e => e.section === sct.id).sort((a, b) => a.title.localeCompare(b.title, LOC));
+        return `<div class="case">
+          <button class="plaque" data-sec="${sct.id}" title="${esc(sct[LANG][1])}"><span>${sct.icon}</span><span>${esc(sct[LANG][0])}</span><span class="ct">${books.length}</span></button>
+          <div class="shelf" data-sec="${sct.id}">${books.map(e => bookHTML(e)).join('')}</div></div>`; }).join('')}
+      <div class="ladder" aria-hidden="true"></div>
+    </div>`}`;
+  view.querySelectorAll('.shelf').forEach(fillShelf);
+  view.querySelectorAll('.book').forEach(b => b.onclick = () => { location.hash = 'e/' + b.dataset.id; });
+  view.querySelectorAll('.plaque').forEach(b => b.onclick = () => { state.section = state.section === b.dataset.sec ? '' : b.dataset.sec; render(); });
+  const qi = document.getElementById('q');
+  qi.oninput = () => { state.q = qi.value; const pos = qi.selectionStart; renderBrowse(); const n = document.getElementById('q'); n.focus(); n.setSelectionRange(pos, pos); };
+  pathSel.onchange = () => { state.path = pathSel.value; render(); };
+  const as = document.getElementById('allSec'); if(as) as.onclick = e => { e.preventDefault(); state.section = ''; render(); };
+  bindCards(view);
+}
+
+function renderArticle(e){
+  if(!e){ view.innerHTML = `<div class="note">${T('This entry does not exist or is not approved yet.','Šio įrašo nėra arba jis dar nepatvirtintas.')} <a href="#">${T('Back to the Archive','Grįžti į Archyvą')}</a></div>`; return; }
+  const meta = [secName(e.section), e.path ? pathName(e.path) : '', T('by ','autorius: ') + (e.author_name || '—'), fmtDate(e.approved_at || e.created_at)].filter(Boolean).join(' · ');
+  const canEdit = isAdmin || (user && e.author_id === user.id && e.status === 'pending');
+  view.innerHTML = `<p style="margin-bottom:14px"><a href="#" id="backList">← ${T('The Archive','Archyvas')}</a></p>
+    <article class="article" style="border-top:8px solid ${bookLook(e).c};box-shadow:inset 0 1px 0 rgba(232,207,149,.35)">
+      ${e.status === 'pending' ? `<span class="chip st" style="margin:0 0 12px">${T('WAITING FOR APPROVAL','LAUKIA PATVIRTINIMO')}</span>` : ''}
+      <h2 class="t">${esc(e.title)}</h2>
+      <div class="em">${esc(meta)}</div>
+      <div>${(e.tags || []).map(t => `<button class="chip" data-tag="${esc(t)}">#${esc(t)}</button>`).join('')}</div>
+      <div class="prose">${md(e.body)}</div>
+      ${canEdit ? `<div class="acts" style="margin-top:24px">${isAdmin && e.status === 'pending' ? `<button class="btn" id="aApprove">${T('APPROVE','PATVIRTINTI')}</button>` : ''}
+        <button class="btn ghost" id="aEdit">${T('EDIT','REDAGUOTI')}</button><button class="btn danger" id="aDel">${T('DELETE','IŠTRINTI')}</button></div>` : ''}
+    </article>`;
+  backList.onclick = ev => { ev.preventDefault(); location.hash = ''; };
+  view.querySelectorAll('.chip[data-tag]').forEach(c => c.onclick = () => { state.q = '#' + c.dataset.tag; state.tab = 'browse'; location.hash = ''; });
+  if(canEdit){
+    aEdit.onclick = () => { state.editing = e; state.tab = 'write'; location.hash = ''; };
+    aDel.onclick = () => removeEntry(e);
+    const ap = document.getElementById('aApprove'); if(ap) ap.onclick = () => approveEntry(e);
+  }
+  window.scrollTo(0, 0);
+}
+
+function renderWrite(){
+  if(!user){
+    view.innerHTML = `<div class="note">${T('Only Temple members can write in the Archive. <a href="index.html">Sign in to the Temple</a> first.','Į Archyvą gali rašyti tik Šventyklos nariai. Pirmiausia <a href="index.html">prisijunk prie Šventyklos</a>.')}</div>`;
+    return;
+  }
+  const e = state.editing || {};
+  view.innerHTML = `<form class="form" id="wForm">
+    <h2>${e.id ? T('Edit entry','Redaguoti įrašą') : T('Write in the Archive','Rašyti į Archyvą')}</h2>
+    <label>${T('Title','Pavadinimas')}<input id="fTitle" required minlength="2" maxlength="160" value="${esc(e.title || '')}"></label>
+    <div class="row">
+      <label>${T('Section','Skyrius')}<select id="fSec" required>${SECTIONS.map(s => `<option value="${s.id}"${(e.section || state.section) === s.id ? ' selected' : ''}>${esc(s[LANG][0])}</option>`).join('')}</select></label>
+      <label>${T('Path / tradition','Kelias / tradicija')}<select id="fPath"><option value="">${T('— none —','— nenurodyta —')}</option>${PATHS.map(p => `<option value="${p[0]}"${e.path === p[0] ? ' selected' : ''}>${esc(LANG === 'lt' ? p[2] : p[1])}</option>`).join('')}</select></label>
+    </div>
+    <div class="row">
+      <label>${T('Tags (comma separated)','Žymos (atskirk kableliais)')}<input id="fTags" maxlength="300" placeholder="${T('e.g. hekate, crossroads, protection','pvz., hekatė, kryžkelė, apsauga')}" value="${esc((e.tags || []).join(', '))}"></label>
+      <label>${T('Language of the text','Teksto kalba')}<select id="fLang"><option value="en"${(e.lang || LANG) === 'en' ? ' selected' : ''}>English</option><option value="lt"${(e.lang || LANG) === 'lt' ? ' selected' : ''}>Lietuvių</option></select></label>
+    </div>
+    <label>${T('Text','Tekstas')}<textarea id="fBody" required maxlength="60000">${esc(e.body || '')}</textarea></label>
+    <div class="help">${T(
+      '<code>## Heading</code> · <code>### Small heading</code> · <code>**bold**</code> · <code>*italic*</code> · <code>- list</code> · <code>1. numbered</code> · <code>&gt; quote</code> · <code>---</code> line · <code>[[Title of another entry]]</code> links to it · <code>[text](https://…)</code> web link',
+      '<code>## Antraštė</code> · <code>### Maža antraštė</code> · <code>**paryškinta**</code> · <code>*pasvirusi*</code> · <code>- sąrašas</code> · <code>1. numeruotas</code> · <code>&gt; citata</code> · <code>---</code> linija · <code>[[Kito įrašo pavadinimas]]</code> nuoroda į jį · <code>[tekstas](https://…)</code> interneto nuoroda')}</div>
+    <div class="acts">
+      <button class="btn" type="submit" id="fSave">${e.id ? T('SAVE','IŠSAUGOTI') : isAdmin ? T('PUBLISH','PASKELBTI') : T('SUBMIT FOR APPROVAL','PATEIKTI PATVIRTINTI')}</button>
+      <button class="btn ghost" type="button" id="fPrev">${T('PREVIEW','PERŽIŪRĖTI')}</button>
+      ${e.id ? `<button class="btn ghost" type="button" id="fCancel">${T('CANCEL','ATŠAUKTI')}</button>` : ''}
+    </div>
+    <div class="msg" id="fMsg">${!e.id && !isAdmin ? T('Your entry will be visible to everyone after the Temple Keeper approves it.','Tavo įrašą visi pamatys, kai jį patvirtins Šventyklos sergėtoja.') : ''}</div>
+    <div class="preview" id="fPreview" hidden></div>
+  </form>`;
+  // keep an unsent draft in this browser
+  const DKEY = 'archive-draft';
+  if(!e.id){ try { const d = JSON.parse(localStorage.getItem(DKEY) || 'null'); if(d && !fBody.value){ fTitle.value = d.title || ''; fBody.value = d.body || ''; fTags.value = d.tags || ''; } } catch(_){} }
+  const saveDraft = () => { if(e.id) return; try { localStorage.setItem(DKEY, JSON.stringify({ title:fTitle.value, body:fBody.value, tags:fTags.value })); } catch(_){} };
+  [fTitle, fBody, fTags].forEach(i => i.addEventListener('input', saveDraft));
+  fPrev.onclick = () => { fPreview.hidden = !fPreview.hidden; fPreview.innerHTML = `<div class="prose">${md(fBody.value) || ''}</div>`; };
+  const fc = document.getElementById('fCancel'); if(fc) fc.onclick = () => { state.editing = null; location.hash = 'e/' + e.id; };
+  wForm.onsubmit = async ev => {
+    ev.preventDefault();
+    const row = { title:fTitle.value.trim(), section:fSec.value, path:fPath.value || null, lang:fLang.value, body:fBody.value.trim(),
+                  tags:fTags.value.split(',').map(t => t.trim()).filter(Boolean) };
+    if(row.title.length < 2 || !row.body){ fMsg.className = 'msg err'; fMsg.textContent = T('Please write a title and a text.','Įrašyk pavadinimą ir tekstą.'); return; }
+    fSave.disabled = true; fMsg.className = 'msg'; fMsg.textContent = T('Saving…','Saugoma…');
+    let res;
+    if(e.id) res = await sb.from('archive_entries').update(row).eq('id', e.id).select().single();
+    else { if(isAdmin) row.status = 'approved'; res = await sb.from('archive_entries').insert(row).select().single(); }
+    fSave.disabled = false;
+    if(res.error){
+      console.error('Archive save failed', res.error);
+      fMsg.className = 'msg err';
+      fMsg.textContent = /silenced/i.test(res.error.message) ? T('You have been silenced in the Temple.','Tu buvai nutildytas (-a) Šventykloje.') : T('Could not save: ','Nepavyko išsaugoti: ') + res.error.message;
+      return;
+    }
+    if(!e.id){ try { localStorage.removeItem(DKEY); } catch(_){} }
+    await load();
+    state.editing = null;
+    if(res.data.status === 'approved' || isAdmin){ location.hash = 'e/' + res.data.id; }
+    else { state.tab = 'mine'; location.hash = ''; render(); setTimeout(() => alert(T('Thank you! Your entry was sent to the Temple Keeper for approval.','Ačiū! Tavo įrašas išsiųstas Šventyklos sergėtojai patvirtinti.')), 50); }
+  };
+}
+
+function renderMine(){
+  const list = mine();
+  view.innerHTML = list.length ? list.map(e => entryCard(e, e.status === 'pending'
+      ? `<button class="btn ghost" data-a="edit" data-id="${e.id}">${T('EDIT','REDAGUOTI')}</button><button class="btn danger" data-a="del" data-id="${e.id}">${T('DELETE','IŠTRINTI')}</button>` : '')).join('')
+    : `<div class="note">${T('You have not written anything yet.','Dar nieko neparašei.')}</div>`;
+  bindActs(); bindCards(view);
+}
+function renderReview(){
+  const list = pending();
+  view.innerHTML = list.length ? list.map(e => entryCard(e,
+      `<button class="btn" data-a="approve" data-id="${e.id}">${T('APPROVE','PATVIRTINTI')}</button><button class="btn ghost" data-a="read" data-id="${e.id}">${T('READ','SKAITYTI')}</button><button class="btn ghost" data-a="edit" data-id="${e.id}">${T('EDIT','REDAGUOTI')}</button><button class="btn danger" data-a="del" data-id="${e.id}">${T('REJECT','ATMESTI')}</button>`)).join('')
+    : `<div class="note">${T('Nothing is waiting for approval.','Nieko nelaukia patvirtinimo.')}</div>`;
+  bindActs(); bindCards(view);
+}
+function bindActs(){
+  view.querySelectorAll('[data-a]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const e = entries.find(x => String(x.id) === b.dataset.id); if(!e) return;
+    if(b.dataset.a === 'edit'){ state.editing = e; state.tab = 'write'; render(); }
+    if(b.dataset.a === 'del') removeEntry(e);
+    if(b.dataset.a === 'approve') approveEntry(e);
+    if(b.dataset.a === 'read') location.hash = 'e/' + e.id;
+  });
+}
+async function approveEntry(e){
+  const { error } = await sb.from('archive_entries').update({ status:'approved' }).eq('id', e.id);
+  if(error){ alert(error.message); return; }
+  await load(); render();
+}
+async function removeEntry(e){
+  if(!confirm(T('Delete "' + e.title + '" permanently?', 'Visam laikui ištrinti „' + e.title + '“?'))) return;
+  const { error } = await sb.from('archive_entries').delete().eq('id', e.id);
+  if(error){ alert(error.message); return; }
+  await load(); location.hash = ''; render();
+}
+
+function render(){
+  const m = location.hash.match(/^#e\/(\d+)/);
+  state.open = m ? +m[1] : null;
+  renderTabs();
+  if(state.open) return renderArticle(entries.find(e => e.id === state.open));
+  if(state.tab === 'write') return renderWrite();
+  if(state.tab === 'mine' && user) return renderMine();
+  if(state.tab === 'review' && isAdmin) return renderReview();
+  state.tab = 'browse'; renderBrowse();
+}
+addEventListener('hashchange', () => { if(!location.hash) state.open = null; render(); });
+
+/* =========================================================
+   START
+   ========================================================= */
+(async function start(){
+  view.innerHTML = `<div class="note">${T('Opening the Archive…','Atveriamas Archyvas…')}</div>`;
+  try {
+    if(window.supabase && window.supabase.createClient){
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY,
+        { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false, flowType:'pkce' } });
+      const { data:{ session } } = await sb.auth.getSession();
+      user = session ? session.user : null;
+      if(user){ try { const r = await sb.rpc('is_temple_admin'); isAdmin = r.data === true; } catch(_){} }
+    }
+  } catch(e){ console.error('Temple connection failed', e); sb = null; }
+  if(!sb) state.loadError = T('No connection to the Temple.','Nėra ryšio su Šventykla.');
+  await load();
+  render();
+})();
+</script>
+</body>
+</html>
