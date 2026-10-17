@@ -18211,6 +18211,20 @@ document.addEventListener('keydown', function(event) {
     form.addEventListener('submit', function(){ cb.setCustomValidity(''); }, true);
 })();
 </script>
+<style id="temple-menu-scroll">
+/* The Temple Functions menu scrolls when it is taller than the screen */
+#templeFunctionsMenu.temple-functions-panel{
+    max-height:calc(100vh - 110px);
+    max-height:calc(100dvh - 110px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(213,187,140,.35) transparent;
+}
+#templeFunctionsMenu::-webkit-scrollbar{width:6px}
+#templeFunctionsMenu::-webkit-scrollbar-thumb{background:rgba(213,187,140,.35)}
+</style>
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
