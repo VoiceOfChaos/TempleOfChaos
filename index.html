@@ -18225,6 +18225,59 @@ document.addEventListener('keydown', function(event) {
 #templeFunctionsMenu::-webkit-scrollbar{width:6px}
 #templeFunctionsMenu::-webkit-scrollbar-thumb{background:rgba(213,187,140,.35)}
 </style>
+<!-- =========================================================
+     HIDE THE CORNER BUTTONS WHILE SCROLLING DOWN
+     The menu (top left) and the account button (top right) slide away
+     when you scroll down and come back when you scroll up or reach the top.
+     ========================================================= -->
+<style id="temple-hide-on-scroll-css">
+#templeFunctionsWrap,
+#accountButton.account-button{
+    transition:opacity .28s ease, transform .28s ease, visibility .28s ease !important;
+}
+body.temple-chrome-hidden #templeFunctionsWrap:not(.open),
+body.temple-chrome-hidden #accountButton.account-button{
+    opacity:0 !important;
+    visibility:hidden !important;
+    transform:translateY(-24px) !important;
+    pointer-events:none !important;
+}
+</style>
+<script id="temple-hide-on-scroll">
+(function(){
+    var last = new WeakMap(), docLast = 0;
+    function show(){ document.body.classList.remove('temple-chrome-hidden'); }
+    function hide(){
+        var wrap = document.getElementById('templeFunctionsWrap');
+        if (wrap && wrap.classList.contains('open')) return;          // never hide an open menu
+        if (document.body.classList.contains('temple-popup-open')) return;
+        document.body.classList.add('temple-chrome-hidden');
+    }
+    function handle(pos, prev){
+        if (pos < 80) { show(); return; }
+        if (pos - prev > 6) hide();
+        else if (prev - pos > 6) show();
+    }
+    window.addEventListener('scroll', function(e){
+        var t = e.target;
+        if (t === document || t === document.documentElement || t === document.body) {
+            var pos = window.pageYOffset || document.documentElement.scrollTop || 0;
+            handle(pos, docLast); docLast = pos; return;
+        }
+        if (!(t instanceof Element)) return;
+        // only big page-sized scrolling areas (chambers), not menus, chats or popups
+        if (t.closest('#templeFunctionsWrap') || document.body.classList.contains('temple-popup-open')) return;
+        if (t.clientHeight < window.innerHeight * 0.6) return;
+        var prev = last.has(t) ? last.get(t) : 0;
+        handle(t.scrollTop, prev); last.set(t, t.scrollTop);
+    }, true);
+    // bring them back as soon as a popup or the menu opens
+    new MutationObserver(function(){
+        var wrap = document.getElementById('templeFunctionsWrap');
+        if (document.body.classList.contains('temple-popup-open') || (wrap && wrap.classList.contains('open'))) show();
+    }).observe(document.body, { attributes:true, attributeFilter:['class'], subtree:false });
+})();
+</script>
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
