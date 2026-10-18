@@ -9245,6 +9245,13 @@ button[onclick="showHiddenDedications()"] {
         <a class="temple-function-item" href="mind.html" style="text-decoration:none">
             <span class="temple-function-icon">♡</span>
             <span class="temple-function-copy">
+        <a class="temple-function-item" href="profile.html" style="text-decoration:none">
+            <span class="temple-function-icon">☥</span>
+            <span class="temple-function-copy">
+                <strong>MY PROFILE</strong>
+                <small>Your path, your patrons and your books, and other members.</small>
+            </span>
+        </a>
                 <strong>MIND &amp; SOUL CARE</strong>
                 <small>When the path gets heavy: grounding and where to find help.</small>
             </span>
@@ -17210,6 +17217,8 @@ document.addEventListener('keydown', function(event) {
 "Moon phases, dark moons and the Wheel of the Year.": "Mėnulio fazės, tamsieji mėnuliai ir Metų ratas.",
 "TEMPLE LAWS": "ŠVENTYKLOS ĮSTATYMAI",
 "MIND & SOUL CARE": "PROTO IR SIELOS GLOBA",
+"MY PROFILE": "MANO PROFILIS",
+"Your path, your patrons and your books, and other members.": "Tavo kelias, globėjai ir knygos, taip pat kiti nariai.",
 "When the path gets heavy: grounding and where to find help.": "Kai kelias apsunksta: įsižeminimas ir kur rasti pagalbos.",
 "THE ARCHIVE": "ARCHYVAS",
 "Deities, correspondences, rituals and every path, written by members.": "Dievybės, atitikmenys, ritualai ir visi keliai, užrašyti narių.",
@@ -18287,7 +18296,30 @@ body.temple-chrome-hidden #accountButton.account-button{
     }).observe(document.body, { attributes:true, attributeFilter:['class'], subtree:false });
 })();
 </script>
+<script id="temple-profile-links">
+/* Nicknames in the chat open the member's profile */
+(function(){
+    if (typeof renderChatMessages !== 'function') return;
+    var before = renderChatMessages;
+    renderChatMessages = function(){
+        before.apply(this, arguments);
+        var box = document.getElementById('chatMessages');
+        if (!box) return;
+        box.querySelectorAll('.chat-message-name').forEach(function(el){
+            if (el.querySelector('a')) return;
+            var name = (el.textContent || '').trim();
+            if (!name || name === 'Temple Member') return;
+            var a = document.createElement('a');
+            a.href = 'profile.html?n=' + encodeURIComponent(name);
+            a.textContent = name;
+            a.style.color = 'inherit'; a.style.textDecoration = 'none'; a.style.borderBottom = '1px dotted rgba(213,187,140,.5)';
+            el.textContent = ''; el.appendChild(a);
+        });
+    };
+})();
+</script>
 <script src="presence.js" data-show="true"></script>
+<script src="tonight.js"></script>
 </body>
 </html>
 <style id="legacy-public-candle-controls-hidden">
