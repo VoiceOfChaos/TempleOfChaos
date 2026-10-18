@@ -454,7 +454,7 @@ function renderArticle(e){
       ${e.status === 'pending' ? `<span class="chip st" style="margin:0 0 12px">${T('WAITING FOR APPROVAL','LAUKIA PATVIRTINIMO')}</span>` : ''}
       <div class="orn">✦ ❦ ✦</div>
       <h2 class="t" id="artTitle">${esc(e.title)}</h2>
-      <div class="em">${esc(meta)}</div>
+      <div class="em">${esc(meta).replace(esc(T('by ','autorius: ') + (e.author_name || '—')), e.author_name ? esc(T('by ','autorius: ')) + `<a href="profile.html?n=${encodeURIComponent(e.author_name)}">${esc(e.author_name)}</a>` : esc(T('by ','autorius: ') + '—'))}</div>
       <div class="tags">${(e.tags || []).map(t => `<button class="chip" data-tag="${esc(t)}">#${esc(t)}</button>`).join('')}</div>
       <div class="rule"><span>❦</span></div>
       <div class="prose" id="artBody">${md(e.body)}</div>
