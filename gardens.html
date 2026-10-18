@@ -168,6 +168,149 @@ translatePage({
 }, []);
 addLangButton();
 </script>
+
+<!-- ===================== WHO SHOULD COME NEXT? (voting) ===================== -->
+<style id="garden-votes-css">
+.votes{max-width:760px;margin:0 auto;padding:0 20px 90px}
+.votes h2{text-align:center;font-weight:normal;font-size:clamp(20px,4vw,26px);letter-spacing:.14em;color:#d6bc89}
+.votes .lead{margin:12px auto 0;max-width:540px;text-align:center;color:#a89e90;font-size:15px;line-height:1.6;font-style:italic}
+.vlist{margin-top:26px;display:grid;gap:10px}
+.vrow{position:relative;display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid rgba(213,187,140,.2);
+  background:linear-gradient(145deg,rgba(24,20,18,.9),rgba(7,7,8,.95));overflow:hidden}
+.vrow .bar{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(213,187,140,.13),rgba(213,187,140,.03));transition:width .6s ease;pointer-events:none}
+.vrow .rank{position:relative;width:24px;text-align:center;color:#82796e;font-size:13px}
+.vrow .who{position:relative;flex:1;min-width:0}
+.vrow .nm{font-size:17px;letter-spacing:.05em;color:#ece0c4;overflow-wrap:anywhere}
+.vrow .nt{margin-top:3px;font-size:12px;letter-spacing:.06em;color:#82796e}
+.vrow .ct{position:relative;font-size:13px;color:#cdb98f;white-space:nowrap}
+.vrow .vb{position:relative;padding:8px 13px;border:1px solid rgba(213,187,140,.4);background:rgba(213,187,140,.06);color:#e3cfa6;
+  font-family:inherit;font-size:11px;letter-spacing:.14em;cursor:pointer;white-space:nowrap}
+.vrow .vb.on{background:rgba(213,187,140,.2);border-color:#d6bc89;color:#f5e6c6}
+.vrow .vb:disabled{opacity:.5;cursor:default}
+.vrow.planted{border-color:rgba(130,190,120,.35)}
+.vrow .pl{position:relative;font-size:11px;letter-spacing:.14em;color:#9fcf95;white-space:nowrap}
+.vrow .adm{position:relative;display:flex;gap:6px}
+.vrow .adm button{border:0;background:none;color:#a08a6e;font-family:inherit;font-size:11px;letter-spacing:.08em;cursor:pointer;padding:2px}
+.vform{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.vform input{flex:1 1 200px;padding:11px 12px;background:#0d0b0a;border:1px solid rgba(213,187,140,.28);color:#e5ddd0;font-family:inherit;font-size:16px}
+.vform button{padding:11px 18px;border:1px solid rgba(213,187,140,.45);background:rgba(213,187,140,.08);color:#e3cfa6;font-family:inherit;font-size:12px;letter-spacing:.14em;cursor:pointer}
+.vmsg{margin-top:12px;text-align:center;font-size:14px;color:#cdb98f;min-height:18px}
+.vmsg.err{color:#d6907f}
+.vnote{margin-top:18px;text-align:center;color:#82796e;font-size:14px;font-style:italic}
+.vnote a{color:#d6bc89}
+@media (max-width:520px){.vrow{flex-wrap:wrap;gap:10px}.vrow .who{flex-basis:calc(100% - 40px)}.vrow .ct{margin-left:38px}.vrow .vb{margin-left:auto}}
+</style>
+<section class="votes" id="next">
+  <div class="divider" style="margin-bottom:34px"></div>
+  <h2 id="vTitle">WHO SHOULD COME NEXT?</h2>
+  <p class="lead" id="vLead">The Temple grows with its members. Vote for the deities you would like to meet in a garden of their own, or suggest a new one. You can vote for as many as you wish.</p>
+  <div class="vlist" id="vList"><div class="vnote">…</div></div>
+  <div id="vBottom"></div>
+  <div class="vmsg" id="vMsg"></div>
+</section>
+<script id="garden-votes">
+(function(){
+  var SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH";
+  var lt = (function(){ try { var v = localStorage.getItem('temple-lang'); if (v === 'lt' || v === 'en') return v === 'lt'; } catch(e){}
+    return (navigator.language || '').toLowerCase().indexOf('lt') === 0; })();
+  function T(en, l){ return lt ? l : en; }
+  var TRAD = { Celtic:'Keltų', Greek:'Graikų', Norse:'Skandinavų', Mesopotamian:'Mesopotamijos', Egyptian:'Egipto', Baltic:'Baltų', Roman:'Romėnų', Slavic:'Slavų', Hindu:'Induistų' };
+  var $ = function(id){ return document.getElementById(id); };
+  var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+  if (lt) {
+    $('vTitle').textContent = 'KAS ATEIS KITAS?';
+    $('vLead').textContent = 'Šventykla auga kartu su savo nariais. Balsuok už dievybes, kurias norėtum sutikti jų pačių sode, arba pasiūlyk naują. Gali balsuoti už kiek nori.';
+  }
+  var sb = null, user = null, isAdmin = false, rows = [];
+
+  function msg(t, err){ $('vMsg').textContent = t || ''; $('vMsg').className = 'vmsg' + (err ? ' err' : ''); }
+  function friendly(e){
+    var m = (e && e.message) || '';
+    if (/silenced/i.test(m)) return T('You have been silenced in the Temple.', 'Tu buvai nutildytas (-a) Šventykloje.');
+    if (/3 deities a day/i.test(m)) return T('You can suggest 3 deities a day. Come back tomorrow.', 'Per dieną gali pasiūlyti 3 dievybes. Sugrįžk rytoj.');
+    if (/duplicate|unique|23505/i.test(m + (e && e.code))) return T('This deity is already on the list. Give them your vote!', 'Ši dievybė jau sąraše. Atiduok jai savo balsą!');
+    return m || T('Something went wrong.', 'Kažkas nepavyko.');
+  }
+
+  function render(){
+    var list = rows.slice().sort(function(a, b){ return (a.status === 'planted') - (b.status === 'planted') || b.votes - a.votes || a.name.localeCompare(b.name); });
+    var max = Math.max(1, Math.max.apply(null, list.map(function(r){ return r.votes; }).concat([0])));
+    var i = 0;
+    $('vList').innerHTML = list.length ? list.map(function(r){
+      var planted = r.status === 'planted';
+      if (!planted) i++;
+      var note = r.note ? (lt && TRAD[r.note] ? TRAD[r.note] : r.note) : '';
+      var by = r.created_by_name ? T('suggested by ', 'pasiūlė ') + r.created_by_name : '';
+      return '<div class="vrow' + (planted ? ' planted' : '') + '" data-id="' + r.id + '">' +
+        (planted ? '' : '<div class="bar" style="width:' + Math.round(100 * r.votes / max) + '%"></div>') +
+        '<span class="rank">' + (planted ? '🌱' : i) + '</span>' +
+        '<div class="who"><div class="nm">' + esc(r.name) + '</div>' + (note || by ? '<div class="nt">' + esc([note, by].filter(Boolean).join(' · ')) + '</div>' : '') + '</div>' +
+        (planted ? '<span class="pl">' + T('GARDEN PLANTED', 'SODAS PASODINTAS') + '</span>'
+                 : '<span class="ct">' + r.votes + ' ' + (lt ? (r.votes % 10 === 1 && r.votes % 100 !== 11 ? 'balsas' : (r.votes % 10 >= 2 && r.votes % 10 <= 9 && (r.votes % 100 < 10 || r.votes % 100 > 20)) ? 'balsai' : 'balsų') : (r.votes === 1 ? 'vote' : 'votes')) + '</span>' +
+                   '<button class="vb' + (r.mine ? ' on' : '') + '" type="button" data-vote="' + r.id + '">' + (r.mine ? T('VOTED ✓', 'BALSUOTA ✓') : T('♡ VOTE', '♡ BALSUOTI')) + '</button>') +
+        (isAdmin ? '<span class="adm">' + (planted ? '' : '<button type="button" data-plant="' + r.id + '">' + T('mark planted', 'pasodinta') + '</button>') + '<button type="button" data-del="' + r.id + '">' + T('remove', 'pašalinti') + '</button></span>' : '') +
+        '</div>';
+    }).join('') : '<div class="vnote">' + T('No deities on the list yet.', 'Sąraše dar nėra dievybių.') + '</div>';
+
+    $('vBottom').innerHTML = user
+      ? '<form class="vform" id="vForm"><input id="vName" maxlength="60" required placeholder="' + esc(T('Suggest a deity, e.g. Odin', 'Pasiūlyk dievybę, pvz., Perkūnas')) + '">' +
+        '<input id="vNote" maxlength="60" placeholder="' + esc(T('Tradition (optional)', 'Tradicija (nebūtina)')) + '" style="flex:0 1 180px">' +
+        '<button type="submit">' + T('SUGGEST', 'PASIŪLYTI') + '</button></form>'
+      : '<div class="vnote">' + T('<a href="index.html">Sign in to the Temple</a> to vote and suggest deities.', '<a href="index.html">Prisijunk prie Šventyklos</a>, kad galėtum balsuoti ir siūlyti dievybes.') + '</div>';
+
+    $('vList').querySelectorAll('[data-vote]').forEach(function(b){ b.onclick = function(){ vote(+b.dataset.vote, b); }; });
+    $('vList').querySelectorAll('[data-plant]').forEach(function(b){ b.onclick = function(){ adminAct('plant', +b.dataset.plant); }; });
+    $('vList').querySelectorAll('[data-del]').forEach(function(b){ b.onclick = function(){ adminAct('del', +b.dataset.del); }; });
+    var f = $('vForm'); if (f) f.onsubmit = function(ev){ ev.preventDefault(); suggest(); };
+  }
+
+  async function load(){
+    var r = await sb.rpc('deity_request_list');
+    if (r.error) { console.error('Votes could not load', r.error); $('vList').innerHTML = '<div class="vnote">' + T('The voting could not be opened.', 'Balsavimo nepavyko atverti.') + '</div>'; return; }
+    rows = r.data || []; render();
+  }
+  async function vote(id, btn){
+    if (!user) { msg(T('Sign in to the Temple to vote.', 'Prisijunk prie Šventyklos, kad galėtum balsuoti.'), true); return; }
+    var row = rows.find(function(r){ return r.id === id; }); if (!row) return;
+    btn.disabled = true; msg('');
+    var res = row.mine ? await sb.from('deity_votes').delete().eq('request_id', id).eq('user_id', user.id)
+                       : await sb.from('deity_votes').insert({ request_id: id });
+    if (res.error) { btn.disabled = false; msg(friendly(res.error), true); return; }
+    row.votes += row.mine ? -1 : 1; row.mine = !row.mine; render();
+  }
+  async function suggest(){
+    var name = $('vName').value.trim(), note = $('vNote').value.trim();
+    if (name.length < 2) return;
+    msg(T('Planting the seed…', 'Sodinama sėkla…'));
+    var res = await sb.from('deity_requests').insert({ name: name, note: note || null }).select('id').single();
+    if (res.error) { msg(friendly(res.error), true); return; }
+    await sb.from('deity_votes').insert({ request_id: res.data.id });
+    msg(T('Thank you! ' + name + ' is on the list, with your vote.', 'Ačiū! ' + name + ' įtraukta (-as) į sąrašą su tavo balsu.'));
+    load();
+  }
+  async function adminAct(what, id){
+    var row = rows.find(function(r){ return r.id === id; }); if (!row) return;
+    if (what === 'del' && !confirm(T('Remove ' + row.name + ' from the list?', 'Pašalinti ' + row.name + ' iš sąrašo?'))) return;
+    var res = what === 'del' ? await sb.from('deity_requests').delete().eq('id', id)
+                             : await sb.from('deity_requests').update({ status: 'planted' }).eq('id', id);
+    if (res.error) { msg(friendly(res.error), true); return; }
+    load();
+  }
+
+  async function start(){
+    try {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false } });
+      var s = await sb.auth.getSession();
+      user = s.data && s.data.session ? s.data.session.user : null;
+      if (user) { try { var a = await sb.rpc('is_temple_admin'); isAdmin = a.data === true; } catch(e){} }
+    } catch(e) { console.error('Temple connection failed', e); $('vList').innerHTML = '<div class="vnote">' + T('No connection to the Temple.', 'Nėra ryšio su Šventykla.') + '</div>'; return; }
+    load();
+  }
+  if (window.supabase && window.supabase.createClient) start();
+  else { var sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'; sc.onload = start; document.head.appendChild(sc); }
+})();
+</script>
 <script src="presence.js"></script>
 </body>
 </html>
