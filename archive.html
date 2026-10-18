@@ -445,7 +445,7 @@ function renderWrite(){
     if(!e.id){ try { localStorage.removeItem(DKEY); } catch(_){} }
     await load();
     state.editing = null;
-    if(res.data.status === 'approved' || isAdmin){ location.hash = 'e/' + res.data.id; }
+    if(res.data.status === 'approved' || isAdmin){ state.tab = 'browse'; location.hash = 'e/' + res.data.id; }
     else { state.tab = 'mine'; location.hash = ''; render(); setTimeout(() => alert(T('Thank you! Your entry was sent to the Temple Keeper for approval.','Ačiū! Tavo įrašas išsiųstas Šventyklos sergėtojai patvirtinti.')), 50); }
   };
 }
