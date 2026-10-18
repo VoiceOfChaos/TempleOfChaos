@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member · Temple of Chaos</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#050507">
+<meta name="description" content="A member of the Temple of Chaos: their path, their patron deities and their books in the Archive.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Temple of Chaos">
+<meta property="og:title" content="Member · Temple of Chaos">
+<meta property="og:description" content="Their path, their patron deities and their books in the Archive.">
+<meta property="og:url" content="https://voiceofchaos.github.io/TempleOfChaos/profile.html">
+<meta property="og:image" content="https://voiceofchaos.github.io/TempleOfChaos/preview.png">
+<style>
+:root{--bg:#050507;--ink:#e8e3d8;--muted:#a89e90;--dim:#82796e;--gold:#d6bc89;--line:rgba(213,187,140,.28);--line2:rgba(213,187,140,.14)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(circle at 50% 0%, rgba(91,42,134,.22), transparent 55%)}
+a{color:var(--gold)}
+button,input,select,textarea{font-family:inherit;color:inherit}
+.topbtn{position:absolute;top:20px;z-index:50;padding:10px 16px;border:1px solid rgba(213,187,140,.38);background:rgba(7,7,8,.82);
+  color:#d9c7a4;font-size:12px;letter-spacing:.14em;cursor:pointer;text-decoration:none}
+.topbtn:hover{background:rgba(213,187,140,.08)}
+.back{left:20px}.langbtn{right:20px;padding:10px 14px}
+header{text-align:center;padding:92px 20px 6px}
+.eyebrow{color:var(--dim);font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+main{max-width:700px;margin:0 auto;padding:18px 16px 80px}
+.note{border:1px solid var(--line2);padding:22px;text-align:center;color:var(--muted);font-style:italic;line-height:1.6;background:rgba(10,9,9,.7)}
+
+.card{position:relative;border:1px solid var(--line);background:linear-gradient(160deg,rgba(28,22,20,.94),rgba(7,7,8,.97));padding:34px 26px 28px;text-align:center;
+  box-shadow:0 20px 50px rgba(0,0,0,.55),inset 0 0 0 6px rgba(0,0,0,.25),inset 0 0 0 7px rgba(213,187,140,.14)}
+.seal{width:112px;height:112px;margin:0 auto;position:relative}
+.seal svg{position:absolute;inset:0;width:100%;height:100%;color:var(--gold);filter:drop-shadow(0 0 14px rgba(214,188,137,.3))}
+.seal .ini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;color:#f0e2c4;letter-spacing:0}
+.nick{margin-top:18px;font-weight:normal;font-size:clamp(26px,6vw,36px);letter-spacing:.08em;color:var(--gold);overflow-wrap:anywhere}
+.keeper{display:inline-block;margin-top:10px;padding:4px 12px;border:1px solid rgba(213,187,140,.55);font-size:11px;letter-spacing:.2em;color:#f0e2c4;background:rgba(213,187,140,.1)}
+.since{margin-top:10px;color:var(--dim);font-size:13px;letter-spacing:.06em;font-style:italic}
+.facts{margin-top:26px;display:grid;gap:14px;text-align:left}
+.fact .k{font-size:11px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.fact .v{margin-top:4px;font-size:17px;line-height:1.55;color:#e4dbcd;overflow-wrap:anywhere;white-space:pre-wrap}
+.rule{display:flex;align-items:center;gap:12px;margin:26px auto 0;max-width:300px;color:rgba(213,187,140,.7)}
+.rule:before,.rule:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(213,187,140,.5),transparent)}
+.stats{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{border:1px solid var(--line2);padding:12px 6px;background:rgba(0,0,0,.25)}
+.stat b{display:block;font-weight:normal;font-size:24px;color:#f0e2c4}
+.stat span{display:block;margin-top:2px;font-size:11px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.fav{margin-top:14px;font-size:14px;color:var(--muted)}
+.books{margin-top:26px;text-align:left}
+.books h3{font-weight:normal;font-size:13px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;text-align:center}
+.blist{margin-top:12px;display:grid;gap:8px}
+.blist a{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line2);text-decoration:none;color:#e4dbcd;background:rgba(0,0,0,.2)}
+.blist a:hover{border-color:var(--line)}
+.blist .sp{width:10px;height:34px;flex:none;background:var(--c);box-shadow:inset 0 0 0 1px rgba(232,207,149,.4)}
+.blist small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
+.acts{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.btn{padding:10px 16px;border:1px solid rgba(213,187,140,.45);background:rgba(213,187,140,.07);font-size:12px;letter-spacing:.14em;cursor:pointer;color:#e3cfa6;text-decoration:none}
+.btn:hover{background:rgba(213,187,140,.15)}
+.btn.ghost{border-color:var(--line2);background:none;color:var(--muted)}
+.form{display:grid;gap:14px;text-align:left;margin-top:24px}
+.form label{display:grid;gap:6px;font-size:11px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+.form input,.form select,.form textarea{padding:11px 12px;background:#0d0b0a;border:1px solid var(--line);font-size:16px;color:#e5ddd0;text-transform:none;letter-spacing:0;width:100%}
+.form textarea{min-height:140px;line-height:1.6;resize:vertical}
+.msg{font-size:14px;color:#d9c7a4;min-height:18px;text-align:center;margin-top:10px}
+.msg.err{color:#d6907f}
+.find{margin-top:28px;display:flex;gap:8px}
+.find input{flex:1;padding:10px 12px;background:#0d0b0a;border:1px solid var(--line2);font-size:15px;color:#e5ddd0}
+.priv{margin-top:14px;font-size:12px;color:var(--dim);font-style:italic;text-align:center}
+@media (max-width:600px){.topbtn{top:14px;padding:8px 12px;font-size:11px}.back{left:14px}.langbtn{right:14px}header{padding-top:74px}.card{padding:28px 16px 22px}.stat b{font-size:20px}}
+</style>
+</head>
+<body>
+<a class="topbtn back" href="index.html" id="backBtn">← TEMPLE</a>
+<button class="topbtn langbtn" id="langBtn" type="button" aria-label="Language / Kalba">LT</button>
+<header><div class="eyebrow" id="eyebrow">Temple of Chaos · Member</div></header>
+<main>
+  <div id="view"><div class="note">…</div></div>
+  <form class="find" id="findForm"><input id="findName" maxlength="40" placeholder="Find a member by nickname"><button class="btn ghost" type="submit" id="findBtn">FIND</button></form>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const PATHS = [
+  ['chaos','Chaos magic','Chaoso magija'], ['luciferian','Luciferianism','Liuciferizmas'], ['lhp','Left-hand path','Kairiosios rankos kelias'],
+  ['hellenic','Hellenic','Helėnų'], ['roman','Roman','Romėnų'], ['baltic','Baltic (Romuva)','Baltų (Romuva)'], ['slavic','Slavic','Slavų'],
+  ['norse','Norse','Skandinavų'], ['celtic','Celtic','Keltų'], ['kemetic','Kemetic (Egyptian)','Kemetizmas (Egipto)'],
+  ['mesopotamian','Mesopotamian','Mesopotamijos'], ['hindu','Hindu & Shakta','Induizmas ir šaktizmas'], ['buddhist','Buddhist & Tantric','Budizmas ir tantra'],
+  ['wicca','Wicca','Vika'], ['witchcraft','Witchcraft','Raganavimas'], ['thelema','Thelema','Telema'], ['hermetic','Hermetic & Occult','Hermetizmas ir okultizmas'],
+  ['demonolatry','Demonolatry','Demonolatrija'], ['shamanism','Shamanism & Animism','Šamanizmas ir animizmas'], ['folk','Folk magic','Liaudies magija'],
+  ['eclectic','Eclectic','Eklektinis'], ['other','Other','Kitas']
+];
+const GARDENS = { lucifer:['garden.html','Garden of Lucifer','Liuciferio sodas'], hekate:['hekate.html','Crossroads of Hekate','Hekatės kryžkelė'],
+  kali:['kali.html','Garden of Kali Ma','Motinos Kali sodas'], lilith:['lilith.html','Garden of Lilith','Lilitos sodas'],
+  nyx:['nyx.html','Garden of Nyx','Niktės sodas'], aphrodite:['aphrodite.html','Garden of Aphrodite','Afroditės sodas'] };
+const SECTIONS = { deities:['Deities & Spirits','Dievybės ir dvasios'], correspondences:['Herbs, Crystals & Symbols','Žolelės, kristalai ir simboliai'],
+  rituals:['Rituals, Spells & Prayers','Ritualai, burtai ir maldos'], upg:['Personal Experience (UPG)','Asmeninė patirtis (UPG)'],
+  paths:['Paths & Traditions','Keliai ir tradicijos'], other:['Other','Kita'] };
+const LEATHER = ['#5a1e24','#2b3d2a','#26304d','#4a2648','#4a3018','#1f3d3d','#6a4316','#3d1f1f','#2a2a2e','#3b2a55','#55302a','#1e3a2c'];
+function hashN(n){ let x = (Number(n) * 2654435761) >>> 0; x ^= x >>> 15; return x >>> 0; }
+
+const LANG = (()=>{ try { const v = localStorage.getItem('temple-lang'); if(v === 'lt' || v === 'en') return v; } catch(e){}
+  return (navigator.language || '').toLowerCase().startsWith('lt') ? 'lt' : 'en'; })();
+const T = (en, lt) => LANG === 'lt' ? lt : en;
+document.documentElement.lang = LANG;
+langBtn.textContent = LANG === 'lt' ? 'EN' : 'LT';
+langBtn.addEventListener('click', ()=>{ try { localStorage.setItem('temple-lang', LANG === 'lt' ? 'en' : 'lt'); } catch(e){} location.reload(); });
+if(LANG === 'lt'){ backBtn.textContent = '← ŠVENTYKLA'; eyebrow.textContent = 'Chaoso šventykla · Narys'; findName.placeholder = 'Rask narį pagal slapyvardį'; findBtn.textContent = 'RASTI'; }
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pathName = id => { const p = PATHS.find(x => x[0] === id); return p ? (LANG === 'lt' ? p[2] : p[1]) : (id || ''); };
+
+const SUPABASE_URL = "https://gdgraqxbannrdttmtwro.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BPScsIo5l3fnkkcRAQu1Sw_rT7-R7JH";
+let sb = null, user = null, myNick = '', prof = null;
+
+const SEAL = `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor"><circle cx="60" cy="60" r="56" stroke-width="1.5"/><circle cx="60" cy="60" r="50" stroke-width=".8" opacity=".6"/>
+  <g stroke-width="1.2" opacity=".75">${Array.from({length:8}, (_, i) => { const a = i * Math.PI / 4, x1 = 60 + 50 * Math.cos(a), y1 = 60 + 50 * Math.sin(a), x2 = 60 + 56 * Math.cos(a), y2 = 60 + 56 * Math.sin(a);
+  return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`; }).join('')}</g>
+  <g fill="currentColor" stroke="none">${Array.from({length:8}, (_, i) => { const a = i * Math.PI / 4 + Math.PI / 8, x = 60 + 53 * Math.cos(a), y = 60 + 53 * Math.sin(a); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.4"/>`; }).join('')}</g></svg>`;
+
+function nickFromUrl(){ const n = new URLSearchParams(location.search).get('n'); return n ? n.trim() : ''; }
+
+function renderProfile(p){
+  const since = new Date(p.member_since).toLocaleDateString(T('en-GB','lt-LT'), { year:'numeric', month:'long' });
+  const g = p.favourite_garden && GARDENS[p.favourite_garden];
+  const facts = [
+    p.path ? [T('Path','Kelias'), pathName(p.path)] : null,
+    p.patrons ? [T('Patron deities','Globėjai'), p.patrons] : null,
+    p.bio ? [T('About','Apie mane'), p.bio] : null
+  ].filter(Boolean);
+  const books = p.books || [];
+  document.title = p.nickname + ' · ' + T('Temple of Chaos','Chaoso šventykla');
+  view.innerHTML = `<article class="card">
+    <div class="seal">${SEAL}<div class="ini">${esc((p.nickname || '?').charAt(0).toUpperCase())}</div></div>
+    <h1 class="nick">${esc(p.nickname)}</h1>
+    ${p.keeper ? `<div class="keeper">✦ ${T('TEMPLE KEEPER','ŠVENTYKLOS SERGĖTOJA')} ✦</div>` : ''}
+    <div class="since">${T('Member since ','Narys nuo ') + esc(since)}</div>
+    ${facts.length ? `<div class="facts">${facts.map(f => `<div class="fact"><div class="k">${esc(f[0])}</div><div class="v">${esc(f[1])}</div></div>`).join('')}</div>`
+      : (p.is_me ? `<p class="since" style="margin-top:20px">${T('Your profile is still empty. Tell the Temple about your path.','Tavo profilis dar tuščias. Papasakok Šventyklai apie savo kelią.')}</p>` : '')}
+    <div class="rule">❦</div>
+    <div class="stats">
+      <div class="stat"><b>${books.length}</b><span>${T('Books','Knygos')}</span></div>
+      <div class="stat"><b>${p.offerings || 0}</b><span>${T('Offerings','Aukos')}</span></div>
+      <div class="stat"><b>${p.comments || 0}</b><span>${T('Comments','Komentarai')}</span></div>
+    </div>
+    ${g ? `<div class="fav">${T('Walks most often in ','Dažniausiai lankosi: ')}<a href="${g[0]}">${esc(LANG === 'lt' ? g[2] : g[1])}</a></div>` : ''}
+    ${books.length ? `<div class="books"><h3>${T('Books in the Archive','Knygos Archyve')}</h3><div class="blist">${books.map(b => `<a href="archive.html#e/${b.id}"><span class="sp" style="--c:${LEATHER[hashN(b.id) % LEATHER.length]}"></span><span>${esc(b.title)}<small>${esc((SECTIONS[b.section] || [b.section, b.section])[LANG === 'lt' ? 1 : 0])}</small></span></a>`).join('')}</div></div>` : ''}
+    ${p.is_me ? `<div class="acts"><button class="btn" id="editBtn" type="button">${T('EDIT MY PROFILE','REDAGUOTI PROFILĮ')}</button><button class="btn ghost" id="shareBtn" type="button">${T('COPY LINK','KOPIJUOTI NUORODĄ')}</button></div><div class="msg" id="pMsg"></div>` : ''}
+  </article>`;
+  if(p.is_me){
+    editBtn.onclick = renderEdit;
+    shareBtn.onclick = async () => {
+      const url = location.origin + location.pathname + '?n=' + encodeURIComponent(p.nickname);
+      try { await navigator.clipboard.writeText(url); pMsg.textContent = T('Link copied.','Nuoroda nukopijuota.'); }
+      catch(e){ pMsg.textContent = url; }
+    };
+  }
+}
+
+async function renderEdit(){
+  let mine = {};
+  const r = await sb.from('temple_profiles').select('path,patrons,bio').eq('user_id', user.id).maybeSingle();
+  if(!r.error && r.data) mine = r.data;
+  view.innerHTML = `<article class="card">
+    <div class="seal">${SEAL}<div class="ini">${esc(myNick.charAt(0).toUpperCase())}</div></div>
+    <h1 class="nick">${esc(myNick)}</h1>
+    <form class="form" id="pForm">
+      <label>${T('Your path','Tavo kelias')}<select id="pPath"><option value="">${T('— not shown —','— nerodyti —')}</option>${PATHS.map(p => `<option value="${p[0]}"${mine.path === p[0] ? ' selected' : ''}>${esc(LANG === 'lt' ? p[2] : p[1])}</option>`).join('')}</select></label>
+      <label>${T('Patron deities','Globėjai')}<input id="pPatrons" maxlength="200" value="${esc(mine.patrons || '')}" placeholder="${esc(T('e.g. Hekate, Lilith','pvz., Hekatė, Lilit'))}"></label>
+      <label>${T('About you','Apie tave')}<textarea id="pBio" maxlength="800" placeholder="${esc(T('A few words about you and your path…','Keli žodžiai apie tave ir tavo kelią…'))}">${esc(mine.bio || '')}</textarea></label>
+      <div class="acts" style="margin-top:4px"><button class="btn" type="submit" id="pSave">${T('SAVE','IŠSAUGOTI')}</button><button class="btn ghost" type="button" id="pCancel">${T('CANCEL','ATŠAUKTI')}</button></div>
+      <div class="msg" id="pMsg"></div>
+    </form>
+    <p class="priv">${T('Everything here is visible to everyone who visits your profile. Your e-mail is never shown.','Viską, kas čia parašyta, mato visi, aplankę tavo profilį. Tavo el. paštas niekada nerodomas.')}</p>
+  </article>`;
+  pCancel.onclick = () => show(myNick);
+  pForm.onsubmit = async ev => {
+    ev.preventDefault();
+    pSave.disabled = true; pMsg.className = 'msg'; pMsg.textContent = T('Saving…','Saugoma…');
+    const { error } = await sb.from('temple_profiles').upsert({ user_id:user.id, path:pPath.value || null, patrons:pPatrons.value.trim() || null, bio:pBio.value.trim() || null }, { onConflict:'user_id' });
+    pSave.disabled = false;
+    if(error){ console.error('Profile save failed', error); pMsg.className = 'msg err';
+      pMsg.textContent = /silenced/i.test(error.message) ? T('You have been silenced in the Temple.','Tu buvai nutildytas (-a) Šventykloje.') : T('Could not save: ','Nepavyko išsaugoti: ') + error.message; return; }
+    show(myNick);
+  };
+}
+
+async function show(nick){
+  view.innerHTML = `<div class="note">${T('Opening…','Atveriama…')}</div>`;
+  const { data, error } = await sb.rpc('temple_profile', { p_nickname: nick });
+  if(error){ console.error('Profile could not load', error); view.innerHTML = `<div class="note">${T('The profile could not be opened.','Profilio nepavyko atverti.')}</div>`; return; }
+  if(!data){ view.innerHTML = `<div class="note">${T('No member with the nickname ','Nėra nario slapyvardžiu ') + '<b>' + esc(nick) + '</b>.'}</div>`; return; }
+  prof = data; renderProfile(data);
+  if(nickFromUrl() !== data.nickname) history.replaceState(null, '', '?n=' + encodeURIComponent(data.nickname));
+}
+
+findForm.onsubmit = ev => { ev.preventDefault(); const n = findName.value.trim(); if(n) { history.pushState(null, '', '?n=' + encodeURIComponent(n)); show(n); } };
+addEventListener('popstate', () => { const n = nickFromUrl() || myNick; if(n) show(n); });
+
+(async function start(){
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false } });
+    const { data:{ session } } = await sb.auth.getSession();
+    user = session ? session.user : null;
+    if(user) myNick = (user.user_metadata && (user.user_metadata.nickname || user.user_metadata.username)) || '';
+  } catch(e){ console.error('Temple connection failed', e); view.innerHTML = `<div class="note">${T('No connection to the Temple.','Nėra ryšio su Šventykla.')}</div>`; return; }
+  const n = nickFromUrl() || myNick;
+  if(n) show(n);
+  else view.innerHTML = `<div class="note">${T('<a href="index.html">Sign in to the Temple</a> to see and edit your profile, or find another member below.','<a href="index.html">Prisijunk prie Šventyklos</a>, kad matytum ir redaguotum savo profilį, arba rask kitą narį žemiau.')}</div>`;
+})();
+</script>
+<script src="presence.js"></script>
+</body>
+</html>
