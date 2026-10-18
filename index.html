@@ -9245,13 +9245,6 @@ button[onclick="showHiddenDedications()"] {
         <a class="temple-function-item" href="mind.html" style="text-decoration:none">
             <span class="temple-function-icon">♡</span>
             <span class="temple-function-copy">
-        <a class="temple-function-item" href="profile.html" style="text-decoration:none">
-            <span class="temple-function-icon">☥</span>
-            <span class="temple-function-copy">
-                <strong>MY PROFILE</strong>
-                <small>Your path, your patrons and your books, and other members.</small>
-            </span>
-        </a>
                 <strong>MIND &amp; SOUL CARE</strong>
                 <small>When the path gets heavy: grounding and where to find help.</small>
             </span>
@@ -17217,8 +17210,6 @@ document.addEventListener('keydown', function(event) {
 "Moon phases, dark moons and the Wheel of the Year.": "Mėnulio fazės, tamsieji mėnuliai ir Metų ratas.",
 "TEMPLE LAWS": "ŠVENTYKLOS ĮSTATYMAI",
 "MIND & SOUL CARE": "PROTO IR SIELOS GLOBA",
-"MY PROFILE": "MANO PROFILIS",
-"Your path, your patrons and your books, and other members.": "Tavo kelias, globėjai ir knygos, taip pat kiti nariai.",
 "When the path gets heavy: grounding and where to find help.": "Kai kelias apsunksta: įsižeminimas ir kur rasti pagalbos.",
 "THE ARCHIVE": "ARCHYVAS",
 "Deities, correspondences, rituals and every path, written by members.": "Dievybės, atitikmenys, ritualai ir visi keliai, užrašyti narių.",
@@ -18296,6 +18287,110 @@ body.temple-chrome-hidden #accountButton.account-button{
     }).observe(document.body, { attributes:true, attributeFilter:['class'], subtree:false });
 })();
 </script>
+<script id="temple-sanctuary-profile">
+/* MY SANCTUARY → PROFILE tab: what other members see when they tap your name (member-card.js) */
+(function(){
+    if (typeof renderSanctuaryTab !== 'function') return;
+    var lt = (function(){ try { var v = localStorage.getItem('temple-lang'); if (v === 'lt' || v === 'en') return v === 'lt'; } catch(e){}
+        return (navigator.language || '').toLowerCase().indexOf('lt') === 0; })();
+    function T(en, l){ return lt ? l : en; }
+    function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+    var PATHS = [
+  ['chaos','Chaos magic','Chaoso magija'], ['luciferian','Luciferianism','Liuciferizmas'], ['lhp','Left-hand path','Kairiosios rankos kelias'],
+  ['hellenic','Hellenic','Helėnų'], ['roman','Roman','Romėnų'], ['baltic','Baltic (Romuva)','Baltų (Romuva)'], ['slavic','Slavic','Slavų'],
+  ['norse','Norse','Skandinavų'], ['celtic','Celtic','Keltų'], ['kemetic','Kemetic (Egyptian)','Kemetizmas (Egipto)'],
+  ['mesopotamian','Mesopotamian','Mesopotamijos'], ['hindu','Hindu & Shakta','Induizmas ir šaktizmas'], ['buddhist','Buddhist & Tantric','Budizmas ir tantra'],
+  ['wicca','Wicca','Vika'], ['witchcraft','Witchcraft','Raganavimas'], ['thelema','Thelema','Telema'], ['hermetic','Hermetic & Occult','Hermetizmas ir okultizmas'],
+  ['demonolatry','Demonolatry','Demonolatrija'], ['shamanism','Shamanism & Animism','Šamanizmas ir animizmas'], ['folk','Folk magic','Liaudies magija'],
+  ['eclectic','Eclectic','Eklektinis'], ['other','Other','Kitas']
+];
+
+    // the tab and its panel, placed before REVIEW
+    var tabs = document.getElementById('sanctuaryTabs');
+    if (!tabs || document.getElementById('sanctuaryProfileTab')) return;
+    var btn = document.createElement('button');
+    btn.className = 'sanctuary-tab'; btn.id = 'sanctuaryProfileTab'; btn.type = 'button';
+    btn.textContent = T('PROFILE', 'PROFILIS');
+    btn.addEventListener('click', function(){ showSanctuaryTab('profile', btn); });
+    var review = document.getElementById('sanctuaryReviewTab');
+    tabs.insertBefore(btn, review || null);
+    var panel = document.createElement('section');
+    panel.id = 'sanctuaryPanelProfile'; panel.className = 'sanctuary-panel';
+    var rp = document.getElementById('sanctuaryPanelReview');
+    rp.parentNode.insertBefore(panel, rp);
+
+    var st = document.createElement('style');
+    st.textContent = '.tsp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}' +
+        '.tsp-stats div{border:1px solid rgba(210,190,150,.14);padding:10px 4px;text-align:center;background:rgba(0,0,0,.16)}' +
+        '.tsp-stats b{display:block;font-weight:normal;font-size:20px;color:#eadcc0}.tsp-stats span{display:block;margin-top:2px;font-size:9px;letter-spacing:.14em;color:#8f877d;text-transform:uppercase}' +
+        '.tsp-form select{padding:12px;background:rgba(0,0,0,.24);border:1px solid rgba(210,190,150,.22);color:#eee5d7;font:inherit}' +
+        '.tsp-note{color:#7d756c;font-size:12px;font-style:italic;line-height:1.5}' +
+        '.tsp-msg{color:#d6c39b;font-size:13px;min-height:16px}.tsp-msg.err{color:#d6907f}' +
+        '';
+    document.head.appendChild(st);
+
+    function nick(){ var m = (currentAuthUser && currentAuthUser.user_metadata) || {}; return m.nickname || m.username || ''; }
+
+    async function renderProfilePanel(){
+        var n = nick();
+        panel.innerHTML = '<div class="sanctuary-toolbar"><h3>' + T('MY PROFILE', 'MANO PROFILIS') + '</h3>' +
+            '<button class="sanctuary-action" type="button" id="tspView">' + T('SEE IT AS OTHERS DO', 'PERŽIŪRĖTI KAIP KITI') + '</button></div>' +
+            '<div class="tsp-stats" id="tspStats"><div><b>…</b><span>' + T('Books', 'Knygos') + '</span></div><div><b>…</b><span>' + T('Offerings', 'Aukos') + '</span></div><div><b>…</b><span>' + T('Comments', 'Komentarai') + '</span></div></div>' +
+            '<form class="sanctuary-form tsp-form" id="tspForm">' +
+              '<label for="tspPath">' + T('Your path', 'Tavo kelias') + '</label>' +
+              '<select id="tspPath"><option value="">' + T('— not shown —', '— nerodyti —') + '</option>' +
+                PATHS.map(function(p){ return '<option value="' + p[0] + '">' + esc(lt ? p[2] : p[1]) + '</option>'; }).join('') + '</select>' +
+              '<label for="tspPatrons">' + T('Patron deities', 'Globėjai') + '</label>' +
+              '<input id="tspPatrons" maxlength="200" placeholder="' + esc(T('e.g. Hekate, Lilith', 'pvz., Hekatė, Lilit')) + '">' +
+              '<label for="tspBio">' + T('About you', 'Apie tave') + '</label>' +
+              '<textarea id="tspBio" maxlength="800" placeholder="' + esc(T('A few words about you and your path…', 'Keli žodžiai apie tave ir tavo kelią…')) + '"></textarea>' +
+              '<div class="sanctuary-form-actions"><button class="sanctuary-action" type="submit" id="tspSave">' + T('SAVE PROFILE', 'IŠSAUGOTI PROFILĮ') + '</button>' +
+              '</div>' +
+              '<div class="tsp-msg" id="tspMsg"></div>' +
+              '<div class="tsp-note">' + T('This is public: everyone who taps your name in the chat or in the Archive sees it. Your e-mail is never shown. Everything else in your Sanctuary stays private.',
+                                           'Tai vieša: tai mato visi, paspaudę tavo vardą pokalbiuose ar Archyve. Tavo el. paštas niekada nerodomas. Visa kita tavo Šventovėje lieka privatu.') + '</div>' +
+            '</form>';
+        var f = document.getElementById('tspForm'), msg = document.getElementById('tspMsg');
+        document.getElementById('tspView').onclick = function(){ if (window.openMemberCard) openMemberCard(n); };
+        f.onsubmit = async function(ev){
+            ev.preventDefault();
+            var save = document.getElementById('tspSave'); save.disabled = true;
+            msg.className = 'tsp-msg'; msg.textContent = T('Saving…', 'Saugoma…');
+            var res = await supabaseClient.from('temple_profiles').upsert({ user_id: currentAuthUser.id,
+                path: document.getElementById('tspPath').value || null,
+                patrons: document.getElementById('tspPatrons').value.trim() || null,
+                bio: document.getElementById('tspBio').value.trim() || null }, { onConflict: 'user_id' });
+            save.disabled = false;
+            if (res.error) { console.error('Profile save failed', res.error); msg.className = 'tsp-msg err';
+                msg.textContent = /silenced/i.test(res.error.message) ? T('You have been silenced in the Temple.', 'Tu buvai nutildytas (-a) Šventykloje.')
+                                : /temple_profiles|42P01|schema cache/i.test(res.error.message + res.error.code) ? T('Run profiles_votes_setup.sql in Supabase first.', 'Pirmiausia Supabase paleisk profiles_votes_setup.sql.')
+                                : T('Could not save: ', 'Nepavyko išsaugoti: ') + res.error.message; return; }
+            msg.textContent = T('Saved. ✦', 'Išsaugota. ✦');
+        };
+        if (!supabaseClient || !currentAuthUser) return;
+        try {
+            var r = await supabaseClient.from('temple_profiles').select('path,patrons,bio').eq('user_id', currentAuthUser.id).maybeSingle();
+            if (!r.error && r.data) {
+                document.getElementById('tspPath').value = r.data.path || '';
+                document.getElementById('tspPatrons').value = r.data.patrons || '';
+                document.getElementById('tspBio').value = r.data.bio || '';
+            }
+            var p = await supabaseClient.rpc('temple_profile', { p_nickname: n });
+            if (!p.error && p.data) {
+                var b = document.querySelectorAll('#tspStats b');
+                b[0].textContent = (p.data.books || []).length; b[1].textContent = p.data.offerings || 0; b[2].textContent = p.data.comments || 0;
+            }
+        } catch(e){ console.error('Profile could not load', e); }
+    }
+
+    var original = renderSanctuaryTab;
+    renderSanctuaryTab = function(tab){
+        if (tab === 'profile') return renderProfilePanel();
+        return original.apply(this, arguments);
+    };
+})();
+</script>
+<script src="member-card.js"></script>
 <script id="temple-profile-links">
 /* Nicknames in the chat open the member's profile */
 (function(){
@@ -18310,7 +18405,8 @@ body.temple-chrome-hidden #accountButton.account-button{
             var name = (el.textContent || '').trim();
             if (!name || name === 'Temple Member') return;
             var a = document.createElement('a');
-            a.href = 'profile.html?n=' + encodeURIComponent(name);
+            a.href = '#';
+            a.addEventListener('click', function(ev){ ev.preventDefault(); if (window.openMemberCard) openMemberCard(name); });
             a.textContent = name;
             a.style.color = 'inherit'; a.style.textDecoration = 'none'; a.style.borderBottom = '1px dotted rgba(213,187,140,.5)';
             el.textContent = ''; el.appendChild(a);
